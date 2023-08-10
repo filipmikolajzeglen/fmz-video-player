@@ -9,13 +9,13 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class Main extends Application {
+import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.APPLICATION_FXML;
+import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.APPLICATION_ERROR_LOAD;
+import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.APPLICATION_TITLE;
+import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.APPLICATION_ICON;
+import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.APPLICATION_ERROR;
 
-    private final static String APPLICATION_TITLE = "FMZ Video Player";
-    private final static String APPLICATION_ICON = "fmzPlayerIcon.png";
-    private final static String APPLICATION_FXML = "/com/filip/tvscheduler/fmztvscheduler/fmz-video-player.fxml";
-    private final static String APPLICATION_ERROR_LOAD = "Cannot load " + APPLICATION_FXML;
-    private final static String APPLICATION_ERROR = "Cannot start the application: ";
+public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {

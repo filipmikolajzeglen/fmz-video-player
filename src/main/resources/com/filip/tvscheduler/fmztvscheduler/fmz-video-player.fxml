@@ -4,9 +4,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.media.*?>
+<?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<?import javafx.scene.shape.SVGPath?>
 <StackPane fx:id="stackPaneParent" style="-fx-background-color: #000000;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.filip.tvscheduler.fmztvscheduler.video.VideoPlayer">
     <MediaView fx:id="mediaView" />
     <VBox alignment="BOTTOM_CENTER">
@@ -25,28 +25,28 @@
 
             <HBox fx:id="hBoxControls" alignment="CENTER_LEFT">
 
-                <Button fx:id="buttonPlayPauseRestart" minWidth="30" maxWidth="30" style="-fx-cursor: hand; -fx-background-color: none;">
-                    <HBox.margin>
-                        <Insets left="15.0"/>
-                    </HBox.margin>
-                    <graphic>
-                        <SVGPath fx:id="buttonPlayPauseRestartSVG" fill="#ffffff"/>
-                    </graphic>
-                </Button>
-
-                <Button fx:id="buttonNext" minWidth="30" maxWidth="30" style="-fx-cursor: hand; -fx-background-color: none;">
+                <Button fx:id="buttonPlayPauseRestart" maxWidth="30" minWidth="30" style="-fx-cursor: hand; -fx-background-color: none;">
                     <HBox.margin>
                         <Insets left="15.0" />
                     </HBox.margin>
                     <graphic>
-                        <SVGPath fx:id="buttonNextSVG" fill="#ffffff" onMouseClicked="#buttonNextClicked"/>
+                        <SVGPath fx:id="buttonPlayPauseRestartSVG" fill="#ffffff" />
+                    </graphic>
+                </Button>
+
+                <Button fx:id="buttonNext" maxWidth="30" minWidth="30" style="-fx-cursor: hand; -fx-background-color: none;">
+                    <HBox.margin>
+                        <Insets left="15.0" />
+                    </HBox.margin>
+                    <graphic>
+                        <SVGPath fx:id="buttonNextSVG" fill="#ffffff" onMouseClicked="#buttonNextClicked" />
                     </graphic>
                 </Button>
 
                 <HBox fx:id="hBoxVolume" alignment="CENTER">
 
                     <children>
-                        <Label fx:id="labelVolume" minWidth="60" maxWidth="60" style="-fx-cursor: hand;">
+                        <Label fx:id="labelVolume" maxWidth="60" minWidth="60" style="-fx-cursor: hand;">
                             <padding>
                                 <Insets left="25.0" right="10.0" />
                             </padding>
@@ -54,7 +54,7 @@
                                 <Insets />
                             </HBox.margin>
                             <graphic>
-                                <SVGPath fx:id="labelVolumeSVG" fill="#ffffff"/>
+                                <SVGPath fx:id="labelVolumeSVG" fill="#ffffff" />
                             </graphic>
                         </Label>
                         <Slider fx:id="sliderVolume" max="1.0" style="-fx-cursor: hand;" stylesheets="@../../../../css/timebar.css" />
@@ -67,7 +67,7 @@
                         <Insets left="10.0" />
                     </HBox.margin>
                     <font>
-                        <Font name="JetBrains Mono Medium" size="18.0" />
+                        <Font name="JetBrains Mono SemiBold" size="18.0" />
                     </font>
                 </Label>
 
@@ -99,12 +99,12 @@
                                 <Insets right="10.0" />
                             </HBox.margin>
                         </Label>
-                        <Label fx:id="labelFullScreen" minWidth="60" maxWidth="60" alignment="CENTER" contentDisplay="CENTER" style="-fx-cursor: hand;">
+                        <Label fx:id="labelFullScreen" alignment="CENTER" contentDisplay="CENTER" maxWidth="60" minWidth="60" style="-fx-cursor: hand;">
                             <padding>
                                 <Insets right="10.0" />
                             </padding>
                             <graphic>
-                                <SVGPath fx:id="labelFullScreenSVG" fill="#ffffff"/>
+                                <SVGPath fx:id="labelFullScreenSVG" fill="#ffffff" />
                             </graphic>
                         </Label>
                     </children>

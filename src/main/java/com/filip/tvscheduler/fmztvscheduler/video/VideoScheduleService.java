@@ -1,43 +1,15 @@
 package com.filip.tvscheduler.fmztvscheduler.video;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.VIDEO_MAIN_SOURCE;
+import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.EPISODES_LIMIT_OF_A_SINGLE_SERIES_PER_DAY;
+import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.MAXIMUM_NUMBER_OF_EPISODES_IN_THE_SCHEDULE_PER_DAY;
 import static java.util.Objects.requireNonNull;
 
 public class VideoScheduleService {
-
-    private final static String VIDEO_MAIN_SOURCE = "E:\\FoxKids";
-    private final static String FULLSCREEN = "--fullscreen";
-    private final static String PLAYER_SOURCE = "C:\\Program Files\\VideoLAN\\VLC\\vlc.exe";
-    private final static int EPISODES_LIMIT_OF_A_SINGLE_SERIES_PER_DAY = 2;
-    private final static int MAXIMUM_NUMBER_OF_EPISODES_IN_THE_SCHEDULE_PER_DAY = 30;
-
-    public void runVideos() throws IOException {
-        runCommand(prepareCommandsToRunAllVideos(createVideosSchedule())).start();
-    }
-
-    private ProcessBuilder runCommand(List<String> commands) {
-        return new ProcessBuilder(commands)
-                .directory(new File("E:\\FoxKids"))
-                .redirectErrorStream(true);
-    }
-
-    private String getResults(Process process) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        StringBuilder builder = new StringBuilder();
-        String line = null;
-        while ((line = reader.readLine()) != null) {
-            builder.append(line);
-            builder.append(System.getProperty("line.separator"));
-            System.out.println(line);
-        }
-        return builder.toString().length() > 1 ? builder.toString() : null;
-    }
 
     public List<String> createPathsToAllVideos() {
         List<String> videoCommands = new ArrayList<>();
@@ -47,18 +19,6 @@ public class VideoScheduleService {
             videoCommands.add(video.getVideoPath());
         }
 
-        return videoCommands;
-    }
-
-    private List<String> prepareCommandsToRunAllVideos(List<Video> videos) {
-        List<String> videoCommands = new ArrayList<>();
-        videoCommands.add(PLAYER_SOURCE);
-
-        for (Video video : videos) {
-            videoCommands.add(video.getVideoPath());
-        }
-
-        videoCommands.add(FULLSCREEN);
         return videoCommands;
     }
 

@@ -130,10 +130,10 @@ public class VideoPlayer implements Initializable {
     }
 
     private void initializeAllControlsSvgOnTheBeginning() {
-        setButtonPauseSvg();
-        setButtonNextSvg();
-        setLabelVolumeSvg();
-        setLabelExitFullscreenSvg();
+        setButtonPauseSVG();
+        setButtonNextSVG();
+        setLabelVolume2SVG();
+        setLabelExitFullscreenSVG();
 
         sliderVolume.setValue(DEFAULT_VOLUME_VALUE);
         labelSpeed.setText(SPEED_LEVEL_1);
@@ -198,18 +198,11 @@ public class VideoPlayer implements Initializable {
     }
 
     private void videoPlayerSizeBinding() {
-        stackPaneParent.sceneProperty().addListener(new ChangeListener<Scene>() {
-            @Override
-            public void changed(ObservableValue<? extends Scene> observableValue, Scene scene, Scene newScene) {
-                if (scene == null && newScene != null) {
-                    mediaView.fitHeightProperty().bind(newScene.heightProperty().subtract(hBoxControls.heightProperty().add(0)));
-                }
-            }
-        });
-
         stackPaneParent.sceneProperty().addListener((observableValue, oldScene, newScene) -> {
             if (oldScene == null && newScene != null) {
-                mediaView.fitHeightProperty().bind(newScene.heightProperty().subtract(hBoxControls.heightProperty()));
+                mediaView.fitHeightProperty()
+                        .bind(newScene.heightProperty()
+                                .subtract(hBoxControls.heightProperty().add(0)));
                 mediaView.fitWidthProperty().bind(newScene.widthProperty());
             }
         });
@@ -279,11 +272,11 @@ public class VideoPlayer implements Initializable {
         }
 
         if (isPlaying) {
-            setButtonPlaySvg();
+            setButtonPlaySVG();
             mediaPlayer.pause();
             isPlaying = false;
         } else {
-            setButtonPauseSvg();
+            setButtonPauseSVG();
             mediaPlayer.play();
             isPlaying = true;
         }
@@ -294,13 +287,13 @@ public class VideoPlayer implements Initializable {
 
         if (stage.isFullScreen()) {
             stage.setFullScreen(false);
-            setLabelExitFullscreenSvg();
+            setLabelExitFullscreenSVG();
         } else {
             stage.setFullScreen(true);
-            setLabelEnterFullscreenSvg();
+            setLabelEnterFullscreenSVG();
             stage.addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {
                 if (keyEvent.getCode() == KeyCode.ESCAPE) {
-                    setLabelEnterFullscreenSvg();
+                    setLabelEnterFullscreenSVG();
                 }
             });
         }
@@ -332,12 +325,12 @@ public class VideoPlayer implements Initializable {
         }
 
         if (isMuted) {
-            setLabelVolume1Svg();
+            setLabelVolume1SVG();
             mediaPlayer.setVolume(DEFAULT_VOLUME_VALUE);
             sliderVolume.setValue(DEFAULT_VOLUME_VALUE);
             isMuted = false;
         } else {
-            setLabelVolumeMuteSvg();
+            setLabelVolumeMuteSVG();
             mediaPlayer.setVolume(MUTE_VOLUME_VALUE);
             sliderVolume.setValue(MUTE_VOLUME_VALUE);
             isMuted = true;
@@ -365,7 +358,7 @@ public class VideoPlayer implements Initializable {
         initializeVideoIfPresent(videos);
         initializeMediaPlayerIfUrlPresent(urls);
         atEndOfVideo = true;
-        refreshLabelsIfNeeded();
+        updateCurrentTimeLabelIfNeeded();
     }
 
     private void initializeVideoIfPresent(final Iterator<Video> videos) {
@@ -382,7 +375,7 @@ public class VideoPlayer implements Initializable {
             configureCurrentTimeListener();
             configurePlayPauseRestartAction();
 
-            playVideoByDefault();
+            playByDefault();
         } else {
             showRestartButton();
         }
@@ -416,9 +409,9 @@ public class VideoPlayer implements Initializable {
                 resetVideoIfEnded();
             }
             if (isPlaying) {
-                pauseVideo();
+                pause();
             } else {
-                playVideo();
+                play();
             }
         });
     }
@@ -429,28 +422,28 @@ public class VideoPlayer implements Initializable {
         isPlaying = false;
     }
 
-    private void pauseVideo() {
-        setButtonPlaySvg();
+    private void pause() {
+        setButtonPlaySVG();
         mediaPlayer.pause();
         isPlaying = false;
     }
 
-    private void playVideo() {
-        setButtonPauseSvg();
+    private void play() {
+        setButtonPauseSVG();
         mediaPlayer.play();
         isPlaying = true;
     }
 
-    private void playVideoByDefault() {
+    private void playByDefault() {
         mediaPlayer.setAutoPlay(true);
-        setButtonPauseSvg();
+        setButtonPauseSVG();
     }
 
     private void showRestartButton() {
-        setButtonRestartSvg();
+        setButtonRestartSVG();
     }
 
-    private void refreshLabelsIfNeeded() {
+    private void updateCurrentTimeLabelIfNeeded() {
         if (!labelCurrentTime.textProperty().equals(labelTotalTime.textProperty())) {
             labelCurrentTime.textProperty().unbind();
             labelCurrentTime.setText(getTime(this.mediaPlayer.getTotalDuration()) + " / ");
@@ -485,14 +478,14 @@ public class VideoPlayer implements Initializable {
                 atEndOfVideo = false;
 
                 if (isPlaying) {
-                    setButtonPauseSvg();
+                    setButtonPauseSVG();
                 } else {
-                    setButtonPlaySvg();
+                    setButtonPlaySVG();
                 }
                 break;
             } else {
                 atEndOfVideo = true;
-                setButtonRestartSvg();
+                setButtonRestartSVG();
             }
         }
     }
@@ -506,52 +499,47 @@ public class VideoPlayer implements Initializable {
         }, mediaPlayer.currentTimeProperty()));
     }
 
-    private void setButtonPlaySvg() {
-        setSvgGraphic(buttonPlayPauseRestartSVG, PLAY_SVG, 0.04);
+    private void setButtonPlaySVG() {
+        setSvgGraphic(buttonPlayPauseRestartSVG, PLAY_SVG, PLAY_SVG_SCALE_MODIFIER);
         buttonPlayPauseRestart.setGraphic(buttonPlayPauseRestartSVG);
     }
 
-    private void setButtonPauseSvg() {
-        setSvgGraphic(buttonPlayPauseRestartSVG, PAUSE_SVG, 0.04);
+    private void setButtonPauseSVG() {
+        setSvgGraphic(buttonPlayPauseRestartSVG, PAUSE_SVG, PAUSE_SVG_SCALE_MODIFIER);
         buttonPlayPauseRestart.setGraphic(buttonPlayPauseRestartSVG);
     }
 
-    private void setButtonRestartSvg() {
-        setSvgGraphic(buttonPlayPauseRestartSVG, RESTART_SVG, 0.05);
+    private void setButtonRestartSVG() {
+        setSvgGraphic(buttonPlayPauseRestartSVG, RESTART_SVG, RESTART_SVG_SCALE_MODIFIER);
         buttonPlayPauseRestart.setGraphic(buttonPlayPauseRestartSVG);
     }
 
-    private void setButtonNextSvg() {
-        setSvgGraphic(buttonNextSVG, NEXT_SVG, 0.041);
+    private void setButtonNextSVG() {
+        setSvgGraphic(buttonNextSVG, NEXT_SVG, NEXT_SVG_SCALE_MODIFIER);
     }
 
-    private void setLabelVolumeSvg() {
-        setSvgGraphic(labelVolumeSVG, VOLUME2_SVG, 0.031);
-        labelVolume.setGraphic(labelVolumeSVG);
-    }
-
-    private void setLabelExitFullscreenSvg() {
-        setSvgGraphic(labelFullScreenSVG, EXIT_SVG, 0.03);
+    private void setLabelEnterFullscreenSVG() {
+        setSvgGraphic(labelFullScreenSVG, FULLSCREEN_SVG, SCREEN_MODE_SVG_SCALE_MODIFIER);
         labelFullScreen.setGraphic(labelFullScreenSVG);
     }
 
-    private void setLabelEnterFullscreenSvg() {
-        setSvgGraphic(labelFullScreenSVG, FULLSCREEN_SVG, 0.03);
+    private void setLabelExitFullscreenSVG() {
+        setSvgGraphic(labelFullScreenSVG, EXIT_SVG, SCREEN_MODE_SVG_SCALE_MODIFIER);
         labelFullScreen.setGraphic(labelFullScreenSVG);
     }
 
-    private void setLabelVolume1Svg() {
-        setSvgGraphic(labelVolumeSVG, VOLUME1_SVG, 0.031);
+    private void setLabelVolume1SVG() {
+        setSvgGraphic(labelVolumeSVG, VOLUME1_SVG, VOLUME_SVG_SCALE_MODIFIER);
         labelVolume.setGraphic(labelVolumeSVG);
     }
 
-    private void setLabelVolume2Svg() {
-        setSvgGraphic(labelVolumeSVG, VOLUME2_SVG, 0.031);
+    private void setLabelVolume2SVG() {
+        setSvgGraphic(labelVolumeSVG, VOLUME2_SVG, VOLUME_SVG_SCALE_MODIFIER);
         labelVolume.setGraphic(labelVolumeSVG);
     }
 
-    private void setLabelVolumeMuteSvg() {
-        setSvgGraphic(labelVolumeSVG, MUTE_SVG, 0.031);
+    private void setLabelVolumeMuteSVG() {
+        setSvgGraphic(labelVolumeSVG, MUTE_SVG, VOLUME_SVG_SCALE_MODIFIER);
         labelVolume.setGraphic(labelVolumeSVG);
     }
 

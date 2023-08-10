@@ -12,6 +12,12 @@ public class VideoPlayerConfigurator {
     public static final String VOLUME1_SVG = "M13 7.22L9.603 10H6v4h3.603L13 16.78V7.22zM8.889 16H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1h3.889l5.294-4.332a.5.5 0 0 1 .817.387v15.89a.5.5 0 0 1-.817.387L8.89 16zm9.974.591l-1.422-1.422A3.993 3.993 0 0 0 19 12c0-1.43-.75-2.685-1.88-3.392l1.439-1.439A5.991 5.991 0 0 1 21 12c0 1.842-.83 3.49-2.137 4.591z";
     public static final String VOLUME2_SVG = "M10 7.22L6.603 10H3v4h3.603L10 16.78V7.22zM5.889 16H2a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1h3.889l5.294-4.332a.5.5 0 0 1 .817.387v15.89a.5.5 0 0 1-.817.387L5.89 16zm13.517 4.134l-1.416-1.416A8.978 8.978 0 0 0 21 12a8.982 8.982 0 0 0-3.304-6.968l1.42-1.42A10.976 10.976 0 0 1 23 12c0 3.223-1.386 6.122-3.594 8.134zm-3.543-3.543l-1.422-1.422A3.993 3.993 0 0 0 16 12c0-1.43-.75-2.685-1.88-3.392l1.439-1.439A5.991 5.991 0 0 1 18 12c0 1.842-.83 3.49-2.137 4.591z";
     public static final double DEFAULT_SVG_SCALE = 35.0;
+    public static final double VOLUME_SVG_SCALE_MODIFIER = 0.031;
+    public static final double SCREEN_MODE_SVG_SCALE_MODIFIER = 0.03;
+    public static final double PLAY_SVG_SCALE_MODIFIER = 0.04;
+    public static final double PAUSE_SVG_SCALE_MODIFIER = 0.04;
+    public static final double RESTART_SVG_SCALE_MODIFIER = 0.05;
+    public static final double NEXT_SVG_SCALE_MODIFIER = 0.041;
 
     public static final String PRIMARY_COLOR = "#99ccff";
     public static final String GRADIENT_COLOR = "rgba(255, 255, 255, 0.28)";
@@ -28,4 +34,14 @@ public class VideoPlayerConfigurator {
     public static final double SPEED_LEVEL_3_VALUE = 1.1;
     public static final String SPEED_LEVEL_4 = "1.15X";
     public static final double SPEED_LEVEL_4_VALUE = 1.15;
+
+    public final static String APPLICATION_TITLE = "FMZ Video Player";
+    public final static String APPLICATION_ICON = "fmzPlayerIcon.png";
+    public final static String APPLICATION_FXML = "/com/filip/tvscheduler/fmztvscheduler/fmz-video-player.fxml";
+    public final static String APPLICATION_ERROR_LOAD = "Cannot load " + APPLICATION_FXML;
+    public final static String APPLICATION_ERROR = "Cannot start the application: ";
+
+    public final static String VIDEO_MAIN_SOURCE = "E:\\FoxKids";
+    public final static int EPISODES_LIMIT_OF_A_SINGLE_SERIES_PER_DAY = 2;
+    public final static int MAXIMUM_NUMBER_OF_EPISODES_IN_THE_SCHEDULE_PER_DAY = 30;
 }
