@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.media.*?>
+<?import javafx.scene.text.*?>
+
+<?import javafx.scene.shape.SVGPath?>
+<StackPane fx:id="stackPaneParent" style="-fx-background-color: #000000;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.filip.tvscheduler.fmztvscheduler.video.VideoPlayer">
+    <MediaView fx:id="mediaView" />
+    <VBox alignment="BOTTOM_CENTER">
+
+        <VBox fx:id="vBoxFullPanel" style="-fx-background-color: rgba(0,0,0,0.7);">
+
+            <padding>
+                <Insets top="0.0" />
+            </padding>
+
+            <Slider fx:id="sliderTime" style="-fx-cursor: hand;" stylesheets="@../../../../css/timebar.css">
+                <padding>
+                    <Insets bottom="15.0" left="10.0" right="10.0" top="5.0" />
+                </padding>
+            </Slider>
+
+            <HBox fx:id="hBoxControls" alignment="CENTER_LEFT">
+
+                <Button fx:id="buttonPlayPauseRestart" minWidth="30" maxWidth="30" style="-fx-cursor: hand; -fx-background-color: none;">
+                    <HBox.margin>
+                        <Insets left="15.0"/>
+                    </HBox.margin>
+                    <graphic>
+                        <SVGPath fx:id="buttonPlayPauseRestartSVG" fill="#ffffff"/>
+                    </graphic>
+                </Button>
+
+                <Button fx:id="buttonNext" minWidth="30" maxWidth="30" style="-fx-cursor: hand; -fx-background-color: none;">
+                    <HBox.margin>
+                        <Insets left="15.0" />
+                    </HBox.margin>
+                    <graphic>
+                        <SVGPath fx:id="buttonNextSVG" fill="#ffffff" onMouseClicked="#buttonNextClicked"/>
+                    </graphic>
+                </Button>
+
+                <HBox fx:id="hBoxVolume" alignment="CENTER">
+
+                    <children>
+                        <Label fx:id="labelVolume" minWidth="60" maxWidth="60" style="-fx-cursor: hand;">
+                            <padding>
+                                <Insets left="25.0" right="10.0" />
+                            </padding>
+                            <HBox.margin>
+                                <Insets />
+                            </HBox.margin>
+                            <graphic>
+                                <SVGPath fx:id="labelVolumeSVG" fill="#ffffff"/>
+                            </graphic>
+                        </Label>
+                        <Slider fx:id="sliderVolume" max="1.0" style="-fx-cursor: hand;" stylesheets="@../../../../css/timebar.css" />
+                    </children>
+
+                </HBox>
+
+                <Label fx:id="labelCurrentTime" style="-fx-cursor: hand;" text="00:00 / " textFill="#dddddd">
+                    <HBox.margin>
+                        <Insets left="10.0" />
+                    </HBox.margin>
+                    <font>
+                        <Font name="JetBrains Mono Medium" size="18.0" />
+                    </font>
+                </Label>
+
+                <Label fx:id="labelTotalTime" style="-fx-cursor: hand;" text="00:00" textFill="#dddddd">
+                    <padding>
+                        <Insets right="10.0" />
+                    </padding>
+                    <font>
+                        <Font name="JetBrains Mono NL Regular" size="18.0" />
+                    </font>
+                </Label>
+
+                <Label fx:id="labelCurrentEpisode" style="-fx-cursor: hand;" text="SERIES NAME - Episode Name" textFill="#ffffff77">
+                    <HBox.margin>
+                        <Insets left="10.0" right="10.0" />
+                    </HBox.margin>
+                    <font>
+                        <Font name="JetBrains Mono NL Regular" size="18.0" />
+                    </font>
+                </Label>
+
+                <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label fx:id="labelSpeed" alignment="CENTER" style="-fx-cursor: hand;" textFill="#dddddd">
+                            <font>
+                                <Font name="JetBrains Mono Bold" size="18.0" />
+                            </font>
+                            <HBox.margin>
+                                <Insets right="10.0" />
+                            </HBox.margin>
+                        </Label>
+                        <Label fx:id="labelFullScreen" minWidth="60" maxWidth="60" alignment="CENTER" contentDisplay="CENTER" style="-fx-cursor: hand;">
+                            <padding>
+                                <Insets right="10.0" />
+                            </padding>
+                            <graphic>
+                                <SVGPath fx:id="labelFullScreenSVG" fill="#ffffff"/>
+                            </graphic>
+                        </Label>
+                    </children>
+                </HBox>
+
+                <VBox.margin>
+                    <Insets />
+                </VBox.margin>
+
+                <padding>
+                    <Insets bottom="15.0" />
+                </padding>
+
+            </HBox>
+        </VBox>
+
+      <padding>
+         <Insets top="13.0" />
+      </padding>
+
+      <StackPane.margin>
+         <Insets />
+      </StackPane.margin>
+
+    </VBox>
+</StackPane>
