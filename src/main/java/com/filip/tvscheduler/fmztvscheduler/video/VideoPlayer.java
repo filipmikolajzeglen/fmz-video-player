@@ -37,8 +37,7 @@ import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
 import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.*;
-import static com.filip.tvscheduler.fmztvscheduler.video.VideoSimpleLogger.Level.ERROR;
-import static com.filip.tvscheduler.fmztvscheduler.video.VideoSimpleLogger.Level.INFO;
+import static com.filip.tvscheduler.fmztvscheduler.video.VideoSimpleLogger.Level.*;
 
 public class VideoPlayer implements Initializable {
 
@@ -106,7 +105,14 @@ public class VideoPlayer implements Initializable {
             initializeAllControlsSvgOnTheBeginning();
 
             setUpFadeOutFeature();
-            setUpButtonHandlers();
+
+            if (buttonPlayPauseRestart != null) {
+                logger.log(INFO, "buttonPlayPauseRestart was correctly initialized");
+                setUpButtonHandlers();
+            } else {
+                logger.log(ERROR, "buttonPlayPauseRestart was NULL");
+                setUpButtonHandlers();
+            }
 
             volumeBinding();
             videoPlayerSizeBinding();
@@ -131,18 +137,35 @@ public class VideoPlayer implements Initializable {
         media = new Media(new File(videoPath).toURI().toString());
         mediaPlayer = new MediaPlayer(media);
         mediaView.setMediaPlayer(mediaPlayer);
+
+        mediaPlayer.setOnReady(new Runnable() {
+            @Override
+            public void run() {
+                if (mediaPlayer.getTotalDuration().lessThanOrEqualTo(Duration.ZERO)) {
+                    logger.log(ERROR, "Total duration was 00:00 - Started new initialization");
+                    initializeMediaPlayer(videoPath);
+                }
+            }
+        });
+
+        mediaPlayer.setOnError(new Runnable() {
+            @Override
+            public void run() {
+                logger.log(ERROR, "Error occurred in media player: " + mediaPlayer.getError().getMessage());
+            }
+        });
     }
 
     private void initializeMediaPlayer(final Iterator<String> urls, final Iterator<Video> videos) {
         logger.log(INFO, "Initialize media player once again");
         stopAndDisposeMediaPlayer();
-        initializeVideoIfPresent(videos);
         initializeMediaPlayerIfUrlPresent(urls);
+        initializeVideoInfoIfPresent(videos);
         atEndOfVideo = true;
         updateCurrentTimeLabelIfNeeded();
     }
 
-    private void initializeVideoIfPresent(final Iterator<Video> videos) {
+    private void initializeVideoInfoIfPresent(final Iterator<Video> videos) {
         if (videos.hasNext()) {
             logger.log(INFO, "Next video exist");
             initializeVideoInfo(videos.next());
@@ -158,14 +181,15 @@ public class VideoPlayer implements Initializable {
     private void initializeMediaPlayerIfUrlPresent(final Iterator<String> urls) {
         if (urls.hasNext()) {
             logger.log(INFO, "Next video exist");
-            initializeMediaPlayer(urls.next());
             resetTimeSlider();
-            configureTotalDurationListener();
+            initializeMediaPlayer(urls.next());
             configureCurrentTimeListener();
+            configureTotalDurationListener();
             configurePlayPauseRestartAction();
 
             playByDefault();
         } else {
+            logger.log(INFO, "Next video does not exist, set RESTART button");
             showRestartButton();
         }
     }
@@ -183,14 +207,12 @@ public class VideoPlayer implements Initializable {
     }
 
     private void setUpFadeOutFeature() {
-        logger.log(INFO, "Setup fade out feature");
         PauseTransition delayFadeOut = new PauseTransition(Duration.seconds(3));
         delayFadeOut.setOnFinished(e -> fadeOutPane(vBoxFullPanel));
 
         mediaView.setOnMouseMoved(evt -> delayFadeOut.playFromStart());
         vBoxFullPanel.setOnMouseExited(evt -> delayFadeOut.playFromStart());
         vBoxFullPanel.setOnMouseEntered(evt -> {
-            logger.log(INFO, "Stop fade out feature when mouse entered controls panel");
             vBoxFullPanel.setOpacity(1);
             delayFadeOut.stop();
         });
@@ -206,14 +228,18 @@ public class VideoPlayer implements Initializable {
 
     private void setUpButtonHandlers() {
         logger.log(INFO, "Setup button handlers");
-        buttonPlayPauseRestart.setOnAction(event -> handlePlayPauseRestart());
-        labelFullScreen.setOnMouseClicked(event -> handleFullscreenClick());
-        labelSpeed.setOnMouseClicked(event -> handleSpeedClick());
+        if (buttonPlayPauseRestart != null) {
+            buttonPlayPauseRestart.setOnAction(event -> handlePlayPauseRestart());
+            labelFullScreen.setOnMouseClicked(event -> handleFullscreenClick());
+            labelSpeed.setOnMouseClicked(event -> handleSpeedClick());
 
-        labelVolume.setOnMouseClicked(event -> handleVolumeClick());
-        labelVolume.setOnMouseEntered(event -> handleVolumeMouseEnter());
-        hBoxVolume.setOnMouseExited(event -> handleVolumeMouseExit());
-        hBoxVolume.setOnMouseEntered(event -> handleVolumeMouseEnter());
+            labelVolume.setOnMouseClicked(event -> handleVolumeClick());
+            labelVolume.setOnMouseEntered(event -> handleVolumeMouseEnter());
+            hBoxVolume.setOnMouseExited(event -> handleVolumeMouseExit());
+            hBoxVolume.setOnMouseEntered(event -> handleVolumeMouseEnter());
+        } else {
+            logger.log(ERROR, "buttonPlayPauseRestart was NULL");
+        }
     }
 
     private void volumeBinding() {
@@ -261,7 +287,7 @@ public class VideoPlayer implements Initializable {
             public void changed(ObservableValue<? extends Duration> observableValue, Duration oldDuration, Duration newDuration) {
                 sliderTime.setMax(newDuration.toSeconds());
                 labelTotalTime.setText(getTime(newDuration));
-
+                logger.log(INFO, "mediaPlayer.totalDurationProperty(): " + sliderTime.getValue() + " / " + labelTotalTime.getText());
             }
         });
 
@@ -271,6 +297,7 @@ public class VideoPlayer implements Initializable {
                 bindCurrentTimeLabel();
                 if (!isChanging) {
                     mediaPlayer.seek(Duration.seconds(sliderTime.getValue()));
+                    logger.log(INFO, "sliderTime.valueChangingProperty(): " + sliderTime.getValue());
                 }
             }
         });
@@ -279,12 +306,17 @@ public class VideoPlayer implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
                 bindCurrentTimeLabel();
-                double currentTime = mediaPlayer.getCurrentTime().toSeconds();
-                if (Math.abs(currentTime - newValue.doubleValue()) > 0.5) {
-                    mediaPlayer.seek(Duration.seconds(newValue.doubleValue()));
+                if (mediaPlayer != null) {
+                    double currentTime = mediaPlayer.getCurrentTime().toSeconds();
+                    if (Math.abs(currentTime - newValue.doubleValue()) > 0.5) {
+                        mediaPlayer.seek(Duration.seconds(newValue.doubleValue()));
+                        logger.log(INFO, "sliderTime.valueProperty() mediaPlayer current time: " + mediaPlayer.getCurrentTime());
+                    }
+                    addColorToSliderTime(sliderTime, newValue);
+                    labelsMatchEndVideo();
+                } else {
+                    logger.log(ERROR, "sliderTime.valueProperty(): mediaPlayer is currently NULL");
                 }
-                addColorToSliderTime(sliderTime, newValue);
-                labelsMatchEndVideo();
             }
         });
 
@@ -302,6 +334,8 @@ public class VideoPlayer implements Initializable {
         mediaPlayer.setOnEndOfMedia(new Runnable() {
             @Override
             public void run() {
+                logger.log(INFO, "pathToVideoIterator has next: " + pathToVideoIterator.hasNext());
+                logger.log(INFO, "videoIterator has next: " + videoIterator.hasNext());
                 initializeMediaPlayer(pathToVideoIterator, videoIterator);
             }
         });
@@ -406,7 +440,7 @@ public class VideoPlayer implements Initializable {
             sliderVolume.setValue(mediaPlayer.getVolume());
             addColorToSliderVolume(sliderVolume);
             logger.log(INFO, "Volume was set to " + sliderVolume.getValue());
-        } else  {
+        } else {
             logger.log(ERROR, "Media player was NULL during handling volume mouse entered");
         }
     }
@@ -487,6 +521,7 @@ public class VideoPlayer implements Initializable {
         if (!labelCurrentTime.textProperty().equals(labelTotalTime.textProperty())) {
             labelCurrentTime.textProperty().unbind();
             labelCurrentTime.setText(getTime(this.mediaPlayer.getTotalDuration()) + " / ");
+            logger.log(INFO, "updateCurrentTimeLabelIfNeeded: " + labelCurrentTime.getText());
         }
     }
 
@@ -495,6 +530,12 @@ public class VideoPlayer implements Initializable {
         initializeMediaPlayer(pathToVideoIterator, videoIterator);
     }
 
+    /**
+     * This function takes the time of the video and calculates the seconds, minutes, and hours.
+     *
+     * @param time - The time of the video.
+     * @return Corrected seconds, minutes, and hours.
+     */
     public String getTime(Duration time) {
         if (time == null) {
             return "00:00";
@@ -512,33 +553,52 @@ public class VideoPlayer implements Initializable {
         }
     }
 
+    // Check the that the text of the time labels match. If they do then we are at the end of the video.
     public void labelsMatchEndVideo() {
-        Duration totalDuration = mediaPlayer.getTotalDuration();
-        Duration currentTime = mediaPlayer.getCurrentTime();
+        if (mediaPlayer != null) {
+            double totalSeconds = mediaPlayer.getTotalDuration().toSeconds();
+            double currentSeconds = mediaPlayer.getCurrentTime().toSeconds();
 
-        if (totalDuration.lessThanOrEqualTo(currentTime)) {
-            logger.log(INFO, "labelsMatchEndVideo: set button RESTART");
-            atEndOfVideo = true;
-            setButtonRestartSVG();
-        } else {
-            atEndOfVideo = false;
-
-            if (isPlaying) {
-                setButtonPauseSVG();
+            if (Math.abs(totalSeconds - currentSeconds) <= 0.2) {
+                logger.log(INFO, "labelsMatchEndVideo: set button RESTART");
+                atEndOfVideo = true;
+                setButtonRestartSVG();
             } else {
-                setButtonPlaySVG();
+                atEndOfVideo = false;
+                if (isPlaying) {
+                    setButtonPauseSVG();
+                } else {
+                    setButtonPlaySVG();
+                }
             }
+
+            if (atEndOfVideo) {
+                logger.log(INFO, "Next video is initializing");
+                initializeMediaPlayer(pathToVideoIterator, videoIterator);
+            }
+        } else {
+            logger.log(ERROR, "labelsMatchEndVideo: mediaPlayer is currently NULL");
         }
     }
 
+    // Bind the text of the current time label to the current time of the video.
+    // This will allow the timer to update along with the video.
     public void bindCurrentTimeLabel() {
-        logger.log(INFO, "bindCurrentTimeLabel");
-        labelCurrentTime.textProperty().bind(Bindings.createStringBinding(new Callable<String>() {
-            @Override
-            public String call() throws Exception {
-                return getTime(mediaPlayer.getCurrentTime()) + " / ";
-            }
-        }, mediaPlayer.currentTimeProperty()));
+        if (mediaPlayer != null) {
+            labelCurrentTime.textProperty().bind(Bindings.createStringBinding(new Callable<String>() {
+                @Override
+                public String call() throws Exception {
+                    // Return the hours, minutes, and seconds of the video.
+                    // %d is an integer
+                    // Time is given in milliseconds. (For example 750.0 ms).
+                    String time = getTime(mediaPlayer.getCurrentTime()) + " / ";
+                    //logger.log(RUNNING, "bindCurrentTimeLabel: " + time);
+                    return time;
+                }
+            }, mediaPlayer.currentTimeProperty()));
+        } else {
+            logger.log(ERROR, "bindCurrentTimeLabel: mediaPlayer is currently NULL");
+        }
     }
 
     private void setButtonPlaySVG() {
