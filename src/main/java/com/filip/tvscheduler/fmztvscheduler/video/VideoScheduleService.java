@@ -3,6 +3,8 @@ package com.filip.tvscheduler.fmztvscheduler.video;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.VIDEO_MAIN_SOURCE;
 import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.EPISODES_LIMIT_OF_A_SINGLE_SERIES_PER_DAY;
@@ -80,6 +82,15 @@ public class VideoScheduleService {
     // It should be changed because for now it is checked if file is not a directory
     private boolean isVideoFile(String file) {
         return file.charAt(file.length() - 4) == '.';
+    }
+
+    public String createVideoScheduleLog() {
+        AtomicInteger videoNumber = new AtomicInteger(1);
+        String startLine = "List of videos in schedule:  ";
+        return startLine + createVideosSchedule().stream()
+                .map(video -> "\n" + videoNumber.getAndIncrement() + ". " +
+                        video.getVideoName() + " - " + video.getEpisodeName() + ",")
+                .collect(Collectors.joining());
     }
 
 }

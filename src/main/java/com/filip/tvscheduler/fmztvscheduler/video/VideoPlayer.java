@@ -12,7 +12,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -38,10 +37,12 @@ import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
 import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.*;
-import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.GRADIENT_COLOR;
-import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.PRIMARY_COLOR;
+import static com.filip.tvscheduler.fmztvscheduler.video.VideoSimpleLogger.Level.ERROR;
+import static com.filip.tvscheduler.fmztvscheduler.video.VideoSimpleLogger.Level.INFO;
 
 public class VideoPlayer implements Initializable {
+
+    private static VideoSimpleLogger logger = new VideoSimpleLogger();
 
     @FXML
     private StackPane stackPaneParent;
@@ -96,18 +97,23 @@ public class VideoPlayer implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         stopAndDisposeMediaPlayer();
 
-        initializeMediaPlayer(pathToVideoIterator.next());
-        initializeVideoInfo(videoIterator.next());
-        initializeAllControlsSvgOnTheBeginning();
+        logger.log(INFO, "Initialize FMZ Video Player with videos:");
+        logger.log(INFO, scheduler.createVideoScheduleLog());
 
-        setUpFadeOutFeature();
-        setUpButtonHandlers();
+        if (pathToVideoIterator.hasNext()) {
+            initializeMediaPlayer(pathToVideoIterator.next());
+            initializeVideoInfo(videoIterator.next());
+            initializeAllControlsSvgOnTheBeginning();
 
-        volumeBinding();
-        videoPlayerSizeBinding();
-        videoTimeBinding();
+            setUpFadeOutFeature();
+            setUpButtonHandlers();
 
-        mediaPlayer.play();
+            volumeBinding();
+            videoPlayerSizeBinding();
+            videoTimeBinding();
+
+            mediaPlayer.play();
+        }
     }
 
     private void stopAndDisposeMediaPlayer() {
@@ -115,21 +121,57 @@ public class VideoPlayer implements Initializable {
             mediaPlayer.stop();
             mediaPlayer.dispose();
             mediaPlayer = null;
+            logger.log(INFO, "Media player was stopped and disposed. Set to NULL");
         }
     }
 
     private void initializeMediaPlayer(String videoPath) {
+        logger.log(INFO, "Initialize media player");
+        logger.log(INFO, "Current video path: " + videoPath);
         media = new Media(new File(videoPath).toURI().toString());
         mediaPlayer = new MediaPlayer(media);
         mediaView.setMediaPlayer(mediaPlayer);
     }
 
+    private void initializeMediaPlayer(final Iterator<String> urls, final Iterator<Video> videos) {
+        logger.log(INFO, "Initialize media player once again");
+        stopAndDisposeMediaPlayer();
+        initializeVideoIfPresent(videos);
+        initializeMediaPlayerIfUrlPresent(urls);
+        atEndOfVideo = true;
+        updateCurrentTimeLabelIfNeeded();
+    }
+
+    private void initializeVideoIfPresent(final Iterator<Video> videos) {
+        if (videos.hasNext()) {
+            logger.log(INFO, "Next video exist");
+            initializeVideoInfo(videos.next());
+        }
+    }
+
     private void initializeVideoInfo(Video video) {
         String fullEpisodeInfo = String.format("%s - %s", video.getVideoName().toUpperCase(), video.getEpisodeName());
+        logger.log(INFO, "Current video info: " + fullEpisodeInfo);
         labelCurrentEpisode.setText(fullEpisodeInfo);
     }
 
+    private void initializeMediaPlayerIfUrlPresent(final Iterator<String> urls) {
+        if (urls.hasNext()) {
+            logger.log(INFO, "Next video exist");
+            initializeMediaPlayer(urls.next());
+            resetTimeSlider();
+            configureTotalDurationListener();
+            configureCurrentTimeListener();
+            configurePlayPauseRestartAction();
+
+            playByDefault();
+        } else {
+            showRestartButton();
+        }
+    }
+
     private void initializeAllControlsSvgOnTheBeginning() {
+        logger.log(INFO, "Initialize all controls svg on the beginning");
         setButtonPauseSVG();
         setButtonNextSVG();
         setLabelVolume2SVG();
@@ -141,12 +183,14 @@ public class VideoPlayer implements Initializable {
     }
 
     private void setUpFadeOutFeature() {
+        logger.log(INFO, "Setup fade out feature");
         PauseTransition delayFadeOut = new PauseTransition(Duration.seconds(3));
         delayFadeOut.setOnFinished(e -> fadeOutPane(vBoxFullPanel));
 
         mediaView.setOnMouseMoved(evt -> delayFadeOut.playFromStart());
         vBoxFullPanel.setOnMouseExited(evt -> delayFadeOut.playFromStart());
         vBoxFullPanel.setOnMouseEntered(evt -> {
+            logger.log(INFO, "Stop fade out feature when mouse entered controls panel");
             vBoxFullPanel.setOpacity(1);
             delayFadeOut.stop();
         });
@@ -161,14 +205,15 @@ public class VideoPlayer implements Initializable {
     }
 
     private void setUpButtonHandlers() {
+        logger.log(INFO, "Setup button handlers");
         buttonPlayPauseRestart.setOnAction(event -> handlePlayPauseRestart());
-        labelFullScreen.setOnMouseClicked(e -> handleFullscreenClick());
-        labelSpeed.setOnMouseClicked(e -> handleSpeedClick());
+        labelFullScreen.setOnMouseClicked(event -> handleFullscreenClick());
+        labelSpeed.setOnMouseClicked(event -> handleSpeedClick());
 
-        labelVolume.setOnMouseClicked(e -> handleVolumeClick());
-        labelVolume.setOnMouseEntered(e -> handleVolumeMouseEnter());
-        hBoxVolume.setOnMouseExited(e -> handleVolumeMouseExit());
-        hBoxVolume.setOnMouseEntered(e -> handleVolumeMouseEnter());
+        labelVolume.setOnMouseClicked(event -> handleVolumeClick());
+        labelVolume.setOnMouseEntered(event -> handleVolumeMouseEnter());
+        hBoxVolume.setOnMouseExited(event -> handleVolumeMouseExit());
+        hBoxVolume.setOnMouseEntered(event -> handleVolumeMouseEnter());
     }
 
     private void volumeBinding() {
@@ -239,7 +284,7 @@ public class VideoPlayer implements Initializable {
                     mediaPlayer.seek(Duration.seconds(newValue.doubleValue()));
                 }
                 addColorToSliderTime(sliderTime, newValue);
-                labelsMatchEndVideo(labelCurrentTime.getText(), labelTotalTime.getText());
+                labelsMatchEndVideo();
             }
         });
 
@@ -250,7 +295,7 @@ public class VideoPlayer implements Initializable {
                 if (!sliderTime.isValueChanging()) {
                     sliderTime.setValue(newTime.toSeconds());
                 }
-                labelsMatchEndVideo(labelCurrentTime.getText(), labelTotalTime.getText());
+                labelsMatchEndVideo();
             }
         });
 
@@ -264,18 +309,21 @@ public class VideoPlayer implements Initializable {
 
     private void handlePlayPauseRestart() {
         bindCurrentTimeLabel();
-
+        logger.log(INFO, "Is end of video: " + atEndOfVideo);
         if (atEndOfVideo) {
+            logger.log(INFO, "Slider time value was set to 0");
             sliderTime.setValue(0);
             atEndOfVideo = false;
             isPlaying = false;
         }
 
         if (isPlaying) {
+            logger.log(INFO, "Video is pause. Button PLAY was set");
             setButtonPlaySVG();
             mediaPlayer.pause();
             isPlaying = false;
         } else {
+            logger.log(INFO, "Video is playing. Button PAUSE was set");
             setButtonPauseSVG();
             mediaPlayer.play();
             isPlaying = true;
@@ -286,13 +334,16 @@ public class VideoPlayer implements Initializable {
         Stage stage = (Stage) stackPaneParent.getScene().getWindow();
 
         if (stage.isFullScreen()) {
+            logger.log(INFO, "Fullscreen was exited");
             stage.setFullScreen(false);
             setLabelExitFullscreenSVG();
         } else {
+            logger.log(INFO, "Fullscreen was entered");
             stage.setFullScreen(true);
             setLabelEnterFullscreenSVG();
             stage.addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {
                 if (keyEvent.getCode() == KeyCode.ESCAPE) {
+                    logger.log(INFO, "Button ESCAPE was clicked");
                     setLabelEnterFullscreenSVG();
                 }
             });
@@ -301,19 +352,24 @@ public class VideoPlayer implements Initializable {
 
     private void handleSpeedClick() {
         if (mediaPlayer == null) {
+            logger.log(ERROR, "Media player was NULL during handling speed click");
             return;
         }
 
         if (SPEED_LEVEL_1.equals(labelSpeed.getText())) {
+            logger.log(INFO, "Speed video was set to " + SPEED_LEVEL_1);
             mediaPlayer.setRate(SPEED_LEVEL_2_VALUE);
             labelSpeed.setText(SPEED_LEVEL_2);
         } else if (SPEED_LEVEL_2.equals(labelSpeed.getText())) {
+            logger.log(INFO, "Speed video was set to " + SPEED_LEVEL_2);
             mediaPlayer.setRate(SPEED_LEVEL_3_VALUE);
             labelSpeed.setText(SPEED_LEVEL_3);
         } else if (SPEED_LEVEL_3.equals(labelSpeed.getText())) {
+            logger.log(INFO, "Speed video was set to " + SPEED_LEVEL_3);
             mediaPlayer.setRate(SPEED_LEVEL_4_VALUE);
             labelSpeed.setText(SPEED_LEVEL_4);
         } else {
+            logger.log(INFO, "Speed video was restart to " + SPEED_LEVEL_1);
             mediaPlayer.setRate(SPEED_LEVEL_1_VALUE);
             labelSpeed.setText(SPEED_LEVEL_1);
         }
@@ -321,15 +377,18 @@ public class VideoPlayer implements Initializable {
 
     private void handleVolumeClick() {
         if (mediaPlayer == null || sliderVolume == null) {
+            logger.log(ERROR, "Media player or slider volume was NULL during handling volume click");
             return;
         }
 
         if (isMuted) {
+            logger.log(INFO, "Unmuted video volume");
             setLabelVolume1SVG();
             mediaPlayer.setVolume(DEFAULT_VOLUME_VALUE);
             sliderVolume.setValue(DEFAULT_VOLUME_VALUE);
             isMuted = false;
         } else {
+            logger.log(INFO, "Muted video volume");
             setLabelVolumeMuteSVG();
             mediaPlayer.setVolume(MUTE_VOLUME_VALUE);
             sliderVolume.setValue(MUTE_VOLUME_VALUE);
@@ -346,49 +405,27 @@ public class VideoPlayer implements Initializable {
         if (mediaPlayer != null) {
             sliderVolume.setValue(mediaPlayer.getVolume());
             addColorToSliderVolume(sliderVolume);
+            logger.log(INFO, "Volume was set to " + sliderVolume.getValue());
+        } else  {
+            logger.log(ERROR, "Media player was NULL during handling volume mouse entered");
         }
     }
 
     private void handleVolumeMouseExit() {
         hBoxVolume.getChildren().remove(sliderVolume);
-    }
-
-    private void initializeMediaPlayer(final Iterator<String> urls, final Iterator<Video> videos) {
-        stopAndDisposeMediaPlayer();
-        initializeVideoIfPresent(videos);
-        initializeMediaPlayerIfUrlPresent(urls);
-        atEndOfVideo = true;
-        updateCurrentTimeLabelIfNeeded();
-    }
-
-    private void initializeVideoIfPresent(final Iterator<Video> videos) {
-        if (videos.hasNext()) {
-            initializeVideoInfo(videos.next());
-        }
-    }
-
-    private void initializeMediaPlayerIfUrlPresent(final Iterator<String> urls) {
-        if (urls.hasNext()) {
-            initializeMediaPlayer(urls.next());
-            resetTimeSlider();
-            configureTotalDurationListener();
-            configureCurrentTimeListener();
-            configurePlayPauseRestartAction();
-
-            playByDefault();
-        } else {
-            showRestartButton();
-        }
+        logger.log(INFO, "Volume slider was removed after mouse exited");
     }
 
     private void resetTimeSlider() {
         sliderTime.setValue(RESET_TIME_VALUE);
+        logger.log(INFO, "Time slider was reset to " + RESET_TIME_VALUE);
     }
 
     private void configureTotalDurationListener() {
         mediaPlayer.totalDurationProperty().addListener((observableValue, oldDuration, newDuration) -> {
             sliderTime.setMax(newDuration.toSeconds());
             labelTotalTime.setText(getTime(newDuration));
+            logger.log(INFO, "Total duartion was set to: " + labelTotalTime.getText());
         });
     }
 
@@ -398,7 +435,7 @@ public class VideoPlayer implements Initializable {
             if (!sliderTime.isValueChanging()) {
                 sliderTime.setValue(newTime.toSeconds());
             }
-            labelsMatchEndVideo(labelCurrentTime.getText(), labelTotalTime.getText());
+            labelsMatchEndVideo();
         });
     }
 
@@ -406,11 +443,14 @@ public class VideoPlayer implements Initializable {
         buttonPlayPauseRestart.setOnAction(actionEvent -> {
             bindCurrentTimeLabel();
             if (atEndOfVideo) {
+                logger.log(INFO, "configurePlayPauseRestartAction: Video is restarted");
                 resetVideoIfEnded();
             }
             if (isPlaying) {
+                logger.log(INFO, "configurePlayPauseRestartAction: Video is paused");
                 pause();
             } else {
+                logger.log(INFO, "configurePlayPauseRestartAction: Video is played");
                 play();
             }
         });
@@ -472,25 +512,27 @@ public class VideoPlayer implements Initializable {
         }
     }
 
-    public void labelsMatchEndVideo(String labelTime, String labelTotalTime) {
-        for (int i = 0; i < labelTotalTime.length(); i++) {
-            if (labelTime.charAt(i) != labelTotalTime.charAt(i)) {
-                atEndOfVideo = false;
+    public void labelsMatchEndVideo() {
+        Duration totalDuration = mediaPlayer.getTotalDuration();
+        Duration currentTime = mediaPlayer.getCurrentTime();
 
-                if (isPlaying) {
-                    setButtonPauseSVG();
-                } else {
-                    setButtonPlaySVG();
-                }
-                break;
+        if (totalDuration.lessThanOrEqualTo(currentTime)) {
+            logger.log(INFO, "labelsMatchEndVideo: set button RESTART");
+            atEndOfVideo = true;
+            setButtonRestartSVG();
+        } else {
+            atEndOfVideo = false;
+
+            if (isPlaying) {
+                setButtonPauseSVG();
             } else {
-                atEndOfVideo = true;
-                setButtonRestartSVG();
+                setButtonPlaySVG();
             }
         }
     }
 
     public void bindCurrentTimeLabel() {
+        logger.log(INFO, "bindCurrentTimeLabel");
         labelCurrentTime.textProperty().bind(Bindings.createStringBinding(new Callable<String>() {
             @Override
             public String call() throws Exception {
@@ -570,7 +612,7 @@ public class VideoPlayer implements Initializable {
     }
 
     private String generateStyle(double percentage) {
-        return String.format(Locale.US,"-fx-background-color: linear-gradient(to right, %s %f%% , %s %f%%);",
+        return String.format(Locale.US, "-fx-background-color: linear-gradient(to right, %s %f%% , %s %f%%);",
                 PRIMARY_COLOR, percentage, GRADIENT_COLOR, percentage);
     }
 }
