@@ -88,8 +88,8 @@ public class VideoScheduleService {
         AtomicInteger videoNumber = new AtomicInteger(1);
         String startLine = "List of videos in schedule:  ";
         return startLine + createVideosSchedule().stream()
-                .map(video -> "\n" + videoNumber.getAndIncrement() + ". " +
-                        video.getVideoName() + " - " + video.getEpisodeName() + ",")
+                .map(video -> "\n[" + videoNumber.getAndIncrement() + ". " +
+                        video.getVideoName() + " - " + video.getEpisodeName() + "]")
                 .collect(Collectors.joining());
     }
 
