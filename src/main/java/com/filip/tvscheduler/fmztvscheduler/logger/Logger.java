@@ -1,7 +1,9 @@
-package com.filip.tvscheduler.fmztvscheduler.video;
+package com.filip.tvscheduler.fmztvscheduler.logger;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
+import static com.filip.tvscheduler.fmztvscheduler.logger.Logger.Level.*;
 
 /**
  * A simple logging class for videos.
@@ -19,12 +21,28 @@ import java.time.format.DateTimeFormatter;
  * Logs can be created at four severity levels:
  * {@code INFO, ERROR, RUNNING, WARNING}, which are color-coded accordingly.
  */
-public class VideoSimpleLogger {
+public class Logger {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_BRIGHT_WHITE = "\u001b[37;1m";
     private static final int LOG_INVOKER_INDEX = 2;
+
+    public void log(String logMessage) {
+        log(INFO, logMessage);
+    }
+
+    public void warning(String logMessage) {
+        log(WARNING, logMessage);
+    }
+
+    public void running(String logMessage) {
+        log(RUNNING, logMessage);
+    }
+
+    public void error(String logMessage) {
+        log(ERROR, logMessage);
+    }
 
     public void log(Level level, String logMessage) {
         String dateTime = LocalDateTime.now().format(formatter);
