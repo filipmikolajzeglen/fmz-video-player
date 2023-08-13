@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.filip.tvscheduler.fmztvscheduler.logger.Logger;
@@ -75,9 +74,9 @@ public class FMZDatabase<DOCUMENT extends FMZIdentifable & Serializable> {
         try {
             List<DOCUMENT> currentData = loadDataFromFile();
 
-            for (DOCUMENT doc : documents) {
-                if (!currentData.contains(doc)) {
-                    currentData.add(doc);
+            for (DOCUMENT document : documents) {
+                if (!currentData.contains(document)) {
+                    currentData.add(document);
                 }
             }
             mapper.writerWithDefaultPrettyPrinter().writeValue(new File(filename), currentData);

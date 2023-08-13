@@ -41,7 +41,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.*;
-import static com.filip.tvscheduler.fmztvscheduler.logger.Logger.Level.*;
 
 public class VideoPlayer implements Initializable {
 
@@ -97,23 +96,28 @@ public class VideoPlayer implements Initializable {
     private ChangeListener<Duration> mediaPlayerTotalDurationListener;
     private ChangeListener<Duration> mediaPlayerCurrentDurationListener;
 
-    private final VideoPlayerService scheduler = new VideoPlayerService();
-    private final Iterator<String> pathToVideoIterator = scheduler.createPathsToAllVideos().listIterator();
-    private final Iterator<Video> videoIterator = scheduler.createVideosSchedule().listIterator();
+    private final VideoPlayerService videoPlayerService = new VideoPlayerService();
+    private Iterator<String> pathToVideoIterator;
+    private Iterator<Video> videoIterator;
+    private Video currentVideo;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        stopAndDisposeMediaPlayer();
+        videoPlayerService.initializeFMZDB();
+        pathToVideoIterator = videoPlayerService.createPathsToAllVideos().listIterator();
+        videoIterator = videoPlayerService.createVideosSchedule().listIterator();
 
+        stopAndDisposeMediaPlayer();
         logInitialization();
 
         if (!pathToVideoIterator.hasNext()) {
             return;
         }
 
-        initializeAllControlsSvgOnTheBeginning();
-        initializeVideoInfo(videoIterator.next());
+        currentVideo = videoIterator.next();
+        initializeVideoInfo(currentVideo);
         initializeMediaPlayer(pathToVideoIterator.next());
+        initializeAllControlsSvgOnTheBeginning();
         setUpFadeOutFeature();
 
         assertButtonPlayPauseRestartInitialized();
@@ -123,7 +127,7 @@ public class VideoPlayer implements Initializable {
 
     private void logInitialization() {
         logger.log("Initialize FMZ Video Player with videos:");
-        logger.log(scheduler.createVideoScheduleLog());
+        logger.log(videoPlayerService.createVideoScheduleLog());
     }
 
     private void assertButtonPlayPauseRestartInitialized() {
@@ -204,7 +208,8 @@ public class VideoPlayer implements Initializable {
 
     private void initializeVideoInfoIfPresent(final Iterator<Video> videos) {
         if (videos.hasNext()) {
-            initializeVideoInfo(videos.next());
+            currentVideo = videos.next();
+            initializeVideoInfo(currentVideo);
         }
     }
 
@@ -367,6 +372,8 @@ public class VideoPlayer implements Initializable {
         mediaPlayer.setOnEndOfMedia(new Runnable() {
             @Override
             public void run() {
+                currentVideo.setWatched(true);
+                videoPlayerService.getDatabase().save(currentVideo);
                 if (pathToVideoIterator.hasNext() && videoIterator.hasNext()) {
                     logger.log("====================== NEXT VIDEO IS INITIALIZING ======================");
                     initializeMediaPlayer(pathToVideoIterator, videoIterator);

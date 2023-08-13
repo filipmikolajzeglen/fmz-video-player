@@ -32,7 +32,8 @@ public class Main extends Application {
             primaryStage.setFullScreen(true);
             primaryStage.show();
         } catch (IOException e) {
-            System.err.println(APPLICATION_ERROR + e.getMessage());
+            System.err.println(APPLICATION_ERROR + e.getCause());
+            e.printStackTrace();
         }
     }
 

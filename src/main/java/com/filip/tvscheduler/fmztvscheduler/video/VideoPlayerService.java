@@ -1,5 +1,7 @@
 package com.filip.tvscheduler.fmztvscheduler.video;
 
+import com.filip.tvscheduler.fmztvscheduler.fmzdatabase.FMZDatabase;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,9 +11,26 @@ import java.util.stream.Collectors;
 import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.VIDEO_MAIN_SOURCE;
 import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.EPISODES_LIMIT_OF_A_SINGLE_SERIES_PER_DAY;
 import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.MAXIMUM_NUMBER_OF_EPISODES_IN_THE_SCHEDULE_PER_DAY;
+import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.FMZ_DATABASE_NAME;
+import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.FMZ_TABLE_NAME;
+import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.FMZ_DIRECTORY_PATH;
 import static java.util.Objects.requireNonNull;
 
-public class VideoScheduleService {
+public class VideoPlayerService {
+
+    private final static FMZDatabase<Video> DATABASE = new FMZDatabase<>();
+
+    public void initializeFMZDB() {
+        DATABASE.setDatabaseName(FMZ_DATABASE_NAME);
+        DATABASE.setTableName(FMZ_TABLE_NAME);
+        DATABASE.setDirectoryPath(FMZ_DIRECTORY_PATH);
+        DATABASE.initialize();
+        DATABASE.saveAll(getAllVideoFromMainSource());
+    }
+
+    public FMZDatabase<Video> getDatabase() {
+        return DATABASE;
+    }
 
     public List<String> createPathsToAllVideos() {
         List<String> videoCommands = new ArrayList<>();
@@ -25,16 +44,15 @@ public class VideoScheduleService {
     }
 
     public List<Video> createVideosSchedule() {
-        List<Video> allVideos = getAllVideoFromMainSource();
+        List<Video> allUnwatchedVideos = getAllUnwatchedVideo();
         List<Video> videosSchedule = new ArrayList<>();
 
-        for (Video video : allVideos) {
+        for (Video video : allUnwatchedVideos) {
             if (isReachedMaximumNumberOfEpisodesInTheSchedulePerDay(videosSchedule)) {
                 return videosSchedule;
             }
 
             if (!isReachedEpisodesLimitOfASingleSeriesPerDay(videosSchedule, video) && !video.isWatched()) {
-                video.setWatched(true);
                 videosSchedule.add(video);
             }
         }
@@ -80,10 +98,10 @@ public class VideoScheduleService {
 
     // Primitive and not the best way to check if a file is video.
     // It should be changed because for now it is checked if file is not a directory
+
     private boolean isVideoFile(String file) {
         return file.charAt(file.length() - 4) == '.';
     }
-
     public String createVideoScheduleLog() {
         AtomicInteger videoNumber = new AtomicInteger(1);
         String startLine = "List of videos in schedule:  ";
@@ -93,4 +111,9 @@ public class VideoScheduleService {
                 .collect(Collectors.joining());
     }
 
+    public List<Video> getAllUnwatchedVideo() {
+        return DATABASE.findAll().stream()
+                .filter(video -> !video.isWatched())
+                .collect(Collectors.toList());
+    }
 }

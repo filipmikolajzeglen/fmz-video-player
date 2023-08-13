@@ -42,6 +42,9 @@ public class VideoPlayerConfigurator {
     public final static String APPLICATION_ERROR = "Cannot start the application: ";
 
     public final static String VIDEO_MAIN_SOURCE = "E:\\FoxKids";
+    public final static String FMZ_DATABASE_NAME = "FMZDB";
+    public final static String FMZ_TABLE_NAME = "FoxKids";
+    public final static String FMZ_DIRECTORY_PATH = "E:\\";
     public final static int EPISODES_LIMIT_OF_A_SINGLE_SERIES_PER_DAY = 2;
     public final static int MAXIMUM_NUMBER_OF_EPISODES_IN_THE_SCHEDULE_PER_DAY = 30;
 }
