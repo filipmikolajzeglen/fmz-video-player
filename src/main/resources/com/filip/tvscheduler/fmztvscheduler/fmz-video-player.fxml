@@ -67,7 +67,7 @@
                         <Insets left="10.0" />
                     </HBox.margin>
                     <font>
-                        <Font name="JetBrains Mono SemiBold" size="18.0" />
+                        <Font name="JetBrains Mono NL Medium" size="18.0" />
                     </font>
                 </Label>
 

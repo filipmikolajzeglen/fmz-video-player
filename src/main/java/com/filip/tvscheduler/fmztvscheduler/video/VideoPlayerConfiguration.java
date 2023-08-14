@@ -2,7 +2,7 @@ package com.filip.tvscheduler.fmztvscheduler.video;
 
 public class VideoPlayerConfiguration {
 
-    public static final String PRIMARY_COLOR = "#F632A1";
+    public static final String PRIMARY_COLOR = "#6502C4";
     public static final String GRADIENT_COLOR = "rgba(255, 255, 255, 0.28)";
 
     public static final double DEFAULT_VOLUME_VALUE = 0.5;
