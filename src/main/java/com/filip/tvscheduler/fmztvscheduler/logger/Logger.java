@@ -26,7 +26,7 @@ public class Logger {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_BRIGHT_WHITE = "\u001b[37;1m";
-    private static final int LOG_INVOKER_INDEX = 2;
+    private static final int LOG_INVOKER_INDEX = 3;
 
     public void log(String logMessage) {
         log(INFO, logMessage);
