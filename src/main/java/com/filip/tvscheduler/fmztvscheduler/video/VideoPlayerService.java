@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.VIDEO_MAIN_SOURCE;
-import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.EPISODES_LIMIT_OF_A_SINGLE_SERIES_PER_DAY;
-import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.MAXIMUM_NUMBER_OF_EPISODES_IN_THE_SCHEDULE_PER_DAY;
-import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.FMZ_DATABASE_NAME;
-import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.FMZ_TABLE_NAME;
-import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.FMZ_DIRECTORY_PATH;
+import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfiguration.VIDEO_MAIN_SOURCE;
+import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfiguration.EPISODES_LIMIT_OF_A_SINGLE_SERIES_PER_DAY;
+import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfiguration.MAXIMUM_NUMBER_OF_EPISODES_IN_THE_SCHEDULE_PER_DAY;
+import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfiguration.FMZ_DATABASE_NAME;
+import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfiguration.FMZ_TABLE_NAME;
+import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfiguration.FMZ_DIRECTORY_PATH;
 import static java.util.Objects.requireNonNull;
 
 public class VideoPlayerService {

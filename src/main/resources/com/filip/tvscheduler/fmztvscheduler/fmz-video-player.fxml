@@ -43,7 +43,7 @@
                     </graphic>
                 </Button>
 
-                <HBox fx:id="hBoxVolume" alignment="CENTER">
+                <HBox fx:id="hBoxVolume" alignment="CENTER_LEFT">
 
                     <children>
                         <Label fx:id="labelVolume" maxWidth="60" minWidth="60" style="-fx-cursor: hand;">
@@ -54,7 +54,7 @@
                                 <Insets />
                             </HBox.margin>
                             <graphic>
-                                <SVGPath fx:id="labelVolumeSVG" fill="#ffffff" />
+                                <SVGPath fx:id="labelVolumeSVG" fill="#ffffff" nodeOrientation="LEFT_TO_RIGHT" />
                             </graphic>
                         </Label>
                         <Slider fx:id="sliderVolume" max="1.0" style="-fx-cursor: hand;" stylesheets="@../../../../css/timebar.css" />

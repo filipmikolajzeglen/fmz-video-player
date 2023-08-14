@@ -1,5 +1,6 @@
 package com.filip.tvscheduler.fmztvscheduler;
 
+import com.filip.tvscheduler.fmztvscheduler.logger.Logger;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,14 +9,17 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Arrays;
 
-import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.APPLICATION_FXML;
-import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.APPLICATION_ERROR_LOAD;
-import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.APPLICATION_TITLE;
-import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.APPLICATION_ICON;
-import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.APPLICATION_ERROR;
+import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfiguration.APPLICATION_FXML;
+import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfiguration.APPLICATION_ERROR_LOAD;
+import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfiguration.APPLICATION_TITLE;
+import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfiguration.APPLICATION_ICON;
+import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfiguration.APPLICATION_ERROR;
 
 public class Main extends Application {
+
+    private static final Logger logger = new Logger();
 
     @Override
     public void start(Stage primaryStage) {
@@ -32,8 +36,8 @@ public class Main extends Application {
             primaryStage.setFullScreen(true);
             primaryStage.show();
         } catch (IOException e) {
-            System.err.println(APPLICATION_ERROR + e.getCause());
-            e.printStackTrace();
+            logger.error(APPLICATION_ERROR + e.getCause());
+            logger.error(APPLICATION_ERROR + Arrays.toString(e.getStackTrace()));
         }
     }
 

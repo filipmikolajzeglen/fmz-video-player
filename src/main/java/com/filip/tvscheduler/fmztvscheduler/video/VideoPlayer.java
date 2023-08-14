@@ -40,7 +40,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
-import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfigurator.*;
+import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfiguration.*;
 
 public class VideoPlayer implements Initializable {
 
@@ -414,15 +414,15 @@ public class VideoPlayer implements Initializable {
         if (stage.isFullScreen()) {
             logger.log("Fullscreen was exited");
             stage.setFullScreen(false);
-            setLabelExitFullscreenSVG();
+            setLabelEnterFullscreenSVG();
         } else {
             logger.log("Fullscreen was entered");
             stage.setFullScreen(true);
-            setLabelEnterFullscreenSVG();
+            setLabelExitFullscreenSVG();
             stage.addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {
                 if (keyEvent.getCode() == KeyCode.ESCAPE) {
                     logger.log("Button ESCAPE was clicked");
-                    setLabelEnterFullscreenSVG();
+                    setLabelExitFullscreenSVG();
                 }
             });
         }
@@ -695,4 +695,5 @@ public class VideoPlayer implements Initializable {
         return String.format(Locale.US, "-fx-background-color: linear-gradient(to right, %s %f%% , %s %f%%);",
                 PRIMARY_COLOR, percentage, GRADIENT_COLOR, percentage);
     }
+
 }

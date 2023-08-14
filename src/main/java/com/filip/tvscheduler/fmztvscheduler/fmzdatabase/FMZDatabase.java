@@ -109,6 +109,7 @@ public class FMZDatabase<DOCUMENT extends FMZIdentifable & Serializable> {
     }
 
     public List<DOCUMENT> findAll() {
+        logger.log(String.format("Finding all documents from collection '%s'.", tableName));
         return loadDataFromFile();
     }
 
