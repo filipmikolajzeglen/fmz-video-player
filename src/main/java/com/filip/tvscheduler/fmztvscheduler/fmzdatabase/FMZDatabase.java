@@ -13,7 +13,7 @@ import java.util.Optional;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.filip.tvscheduler.fmztvscheduler.logger.Logger;
 
-public class FMZDatabase<DOCUMENT extends FMZIdentifable & Serializable> {
+public class FMZDatabase<DOCUMENT extends FMZIdentifiable & Serializable> {
 
     private static final Logger logger = new Logger();
 

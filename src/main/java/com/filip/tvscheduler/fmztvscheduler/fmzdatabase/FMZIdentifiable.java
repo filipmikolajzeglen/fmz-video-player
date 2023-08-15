@@ -4,6 +4,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.filip.tvscheduler.fmztvscheduler.video.Video;
 
 @JsonDeserialize(as = Video.class)
-public interface FMZIdentifable {
+public interface FMZIdentifiable {
     String getId();
 }

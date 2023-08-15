@@ -1,13 +1,12 @@
 package com.filip.tvscheduler.fmztvscheduler.video;
 
-import com.filip.tvscheduler.fmztvscheduler.fmzdatabase.FMZIdentifable;
-
+import com.filip.tvscheduler.fmztvscheduler.fmzdatabase.FMZIdentifiable;
 
 import java.io.File;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class Video implements Serializable, FMZIdentifable {
+public class Video implements Serializable, FMZIdentifiable {
 
     private String id;
 
