@@ -3,7 +3,7 @@ package com.filip.tvscheduler.fmztvscheduler.logger;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static com.filip.tvscheduler.fmztvscheduler.logger.Logger.Level.*;
+import static com.filip.tvscheduler.fmztvscheduler.logger.LoggerLevel.*;
 
 /**
  * A simple logging class for videos.
@@ -28,7 +28,7 @@ public class Logger {
     private static final String ANSI_BRIGHT_WHITE = "\u001b[37;1m";
     private static final int LOG_INVOKER_INDEX = 3;
 
-    public void log(String logMessage) {
+    public void info(String logMessage) {
         log(INFO, logMessage);
     }
 
@@ -44,7 +44,8 @@ public class Logger {
         log(ERROR, logMessage);
     }
 
-    public void log(Level level, String logMessage) {
+
+    public void log(LoggerLevel level, String logMessage) {
         String dateTime = LocalDateTime.now().format(formatter);
         String levelColor = level.getColorCode();
 
@@ -59,20 +60,4 @@ public class Logger {
         System.out.println(formattedMessage);
     }
 
-    public enum Level {
-        INFO("\u001B[36m"),
-        ERROR("\u001B[31m"),
-        RUNNING("\u001B[0m"),
-        WARNING("\u001B[33m");
-
-        private final String colorCode;
-
-        Level(String colorCode) {
-            this.colorCode = colorCode;
-        }
-
-        public String getColorCode() {
-            return colorCode;
-        }
-    }
 }

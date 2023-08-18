@@ -1,9 +1,9 @@
-# TV Scheduler
+# FMZ Video player
 ## Software prepared to generate private tv
 
 This is a software prepared to generate private TV schedule based on local videos.
 While TV Scheduler is running then software generate full schedule prepared from local video sources.
-Then all videos from schedule is playing with using chose local software like Windows Media Player or VLC.
+Current version of 
 
 # Configuration
 **EPISODES_LIMIT_OF_A_SINGLE_SERIES_PER_DAY** is a variable used to set amount of episode from single series allowed to play

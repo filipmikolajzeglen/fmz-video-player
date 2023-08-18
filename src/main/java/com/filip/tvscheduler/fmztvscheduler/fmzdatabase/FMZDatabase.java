@@ -25,7 +25,7 @@ public class FMZDatabase<DOCUMENT extends FMZIdentifiable & Serializable> {
     public void initialize() {
         File directory = new File(directoryPath + File.separator + databaseName);
         if (!directory.exists()) {
-            logger.log(String.format("Directory path for built-in database '%s' is creating.", databaseName));
+            logger.info(String.format("Directory path for built-in database '%s' is creating.", databaseName));
             directory.mkdirs();
         }
         this.filename = directoryPath + File.separator + databaseName + File.separator + tableName + ".txt";
@@ -33,7 +33,7 @@ public class FMZDatabase<DOCUMENT extends FMZIdentifiable & Serializable> {
         File file = new File(filename);
         if (!file.exists()) {
             try {
-                logger.log(String.format("File txt representing collection '%s' is creating.", tableName));
+                logger.info(String.format("File txt representing collection '%s' is creating.", tableName));
                 file.createNewFile();
                 saveAll(new ArrayList<>());
             } catch (IOException e) {
@@ -63,7 +63,7 @@ public class FMZDatabase<DOCUMENT extends FMZIdentifiable & Serializable> {
             }
 
             mapper.writerWithDefaultPrettyPrinter().writeValue(new File(filename), currentData);
-            logger.log(String.format("Document with id '%s' was saved successful in collection '%s'.", document.getId(), tableName));
+            logger.info(String.format("Document with id '%s' was saved successful in collection '%s'.", document.getId(), tableName));
         } catch (IOException e) {
             logger.error(String.format("Error occurred when saving documents:\n%s", e.getMessage()));
         }
@@ -80,7 +80,7 @@ public class FMZDatabase<DOCUMENT extends FMZIdentifiable & Serializable> {
                 }
             }
             mapper.writerWithDefaultPrettyPrinter().writeValue(new File(filename), currentData);
-            logger.log(String.format("All documents were saved successful in collection '%s'.", tableName));
+            logger.info(String.format("All documents were saved successful in collection '%s'.", tableName));
         } catch (IOException e) {
             logger.error(String.format("Error occurred when saving all documents:\n%s", e.getMessage()));
         }
@@ -92,7 +92,7 @@ public class FMZDatabase<DOCUMENT extends FMZIdentifiable & Serializable> {
             List<DOCUMENT> currentData = loadDataFromFile();
             currentData.remove(document);
             mapper.writerWithDefaultPrettyPrinter().writeValue(new File(filename), currentData);
-            logger.log(String.format("Document with id '%s' was removed successful from collection '%s'.", document.getId(), tableName));
+            logger.info(String.format("Document with id '%s' was removed successful from collection '%s'.", document.getId(), tableName));
         } catch (IOException e) {
             logger.error(String.format("Error occurred when deleting documents:\n%s", e.getMessage()));
         }
@@ -109,7 +109,7 @@ public class FMZDatabase<DOCUMENT extends FMZIdentifiable & Serializable> {
     }
 
     public List<DOCUMENT> findAll() {
-        logger.log(String.format("Finding all documents from collection '%s'.", tableName));
+        logger.info(String.format("Finding all documents from collection '%s'.", tableName));
         return loadDataFromFile();
     }
 
@@ -118,11 +118,11 @@ public class FMZDatabase<DOCUMENT extends FMZIdentifiable & Serializable> {
         try {
             File file = new File(filename);
             if (file.length() > 0) {
-                logger.log(String.format("Collection '%s' is loading.", tableName));
+                logger.info(String.format("Collection '%s' is loading.", tableName));
                 return mapper.readValue(file, new TypeReference<ArrayList<DOCUMENT>>() {
                 });
             } else {
-                logger.log(String.format("Collection '%s' is empty.", tableName));
+                logger.info(String.format("Collection '%s' is empty.", tableName));
                 return new ArrayList<>();
             }
         } catch (IOException e) {
