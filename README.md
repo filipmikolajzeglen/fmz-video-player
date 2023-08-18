@@ -1,11 +1,25 @@
-# FMZ Video player
+# FMZ Video player - v2.0.0
+
 ## Software prepared to generate private tv
 
-This is a software prepared to generate private TV schedule based on local videos.
-While TV Scheduler is running then software generate full schedule prepared from local video sources.
-Current version of 
+This is a software prepared to generate private TV based on local videos.
+FMZ Video player generate full schedule prepared from local video sources and configuration.
+The software was created out of nostalgia to allow to some extent resurrection of channels such as
+FoxKids, Jetix, CartoonNetwork.
 
-# Configuration
+<p align="center">
+  <img src="src/main/resources/fmzPlayerIcon.png">
+</p>
+
+## Configuration
+
+Current version 2.0.0 has all configuration parameters in `com.filipmikolajzeglen.video.VideoPlayerConfiguration`.
+In future this configuration will be moved to application.properties and then used for additional config view.
+
+**PRIMARY_COLOR** is a String representing color of time slider and volume slider saved as hex.
+
+- `PRIMARY_COLOR = "#7C9EF7"`
+
 **EPISODES_LIMIT_OF_A_SINGLE_SERIES_PER_DAY** is a variable used to set amount of episode from single series allowed to play
 per day. For now default value is 2, and it means that two episodes from single series will be play one by one. 
 
@@ -16,23 +30,21 @@ per day
 
 - `MAXIMUM_NUMBER_OF_EPISODES_IN_THE_SCHEDULE_PER_DAY = 30`
 
-**PLAYER_SOURCE** is static variable used to tell Scheduler where is an application to play videos
+**VIDEO_MAIN_SOURCE** is static variable used to tell FMZ Video player where is a main directory with all videos
 
-- `PLAYER_SOURCE = "LOCATION_OF_PLAYER_EXE"`
-- `PLAYER_SOURCE = "C:\Program Files\VideoLAN\VLC\vlc.exe"`
+- `VIDEO_MAIN_SOURCE = "E:\\FoxKids"`
 
-In version 1.0.0 there are two recommended players on Windows 10/11. 
-- VLC Media Player
-- Windows Media Player
+**FMZ_DATABASE_NAME** is a variable to set name of built-in database provided by FMZDatabase.
 
-**FULLSCREEN** is static variable used to tell Scheduler how to run video with fullscreen 
+- `FMZ_DATABASE_NAME = "FMZDB"`
 
-- `FULLSCREEN = "--fullscreen"` for VLC Media Player
-- `FULLSCREEN = "/fullscreen"` for Windows Media Player
+**FMZ_TABLE_NAME** is a variable to set name of table in built-in database.
 
-**VIDEO_MAIN_SOURCE** is static variable used to tell Scheduler where is a main directory with all videos
+- `FMZ_TABLE_NAME = "FoxKids"`
 
-- `VIDEO_MAIN_SOURCE = "E:\\MAIN_DIRECTORY"`
+**FMZ_DIRECTORY_PATH** is a variable that tells where the database is to be created.
+
+- `FMZ_DIRECTORY_PATH = "E:\\"`
 
 Software was prepared to use structure:
     
@@ -42,7 +54,8 @@ Software was prepared to use structure:
     │      ├── VIDEO_SERIES_3
     │      └── ...
 
-    ├── LET_SAY_JETIX
+
+    ├── FOXKIDS
     │      └── POWER RANGERS MIGHTY MORPHIN
     │                ├── S01E01-Episode-name
     │                ├── S01E02-Episode-name
@@ -51,7 +64,7 @@ Software was prepared to use structure:
     │      ├── SIMPSONS
     │      └── ...
 
-Local videos must follow this pattern
+Local videos must follow this pattern:
 
        SXXEYY-Episode-name
        SEASON XX EPISODE YY-EPISODE-NAME
@@ -59,20 +72,31 @@ Local videos must follow this pattern
        For example:
        S01E01-The-Blade-Raider
 
-# How to run version 1.0.0
-If you set your local configuration described earlier, then there are two ways to use the program.
+<p align="center">
+  <img src="src/main/resources/FMZVideoPlayerScreen1.png">
+</p>
 
-1. Open IDE and run play (dummy and simply way)
+## How to run version 2.0.0
+Until there is an interface that allows easy management of the software, the only sensible option to use the player is 
+by configuring the FMZ Video Player and building the artifact yourself
+
+1. Open IDE and provide configuration in `com.filipmikolajzeglen.video.VideoPlayerConfiguration`
 2. Build project using Maven `mvn clean install`
-3. After building project, go to target folder and move **private-tv-scheduler-1.0.0-SNAPSHOT.jar** file e.g. to Desktop
-4. Open terminal in folder with .jar file and use cmd `java -jar private-tv-scheduler-1.0.0-SNAPSHOT.jar`
+3. After building project go to target folder and move **fmz-video-player-1.0.0-SNAPSHOT.jar** file e.g. to Desktop
+4. Open terminal in folder with .jar file and use cmd `java -jar fmz-video-player-1.0.0-SNAPSHOT.jar`
 
-# Plan for next version
-- Add UI
-- Add local DB to keep information about watched series
-- Add functionality to recognize which episode should be run next time
-- Add Web Client to remote playing videos
+## Plan for next version
+- Creating additional config panel to simplify FMZ Video Player configuration
+- Adding Web Client to remote playing videos
+- Upload FMZ Video Player exe
 
-# Version 1.0.0
-- Added Schedule based on local video sources
-- Added Simple logger
+### Version 2.0.0
+- Replaced external video players with own built-in player.
+- Added FMZDatabase a dedicated built-in database created to store information about episodes and their watched status
+- Added functionality to recognize which episode should be run next time
+- Improved built-in Logger for log FMZ Video Player events
+- Cleanup whole project
+
+### Version 1.0.0
+- Added Schedule based on local video sources.
+- Added Simple logger.
