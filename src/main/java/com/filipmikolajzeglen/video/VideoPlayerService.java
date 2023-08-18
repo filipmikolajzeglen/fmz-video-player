@@ -3,6 +3,9 @@ package com.filipmikolajzeglen.video;
 import com.filipmikolajzeglen.database.FMZDatabase;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -32,12 +35,18 @@ class VideoPlayerService {
         return DATABASE;
     }
 
+    public List<Video> getAllUnwatchedVideo() {
+        return DATABASE.findAll().stream()
+                .filter(video -> !video.isWatched())
+                .collect(Collectors.toList());
+    }
+
     public List<String> createPathsToAllVideos() {
         List<String> videoCommands = new ArrayList<>();
         List<Video> videos = createVideosSchedule();
 
         for (Video video : videos) {
-            videoCommands.add(video.getVideoPath());
+            videoCommands.add(video.getPath());
         }
 
         return videoCommands;
@@ -80,40 +89,46 @@ class VideoPlayerService {
 
     private boolean isReachedEpisodesLimitOfASingleSeriesPerDay(List<Video> videosSchedule, Video currentVideo) {
         return videosSchedule.stream()
-                .filter(video -> video.getVideoName().equals(currentVideo.getVideoName()))
+                .filter(video -> video.getSeriesName().equals(currentVideo.getSeriesName()))
                 .count() == EPISODES_LIMIT_OF_A_SINGLE_SERIES_PER_DAY;
     }
 
     private List<Video> getAllEpisodesOfCartoonFromDirectory(File directoryName) {
         List<Video> videos = new ArrayList<>();
+        File[] files = requireNonNull(directoryName.listFiles());
 
-        for (String video : requireNonNull(directoryName.list())) {
-            if (isVideoFile(video)) {
-                videos.add(new Video(directoryName, video));
+        for (File file : files) {
+            if (isVideoFile(file.toPath())) {
+                videos.add(new Video(directoryName, file.getName()));
             }
         }
 
         return videos;
     }
 
-    // Primitive and not the best way to check if a file is video.
-    // It should be changed because for now it is checked if file is not a directory
-
-    private boolean isVideoFile(String file) {
-        return file.charAt(file.length() - 4) == '.';
+    private boolean isVideoFile(Path path) {
+        if (Files.isDirectory(path)) {
+            return false;
+        }
+        String detectedType = detectFileType(path);
+        return detectedType != null && detectedType.startsWith("video");
     }
+
+    private String detectFileType(Path path) {
+        try {
+            return Files.probeContentType(path);
+        } catch (IOException e) {
+            System.out.println("An IO exception occurred " + e);
+            return "";
+        }
+    }
+
     public String createVideoScheduleLog() {
         AtomicInteger videoNumber = new AtomicInteger(1);
         String startLine = "List of videos in schedule:  ";
         return startLine + createVideosSchedule().stream()
                 .map(video -> "\n[" + videoNumber.getAndIncrement() + ". " +
-                        video.getVideoName() + " - " + video.getEpisodeName() + "]")
+                        video.getSeriesName() + " - " + video.getEpisodeName() + "]")
                 .collect(Collectors.joining());
-    }
-
-    public List<Video> getAllUnwatchedVideo() {
-        return DATABASE.findAll().stream()
-                .filter(video -> !video.isWatched())
-                .collect(Collectors.toList());
     }
 }

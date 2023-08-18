@@ -9,32 +9,54 @@ import java.util.Objects;
 public class Video implements Serializable, FMZIdentifiable {
 
     private String id;
-
-    private String videoName;
-
+    private String seriesName;
     private String episodeName;
-
     private String episodeNumber;
-
     private String seasonNumber;
-
-    private String videoExtension;
-
-    private String videoPath;
+    private String extension;
+    private String path;
     private boolean isWatched;
 
     public Video() {
     }
 
     public Video(File directory, String currentVideo) {
-        this.videoName = directory.getName();
-        this.episodeName = currentVideo.substring(7, currentVideo.length() - 4).replace("-", " ");
-        this.episodeNumber = currentVideo.substring(3, 6);
-        this.seasonNumber = currentVideo.substring(0, 3);
-        this.videoExtension = currentVideo.substring(currentVideo.length() - 3);
-        this.videoPath = directory.getAbsolutePath() + "\\" + currentVideo;
+        this.seriesName = extractSeriesName(directory);
+        this.episodeName = extractEpisodeName(currentVideo);
+        this.seasonNumber = extractSeasonNumber(currentVideo);
+        this.episodeNumber = extractEpisodeNumber(currentVideo);
+        this.extension = extractExtension(currentVideo);
+        this.path = buildPath(directory, currentVideo);
+        this.id = createId();
         this.isWatched = false;
-        this.id = String.format("%s%s-%s", seasonNumber, episodeNumber, videoName);
+    }
+
+    private String extractSeriesName(File directory) {
+        return directory.getName();
+    }
+
+    private String extractEpisodeName(String videoName) {
+        return videoName.substring(7, videoName.length() - 4).replace("-", " ");
+    }
+
+    private String extractSeasonNumber(String videoName) {
+        return videoName.substring(0, 3);
+    }
+
+    private String extractEpisodeNumber(String videoName) {
+        return videoName.substring(3, 6);
+    }
+
+    private String extractExtension(String videoName) {
+        return videoName.substring(videoName.length() - 3);
+    }
+
+    private String buildPath(File directory, String videoName) {
+        return directory.getAbsolutePath() + "\\" + videoName;
+    }
+
+    private String createId() {
+        return String.format("%s%s-%s", this.seasonNumber, this.episodeNumber, this.seriesName);
     }
 
     @Override
@@ -46,12 +68,12 @@ public class Video implements Serializable, FMZIdentifiable {
         this.id = id;
     }
 
-    public String getVideoName() {
-        return videoName;
+    public String getSeriesName() {
+        return seriesName;
     }
 
-    public void setVideoName(String videoName) {
-        this.videoName = videoName;
+    public void setSeriesName(String seriesName) {
+        this.seriesName = seriesName;
     }
 
     public String getEpisodeName() {
@@ -78,20 +100,20 @@ public class Video implements Serializable, FMZIdentifiable {
         this.seasonNumber = seasonNumber;
     }
 
-    public String getVideoExtension() {
-        return videoExtension;
+    public String getExtension() {
+        return extension;
     }
 
-    public void setVideoExtension(String videoExtension) {
-        this.videoExtension = videoExtension;
+    public void setExtension(String extension) {
+        this.extension = extension;
     }
 
-    public String getVideoPath() {
-        return videoPath;
+    public String getPath() {
+        return path;
     }
 
-    public void setVideoPath(String videoPath) {
-        this.videoPath = videoPath;
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public boolean isWatched() {
@@ -106,12 +128,12 @@ public class Video implements Serializable, FMZIdentifiable {
     public String toString() {
         return "\nVideo { " +
                 "id: '" + id + '\'' +
-                ", videoName: '" + videoName + '\'' +
+                ", videoName: '" + seriesName + '\'' +
                 ", episodeName: '" + episodeName + '\'' +
                 ", episodeNumber: '" + episodeNumber + '\'' +
                 ", seasonNumber: '" + seasonNumber + '\'' +
-                ", videoExtension: '" + videoExtension + '\'' +
-                ", videoPath: '" + videoPath + '\'' +
+                ", videoExtension: '" + extension + '\'' +
+                ", videoPath: '" + path + '\'' +
                 ", isWatched: " + isWatched +
                 " }";
     }

@@ -44,7 +44,6 @@ public class Logger {
         log(ERROR, logMessage);
     }
 
-
     public void log(LoggerLevel level, String logMessage) {
         String dateTime = LocalDateTime.now().format(formatter);
         String levelColor = level.getColorCode();

@@ -214,7 +214,7 @@ public class VideoPlayer implements Initializable {
     }
 
     private void initializeVideoInfo(Video video) {
-        String fullEpisodeInfo = String.format("%s - %s", video.getVideoName().toUpperCase(), video.getEpisodeName());
+        String fullEpisodeInfo = String.format("%s - %s", video.getSeriesName().toUpperCase(), video.getEpisodeName());
         logger.info("Current video info: " + fullEpisodeInfo);
         labelCurrentEpisode.setText(fullEpisodeInfo);
     }
