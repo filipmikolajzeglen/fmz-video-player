@@ -1,7 +1,7 @@
-package com.filipmikolajzeglen.video;
+package com.filipmikolajzeglen.fmzvideoplayer.video;
 
-import com.filipmikolajzeglen.database.FMZDatabase;
-import com.filipmikolajzeglen.logger.Logger;
+import com.filipmikolajzeglen.fmzvideoplayer.database.FMZDatabase;
+import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,12 +14,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static com.filipmikolajzeglen.video.VideoPlayerConfiguration.VIDEO_MAIN_SOURCE;
-import static com.filipmikolajzeglen.video.VideoPlayerConfiguration.MAX_SINGLE_SERIES_PER_DAY;
-import static com.filipmikolajzeglen.video.VideoPlayerConfiguration.MAX_EPISODES_PER_DAY;
-import static com.filipmikolajzeglen.video.VideoPlayerConfiguration.FMZ_DATABASE_NAME;
-import static com.filipmikolajzeglen.video.VideoPlayerConfiguration.FMZ_TABLE_NAME;
-import static com.filipmikolajzeglen.video.VideoPlayerConfiguration.FMZ_DIRECTORY_PATH;
 import static java.util.Objects.requireNonNull;
 
 class VideoPlayerService {
@@ -28,9 +22,9 @@ class VideoPlayerService {
     private static final FMZDatabase<Video> DATABASE = new FMZDatabase<>();
 
     public void initializeFMZDB() {
-        DATABASE.setDatabaseName(FMZ_DATABASE_NAME);
-        DATABASE.setTableName(FMZ_TABLE_NAME);
-        DATABASE.setDirectoryPath(FMZ_DIRECTORY_PATH);
+        DATABASE.setDatabaseName(VideoPlayerConfiguration.FMZ_DATABASE_NAME);
+        DATABASE.setTableName(VideoPlayerConfiguration.FMZ_TABLE_NAME);
+        DATABASE.setDirectoryPath(VideoPlayerConfiguration.FMZ_DIRECTORY_PATH);
         DATABASE.initialize();
         DATABASE.saveAll(getAllVideoFromMainSource());
     }
@@ -71,17 +65,17 @@ class VideoPlayerService {
     }
 
     private boolean isReachedMaximumNumberOfEpisodesInTheSchedulePerDay(List<Video> videosSchedule) {
-        return videosSchedule.size() == MAX_EPISODES_PER_DAY;
+        return videosSchedule.size() == VideoPlayerConfiguration.MAX_EPISODES_PER_DAY;
     }
 
     private boolean isReachedEpisodesLimitOfASingleSeriesPerDay(List<Video> videosSchedule, Video currentVideo) {
         return videosSchedule.stream()
                 .filter(video -> video.getSeriesName().equals(currentVideo.getSeriesName()))
-                .count() == MAX_SINGLE_SERIES_PER_DAY;
+                .count() == VideoPlayerConfiguration.MAX_SINGLE_SERIES_PER_DAY;
     }
 
     public List<Video> getAllVideoFromMainSource() {
-        File directory = new File(VIDEO_MAIN_SOURCE);
+        File directory = new File(VideoPlayerConfiguration.VIDEO_MAIN_SOURCE);
         File[] listFiles = requireNonNull(directory.listFiles());
 
         return Arrays.stream(listFiles)

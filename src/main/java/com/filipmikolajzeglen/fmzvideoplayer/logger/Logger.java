@@ -1,9 +1,9 @@
-package com.filipmikolajzeglen.logger;
+package com.filipmikolajzeglen.fmzvideoplayer.logger;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static com.filipmikolajzeglen.logger.LoggerLevel.*;
+import static com.filipmikolajzeglen.fmzvideoplayer.logger.LoggerLevel.*;
 
 /**
  * A simple logging class for videos.

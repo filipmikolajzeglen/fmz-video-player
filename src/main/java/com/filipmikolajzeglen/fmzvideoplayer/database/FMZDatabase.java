@@ -1,4 +1,4 @@
-package com.filipmikolajzeglen.database;
+package com.filipmikolajzeglen.fmzvideoplayer.database;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -11,8 +11,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.filipmikolajzeglen.logger.Logger;
-import lombok.Builder;
+import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
 
 /**
  * FMZDatabase is a generic file-based database utility class. It provides the ability to perform

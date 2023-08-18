@@ -1,4 +1,4 @@
-package com.filipmikolajzeglen.logger;
+package com.filipmikolajzeglen.fmzvideoplayer.logger;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

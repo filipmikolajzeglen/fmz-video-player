@@ -1,6 +1,6 @@
-package com.filipmikolajzeglen.video;
+package com.filipmikolajzeglen.fmzvideoplayer.video;
 
-import com.filipmikolajzeglen.logger.Logger;
+import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.PauseTransition;
@@ -38,8 +38,6 @@ import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
-
-import static com.filipmikolajzeglen.video.VideoPlayerConfiguration.*;
 
 public class VideoPlayer implements Initializable {
 
@@ -240,8 +238,8 @@ public class VideoPlayer implements Initializable {
         setLabelVolume2SVG();
         setLabelExitFullscreenSVG();
 
-        sliderVolume.setValue(DEFAULT_VOLUME_VALUE);
-        labelSpeed.setText(SPEED_LEVEL_1);
+        sliderVolume.setValue(VideoPlayerConfiguration.DEFAULT_VOLUME_VALUE);
+        labelSpeed.setText(VideoPlayerConfiguration.SPEED_LEVEL_1);
         hBoxVolume.getChildren().remove(sliderVolume);
     }
 
@@ -281,16 +279,16 @@ public class VideoPlayer implements Initializable {
             @Override
             public void invalidated(Observable observable) {
                 mediaPlayer.setVolume(sliderVolume.getValue());
-                if (mediaPlayer.getVolume() != MUTE_VOLUME_VALUE) {
-                    if (mediaPlayer.getVolume() < DEFAULT_VOLUME_VALUE) {
-                        labelVolumeSVG.setContent(VOLUME1_SVG);
+                if (mediaPlayer.getVolume() != VideoPlayerConfiguration.MUTE_VOLUME_VALUE) {
+                    if (mediaPlayer.getVolume() < VideoPlayerConfiguration.DEFAULT_VOLUME_VALUE) {
+                        labelVolumeSVG.setContent(VideoPlayerConfiguration.VOLUME1_SVG);
                     } else {
-                        labelVolumeSVG.setContent(VOLUME2_SVG);
+                        labelVolumeSVG.setContent(VideoPlayerConfiguration.VOLUME2_SVG);
                     }
                     labelVolume.setGraphic(labelVolumeSVG);
                     isMuted = false;
                 } else {
-                    labelVolumeSVG.setContent(MUTE_SVG);
+                    labelVolumeSVG.setContent(VideoPlayerConfiguration.MUTE_SVG);
                     labelVolume.setGraphic(labelVolumeSVG);
                     isMuted = true;
                 }
@@ -429,22 +427,22 @@ public class VideoPlayer implements Initializable {
             return;
         }
 
-        if (SPEED_LEVEL_1.equals(labelSpeed.getText())) {
-            LOGGER.info("Speed video was set to " + SPEED_LEVEL_1);
-            mediaPlayer.setRate(SPEED_LEVEL_2_VALUE);
-            labelSpeed.setText(SPEED_LEVEL_2);
-        } else if (SPEED_LEVEL_2.equals(labelSpeed.getText())) {
-            LOGGER.info("Speed video was set to " + SPEED_LEVEL_2);
-            mediaPlayer.setRate(SPEED_LEVEL_3_VALUE);
-            labelSpeed.setText(SPEED_LEVEL_3);
-        } else if (SPEED_LEVEL_3.equals(labelSpeed.getText())) {
-            LOGGER.info("Speed video was set to " + SPEED_LEVEL_3);
-            mediaPlayer.setRate(SPEED_LEVEL_4_VALUE);
-            labelSpeed.setText(SPEED_LEVEL_4);
+        if (VideoPlayerConfiguration.SPEED_LEVEL_1.equals(labelSpeed.getText())) {
+            LOGGER.info("Speed video was set to " + VideoPlayerConfiguration.SPEED_LEVEL_1);
+            mediaPlayer.setRate(VideoPlayerConfiguration.SPEED_LEVEL_2_VALUE);
+            labelSpeed.setText(VideoPlayerConfiguration.SPEED_LEVEL_2);
+        } else if (VideoPlayerConfiguration.SPEED_LEVEL_2.equals(labelSpeed.getText())) {
+            LOGGER.info("Speed video was set to " + VideoPlayerConfiguration.SPEED_LEVEL_2);
+            mediaPlayer.setRate(VideoPlayerConfiguration.SPEED_LEVEL_3_VALUE);
+            labelSpeed.setText(VideoPlayerConfiguration.SPEED_LEVEL_3);
+        } else if (VideoPlayerConfiguration.SPEED_LEVEL_3.equals(labelSpeed.getText())) {
+            LOGGER.info("Speed video was set to " + VideoPlayerConfiguration.SPEED_LEVEL_3);
+            mediaPlayer.setRate(VideoPlayerConfiguration.SPEED_LEVEL_4_VALUE);
+            labelSpeed.setText(VideoPlayerConfiguration.SPEED_LEVEL_4);
         } else {
-            LOGGER.info("Speed video was restart to " + SPEED_LEVEL_1);
-            mediaPlayer.setRate(SPEED_LEVEL_1_VALUE);
-            labelSpeed.setText(SPEED_LEVEL_1);
+            LOGGER.info("Speed video was restart to " + VideoPlayerConfiguration.SPEED_LEVEL_1);
+            mediaPlayer.setRate(VideoPlayerConfiguration.SPEED_LEVEL_1_VALUE);
+            labelSpeed.setText(VideoPlayerConfiguration.SPEED_LEVEL_1);
         }
     }
 
@@ -457,14 +455,14 @@ public class VideoPlayer implements Initializable {
         if (isMuted) {
             LOGGER.info("Unmuted video volume");
             setLabelVolume1SVG();
-            mediaPlayer.setVolume(DEFAULT_VOLUME_VALUE);
-            sliderVolume.setValue(DEFAULT_VOLUME_VALUE);
+            mediaPlayer.setVolume(VideoPlayerConfiguration.DEFAULT_VOLUME_VALUE);
+            sliderVolume.setValue(VideoPlayerConfiguration.DEFAULT_VOLUME_VALUE);
             isMuted = false;
         } else {
             LOGGER.info("Muted video volume");
             setLabelVolumeMuteSVG();
-            mediaPlayer.setVolume(MUTE_VOLUME_VALUE);
-            sliderVolume.setValue(MUTE_VOLUME_VALUE);
+            mediaPlayer.setVolume(VideoPlayerConfiguration.MUTE_VOLUME_VALUE);
+            sliderVolume.setValue(VideoPlayerConfiguration.MUTE_VOLUME_VALUE);
             isMuted = true;
         }
     }
@@ -488,7 +486,7 @@ public class VideoPlayer implements Initializable {
     }
 
     private void resetTimeSlider() {
-        sliderTime.setValue(RESET_TIME_VALUE);
+        sliderTime.setValue(VideoPlayerConfiguration.RESET_TIME_VALUE);
     }
 
     private void configureTotalDurationListener() {
@@ -526,7 +524,7 @@ public class VideoPlayer implements Initializable {
     }
 
     private void resetVideoIfEnded() {
-        sliderTime.setValue(RESET_TIME_VALUE);
+        sliderTime.setValue(VideoPlayerConfiguration.RESET_TIME_VALUE);
         atEndOfVideo = false;
         isPlaying = false;
     }
@@ -621,53 +619,53 @@ public class VideoPlayer implements Initializable {
     }
 
     private void setButtonPlaySVG() {
-        setSvgGraphic(buttonPlayPauseRestartSVG, PLAY_SVG, PLAY_SVG_SCALE_MODIFIER);
+        setSvgGraphic(buttonPlayPauseRestartSVG, VideoPlayerConfiguration.PLAY_SVG, VideoPlayerConfiguration.PLAY_SVG_SCALE_MODIFIER);
         buttonPlayPauseRestart.setGraphic(buttonPlayPauseRestartSVG);
     }
 
     private void setButtonPauseSVG() {
-        setSvgGraphic(buttonPlayPauseRestartSVG, PAUSE_SVG, PAUSE_SVG_SCALE_MODIFIER);
+        setSvgGraphic(buttonPlayPauseRestartSVG, VideoPlayerConfiguration.PAUSE_SVG, VideoPlayerConfiguration.PAUSE_SVG_SCALE_MODIFIER);
         buttonPlayPauseRestart.setGraphic(buttonPlayPauseRestartSVG);
     }
 
     private void setButtonRestartSVG() {
-        setSvgGraphic(buttonPlayPauseRestartSVG, RESTART_SVG, RESTART_SVG_SCALE_MODIFIER);
+        setSvgGraphic(buttonPlayPauseRestartSVG, VideoPlayerConfiguration.RESTART_SVG, VideoPlayerConfiguration.RESTART_SVG_SCALE_MODIFIER);
         buttonPlayPauseRestart.setGraphic(buttonPlayPauseRestartSVG);
     }
 
     private void setButtonNextSVG() {
-        setSvgGraphic(buttonNextSVG, NEXT_SVG, NEXT_SVG_SCALE_MODIFIER);
+        setSvgGraphic(buttonNextSVG, VideoPlayerConfiguration.NEXT_SVG, VideoPlayerConfiguration.NEXT_SVG_SCALE_MODIFIER);
     }
 
     private void setLabelEnterFullscreenSVG() {
-        setSvgGraphic(labelFullScreenSVG, FULLSCREEN_SVG, SCREEN_MODE_SVG_SCALE_MODIFIER);
+        setSvgGraphic(labelFullScreenSVG, VideoPlayerConfiguration.FULLSCREEN_SVG, VideoPlayerConfiguration.SCREEN_MODE_SVG_SCALE_MODIFIER);
         labelFullScreen.setGraphic(labelFullScreenSVG);
     }
 
     private void setLabelExitFullscreenSVG() {
-        setSvgGraphic(labelFullScreenSVG, EXIT_SVG, SCREEN_MODE_SVG_SCALE_MODIFIER);
+        setSvgGraphic(labelFullScreenSVG, VideoPlayerConfiguration.EXIT_SVG, VideoPlayerConfiguration.SCREEN_MODE_SVG_SCALE_MODIFIER);
         labelFullScreen.setGraphic(labelFullScreenSVG);
     }
 
     private void setLabelVolume1SVG() {
-        setSvgGraphic(labelVolumeSVG, VOLUME1_SVG, VOLUME_SVG_SCALE_MODIFIER);
+        setSvgGraphic(labelVolumeSVG, VideoPlayerConfiguration.VOLUME1_SVG, VideoPlayerConfiguration.VOLUME_SVG_SCALE_MODIFIER);
         labelVolume.setGraphic(labelVolumeSVG);
     }
 
     private void setLabelVolume2SVG() {
-        setSvgGraphic(labelVolumeSVG, VOLUME2_SVG, VOLUME_SVG_SCALE_MODIFIER);
+        setSvgGraphic(labelVolumeSVG, VideoPlayerConfiguration.VOLUME2_SVG, VideoPlayerConfiguration.VOLUME_SVG_SCALE_MODIFIER);
         labelVolume.setGraphic(labelVolumeSVG);
     }
 
     private void setLabelVolumeMuteSVG() {
-        setSvgGraphic(labelVolumeSVG, MUTE_SVG, VOLUME_SVG_SCALE_MODIFIER);
+        setSvgGraphic(labelVolumeSVG, VideoPlayerConfiguration.MUTE_SVG, VideoPlayerConfiguration.VOLUME_SVG_SCALE_MODIFIER);
         labelVolume.setGraphic(labelVolumeSVG);
     }
 
     private void setSvgGraphic(SVGPath svgPath, String svgCode, double svgScaleModifier) {
         svgPath.setContent(svgCode);
-        svgPath.setScaleX(DEFAULT_SVG_SCALE * svgScaleModifier);
-        svgPath.setScaleY(DEFAULT_SVG_SCALE * svgScaleModifier);
+        svgPath.setScaleX(VideoPlayerConfiguration.DEFAULT_SVG_SCALE * svgScaleModifier);
+        svgPath.setScaleY(VideoPlayerConfiguration.DEFAULT_SVG_SCALE * svgScaleModifier);
     }
 
     private void addColorToSliderVolume(Slider sliderVolume) {
@@ -692,7 +690,7 @@ public class VideoPlayer implements Initializable {
 
     private String generateStyle(double percentage) {
         return String.format(Locale.US, "-fx-background-color: linear-gradient(to right, %s %f%% , %s %f%%);",
-                PRIMARY_COLOR, percentage, GRADIENT_COLOR, percentage);
+                VideoPlayerConfiguration.PRIMARY_COLOR, percentage, VideoPlayerConfiguration.GRADIENT_COLOR, percentage);
     }
 
 }

@@ -1,11 +1,10 @@
-package com.filipmikolajzeglen.video;
+package com.filipmikolajzeglen.fmzvideoplayer.video;
 
-import com.filipmikolajzeglen.database.FMZIdentifiable;
+import com.filipmikolajzeglen.fmzvideoplayer.database.FMZIdentifiable;
 import lombok.*;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.Objects;
 
 import static lombok.AccessLevel.PRIVATE;
 

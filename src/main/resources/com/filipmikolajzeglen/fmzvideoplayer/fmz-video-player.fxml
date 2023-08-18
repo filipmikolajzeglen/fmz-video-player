@@ -7,7 +7,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<StackPane fx:id="stackPaneParent" style="-fx-background-color: #000000;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.filipmikolajzeglen.video.VideoPlayer">
+<StackPane fx:id="stackPaneParent" style="-fx-background-color: #000000;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlayer">
     <MediaView fx:id="mediaView" />
     <VBox alignment="BOTTOM_CENTER">
 
@@ -17,7 +17,7 @@
                 <Insets top="0.0" />
             </padding>
 
-            <Slider fx:id="sliderTime" style="-fx-cursor: hand;" stylesheets="@../../css/timebar.css">
+            <Slider fx:id="sliderTime" style="-fx-cursor: hand;" stylesheets="@../../../css/timebar.css">
                 <padding>
                     <Insets bottom="15.0" left="10.0" right="10.0" top="5.0" />
                 </padding>
@@ -57,7 +57,7 @@
                                 <SVGPath fx:id="labelVolumeSVG" fill="#ffffff" nodeOrientation="LEFT_TO_RIGHT" />
                             </graphic>
                         </Label>
-                        <Slider fx:id="sliderVolume" max="1.0" style="-fx-cursor: hand;" stylesheets="@../../css/timebar.css" />
+                        <Slider fx:id="sliderVolume" max="1.0" style="-fx-cursor: hand;" stylesheets="@../../../css/timebar.css" />
                     </children>
 
                 </HBox>

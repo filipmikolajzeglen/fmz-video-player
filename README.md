@@ -12,7 +12,7 @@ This fantastic piece of software was born from a sense of nostalgia, with featur
 
 ## Configuration
 
-Current version 2.1.0 has all configuration parameters in `com.filipmikolajzeglen.video.VideoPlayerConfiguration`.
+Current version 2.1.0 has all configuration parameters in `video.com.filipmikolajzeglen.fmzvideoplayer.VideoPlayerConfiguration`.
 In future this configuration will be moved to application.properties and then used for additional config view.
 
 **PRIMARY_COLOR** is a String expressing the hex code for the color of time and volume sliders.
@@ -76,7 +76,7 @@ Local videos must be named in this format:
 ## Running Version 2.1.0
 Until an interface is designed for easy software management, the only feasible option to use the player is by configuring FMZ Video Player and building the artifact yourself:
 
-1. Open IDE and provide configuration in `com.filipmikolajzeglen.video.VideoPlayerConfiguration`.
+1. Open IDE and provide configuration in `video.com.filipmikolajzeglen.fmzvideoplayer.VideoPlayerConfiguration`.
 2. Build project using Maven `mvn clean install`.
 3. After building the project, navigate to the target folder and move the **fmz-video-player-2.1.0-SNAPSHOT.jar** file, for instance, to the Desktop.
 4. Open a terminal in the folder containing the .jar file and use the command `java -jar fmz-video-player-2.1.0-SNAPSHOT.jar`.

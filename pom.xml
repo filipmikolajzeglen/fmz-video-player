@@ -91,7 +91,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                com.filip.tvscheduler.fmztvscheduler/com.filipmikolajzeglen.FMZVideoPlayerApplication
+                                com.filip.tvscheduler.fmztvscheduler/com.filipmikolajzeglen.fmzvideoplayer.FMZVideoPlayerApplication
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>

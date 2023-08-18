@@ -1,6 +1,6 @@
-package com.filipmikolajzeglen;
+package com.filipmikolajzeglen.fmzvideoplayer;
 
-import com.filipmikolajzeglen.logger.Logger;
+import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,11 +11,11 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static com.filipmikolajzeglen.video.VideoPlayerConfiguration.APPLICATION_FXML;
-import static com.filipmikolajzeglen.video.VideoPlayerConfiguration.APPLICATION_ERROR_LOAD;
-import static com.filipmikolajzeglen.video.VideoPlayerConfiguration.APPLICATION_TITLE;
-import static com.filipmikolajzeglen.video.VideoPlayerConfiguration.APPLICATION_ICON;
-import static com.filipmikolajzeglen.video.VideoPlayerConfiguration.APPLICATION_ERROR;
+import static com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlayerConfiguration.APPLICATION_FXML;
+import static com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlayerConfiguration.APPLICATION_ERROR_LOAD;
+import static com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlayerConfiguration.APPLICATION_TITLE;
+import static com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlayerConfiguration.APPLICATION_ICON;
+import static com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlayerConfiguration.APPLICATION_ERROR;
 import static java.util.Objects.requireNonNull;
 
 public class FMZVideoPlayerApplication extends Application {

@@ -1,4 +1,4 @@
-package com.filipmikolajzeglen.video;
+package com.filipmikolajzeglen.fmzvideoplayer.video;
 
 public class VideoPlayerConfiguration {
 
@@ -20,7 +20,7 @@ public class VideoPlayerConfiguration {
 
     public final static String APPLICATION_TITLE = "FMZ Video Player";
     public final static String APPLICATION_ICON = "fmzPlayerIcon.png";
-    public final static String APPLICATION_FXML = "/com/filipmikolajzeglen/fmz-video-player.fxml";
+    public final static String APPLICATION_FXML = "/com/filipmikolajzeglen/fmzvideoplayer/fmz-video-player.fxml";
     public final static String APPLICATION_ERROR_LOAD = "Cannot load " + APPLICATION_FXML;
     public final static String APPLICATION_ERROR = "Cannot start the application: ";
 
