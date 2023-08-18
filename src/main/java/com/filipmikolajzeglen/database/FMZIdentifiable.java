@@ -1,7 +1,7 @@
-package com.filip.tvscheduler.fmztvscheduler.fmzdatabase;
+package com.filipmikolajzeglen.database;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.filip.tvscheduler.fmztvscheduler.video.Video;
+import com.filipmikolajzeglen.video.Video;
 
 @JsonDeserialize(as = Video.class)
 public interface FMZIdentifiable {

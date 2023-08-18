@@ -1,6 +1,6 @@
-package com.filip.tvscheduler.fmztvscheduler.video;
+package com.filipmikolajzeglen.video;
 
-import com.filip.tvscheduler.fmztvscheduler.fmzdatabase.FMZIdentifiable;
+import com.filipmikolajzeglen.database.FMZIdentifiable;
 
 import java.io.File;
 import java.io.Serializable;
@@ -32,7 +32,6 @@ public class Video implements Serializable, FMZIdentifiable {
         this.episodeNumber = currentVideo.substring(3, 6);
         this.seasonNumber = currentVideo.substring(0, 3);
         this.videoExtension = currentVideo.substring(currentVideo.length() - 3);
-        ;
         this.videoPath = directory.getAbsolutePath() + "\\" + currentVideo;
         this.isWatched = false;
         this.id = String.format("%s%s-%s", seasonNumber, episodeNumber, videoName);

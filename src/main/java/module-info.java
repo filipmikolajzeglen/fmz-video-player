@@ -5,8 +5,8 @@ module com.filip.tvscheduler.fmztvscheduler {
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
 
-    exports com.filip.tvscheduler.fmztvscheduler;
-    exports com.filip.tvscheduler.fmztvscheduler.fmzdatabase;
-    exports com.filip.tvscheduler.fmztvscheduler.video to com.fasterxml.jackson.databind;
-    opens com.filip.tvscheduler.fmztvscheduler.video to javafx.fxml;
+    exports com.filipmikolajzeglen;
+    exports com.filipmikolajzeglen.database;
+    exports com.filipmikolajzeglen.video to com.fasterxml.jackson.databind;
+    opens com.filipmikolajzeglen.video to javafx.fxml;
 }

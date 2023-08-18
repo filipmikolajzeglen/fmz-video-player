@@ -1,8 +1,8 @@
-package com.filip.tvscheduler.fmztvscheduler.video;
+package com.filipmikolajzeglen.video;
 
 public class VideoPlayerConfiguration {
 
-    public static final String PRIMARY_COLOR = "#6502C4";
+    public static final String PRIMARY_COLOR = "#7C9EF7";
     public static final String GRADIENT_COLOR = "rgba(255, 255, 255, 0.28)";
 
     public static final double DEFAULT_VOLUME_VALUE = 0.5;
@@ -20,7 +20,7 @@ public class VideoPlayerConfiguration {
 
     public final static String APPLICATION_TITLE = "FMZ Video Player";
     public final static String APPLICATION_ICON = "fmzPlayerIcon.png";
-    public final static String APPLICATION_FXML = "/com/filip/tvscheduler/fmztvscheduler/fmz-video-player.fxml";
+    public final static String APPLICATION_FXML = "/com/filipmikolajzeglen/fmz-video-player.fxml";
     public final static String APPLICATION_ERROR_LOAD = "Cannot load " + APPLICATION_FXML;
     public final static String APPLICATION_ERROR = "Cannot start the application: ";
 

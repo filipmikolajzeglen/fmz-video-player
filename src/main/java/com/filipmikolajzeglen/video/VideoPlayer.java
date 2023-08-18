@@ -1,6 +1,6 @@
-package com.filip.tvscheduler.fmztvscheduler.video;
+package com.filipmikolajzeglen.video;
 
-import com.filip.tvscheduler.fmztvscheduler.logger.Logger;
+import com.filipmikolajzeglen.logger.Logger;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.PauseTransition;
@@ -32,7 +32,6 @@ import javafx.util.Duration;
 
 import java.io.File;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -40,11 +39,11 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
-import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfiguration.*;
+import static com.filipmikolajzeglen.video.VideoPlayerConfiguration.*;
 
 public class VideoPlayer implements Initializable {
 
-    private static Logger logger = new Logger();
+    private final Logger logger = new Logger();
 
     @FXML
     private StackPane stackPaneParent;
@@ -64,6 +63,8 @@ public class VideoPlayer implements Initializable {
     private Button buttonPlayPauseRestart;
     @FXML
     private SVGPath buttonPlayPauseRestartSVG;
+    @FXML
+    private Button buttonNext;
     @FXML
     private SVGPath buttonNextSVG;
     @FXML
@@ -142,7 +143,7 @@ public class VideoPlayer implements Initializable {
 
     private void waitForMediaPlayerReadyAndPlay() {
         try {
-            while(mediaPlayer.getStatus() != MediaPlayer.Status.READY){
+            while (mediaPlayer.getStatus() != MediaPlayer.Status.READY) {
                 Thread.sleep(2);
             }
 
@@ -192,7 +193,6 @@ public class VideoPlayer implements Initializable {
             @Override
             public void run() {
                 logger.error("Error occurred in media player: " + mediaPlayer.getError().getMessage());
-                logger.error("Error occurred stack trace: " + Arrays.toString(mediaPlayer.getError().getStackTrace()));
                 logger.warning("Try to initialize media player once again after error");
                 initializeMediaPlayer(videoPath);
             }
@@ -266,19 +266,14 @@ public class VideoPlayer implements Initializable {
     }
 
     private void setUpButtonHandlers() {
-        logger.info("Setup button handlers");
-        if (buttonPlayPauseRestart != null) {
-            buttonPlayPauseRestart.setOnAction(event -> handlePlayPauseRestart());
-            labelFullScreen.setOnMouseClicked(event -> handleFullscreenClick());
-            labelSpeed.setOnMouseClicked(event -> handleSpeedClick());
+        buttonPlayPauseRestart.setOnAction(event -> handlePlayPauseRestart());
+        labelFullScreen.setOnMouseClicked(event -> handleFullscreenClick());
+        labelSpeed.setOnMouseClicked(event -> handleSpeedClick());
 
-            labelVolume.setOnMouseClicked(event -> handleVolumeClick());
-            labelVolume.setOnMouseEntered(event -> handleVolumeMouseEnter());
-            hBoxVolume.setOnMouseExited(event -> handleVolumeMouseExit());
-            hBoxVolume.setOnMouseEntered(event -> handleVolumeMouseEnter());
-        } else {
-            logger.error("buttonPlayPauseRestart was NULL");
-        }
+        labelVolume.setOnMouseClicked(event -> handleVolumeClick());
+        labelVolume.setOnMouseEntered(event -> handleVolumeMouseEnter());
+        hBoxVolume.setOnMouseExited(event -> handleVolumeMouseExit());
+        hBoxVolume.setOnMouseEntered(event -> handleVolumeMouseEnter());
     }
 
     private void volumeBinding() {
@@ -566,6 +561,7 @@ public class VideoPlayer implements Initializable {
 
     @FXML
     private void buttonNextClicked(MouseEvent event) {
+        logger.info("====================== NEXT VIDEO IS INITIALIZING ======================");
         initializeMediaPlayer(pathToVideoIterator, videoIterator);
     }
 
@@ -601,18 +597,21 @@ public class VideoPlayer implements Initializable {
         }
     }
 
-    // Bind the text of the current time label to the current time of the video.
-    // This will allow the timer to update along with the video.
+    /**
+     * Binds the text of the current time label to the current time of the video.
+     * This method allows the timer to update in synchrony with the video. If the mediaPlayer is NULL,
+     * an error message is logged.
+
+     * Binding created using the createStringBinding method to invoke a Callable,
+     * which is responsible for returning the formatted time string with hours, minutes and seconds.
+     * The time is expressed in milliseconds e.g., 750.0 ms.
+     */
     public void bindCurrentTimeLabel() {
         if (mediaPlayer != null) {
             labelCurrentTime.textProperty().bind(Bindings.createStringBinding(new Callable<String>() {
                 @Override
                 public String call() throws Exception {
-                    // Return the hours, minutes, and seconds of the video.
-                    // %d is an integer
-                    // Time is given in milliseconds. (For example 750.0 ms).
                     String time = getTime(mediaPlayer.getCurrentTime()) + " / ";
-                    //logger.log(RUNNING, "bindCurrentTimeLabel: " + time);
                     return time;
                 }
             }, mediaPlayer.currentTimeProperty()));

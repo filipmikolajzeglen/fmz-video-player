@@ -1,9 +1,9 @@
-package com.filip.tvscheduler.fmztvscheduler.logger;
+package com.filipmikolajzeglen.logger;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static com.filip.tvscheduler.fmztvscheduler.logger.LoggerLevel.*;
+import static com.filipmikolajzeglen.logger.LoggerLevel.*;
 
 /**
  * A simple logging class for videos.

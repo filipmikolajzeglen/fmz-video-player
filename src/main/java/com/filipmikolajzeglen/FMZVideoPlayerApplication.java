@@ -1,6 +1,6 @@
-package com.filip.tvscheduler.fmztvscheduler;
+package com.filipmikolajzeglen;
 
-import com.filip.tvscheduler.fmztvscheduler.logger.Logger;
+import com.filipmikolajzeglen.logger.Logger;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,20 +11,21 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfiguration.APPLICATION_FXML;
-import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfiguration.APPLICATION_ERROR_LOAD;
-import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfiguration.APPLICATION_TITLE;
-import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfiguration.APPLICATION_ICON;
-import static com.filip.tvscheduler.fmztvscheduler.video.VideoPlayerConfiguration.APPLICATION_ERROR;
+import static com.filipmikolajzeglen.video.VideoPlayerConfiguration.APPLICATION_FXML;
+import static com.filipmikolajzeglen.video.VideoPlayerConfiguration.APPLICATION_ERROR_LOAD;
+import static com.filipmikolajzeglen.video.VideoPlayerConfiguration.APPLICATION_TITLE;
+import static com.filipmikolajzeglen.video.VideoPlayerConfiguration.APPLICATION_ICON;
+import static com.filipmikolajzeglen.video.VideoPlayerConfiguration.APPLICATION_ERROR;
+import static java.util.Objects.requireNonNull;
 
-public class Main extends Application {
+public class FMZVideoPlayerApplication extends Application {
 
     private static final Logger logger = new Logger();
 
     @Override
     public void start(Stage primaryStage) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource(APPLICATION_FXML));
+            Parent root = FXMLLoader.load(requireNonNull(getClass().getResource(APPLICATION_FXML)));
             if (root == null) {
                 throw new IOException(APPLICATION_ERROR_LOAD);
             }

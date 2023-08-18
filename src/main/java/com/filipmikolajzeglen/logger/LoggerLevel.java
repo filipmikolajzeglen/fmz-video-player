@@ -1,4 +1,4 @@
-package com.filip.tvscheduler.fmztvscheduler.logger;
+package com.filipmikolajzeglen.logger;
 
 enum LoggerLevel {
     INFO("\u001B[36m"),

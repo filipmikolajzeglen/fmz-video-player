@@ -1,4 +1,4 @@
-package com.filip.tvscheduler.fmztvscheduler.fmzdatabase;
+package com.filipmikolajzeglen.database;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -11,11 +11,21 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.filip.tvscheduler.fmztvscheduler.logger.Logger;
+import com.filipmikolajzeglen.logger.Logger;
 
+/**
+ * FMZDatabase is a generic file-based database utility class. It provides the ability to perform
+ * basic CRUD operations (Create, Read, Update, Delete) on documents of type DOCUMENT that extends
+ * 'FMZIdentifiable' and serializable interface. Each instance of this class represents a single table
+ * within the database. It uses JSON as the file format for storing the documents and Jackson library
+ * for serialization and deserialization. It also offers a simple querying method by id using 'findById' method,
+ * and loading all documents using 'findAll' method.
+ *
+ * @param <DOCUMENT> the type of documents to store which must be serializable and identifiable
+ */
 public class FMZDatabase<DOCUMENT extends FMZIdentifiable & Serializable> {
 
-    private static final Logger logger = new Logger();
+    private final Logger logger = new Logger();
 
     private String filename;
     private String directoryPath;
