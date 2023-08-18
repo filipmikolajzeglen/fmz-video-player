@@ -1,5 +1,10 @@
 package com.filipmikolajzeglen.logger;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Getter
 enum LoggerLevel {
     INFO("\u001B[36m"),
     ERROR("\u001B[31m"),
@@ -7,12 +12,5 @@ enum LoggerLevel {
     WARNING("\u001B[33m");
 
     private final String colorCode;
-
-    LoggerLevel(String colorCode) {
-        this.colorCode = colorCode;
-    }
-
-    public String getColorCode() {
-        return colorCode;
-    }
 }
+
