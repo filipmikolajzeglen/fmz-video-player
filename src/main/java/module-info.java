@@ -5,6 +5,8 @@ module com.filip.tvscheduler.fmztvscheduler {
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
 
+    requires static lombok;
+
     exports com.filipmikolajzeglen;
     exports com.filipmikolajzeglen.database;
     exports com.filipmikolajzeglen.video to com.fasterxml.jackson.databind;

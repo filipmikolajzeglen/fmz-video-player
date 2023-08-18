@@ -1,4 +1,4 @@
-# FMZ Video player - v2.0.0
+# FMZ Video player - v2.1.0
 
 ## Software prepared to generate private tv
 
@@ -13,22 +13,22 @@ FoxKids, Jetix, CartoonNetwork.
 
 ## Configuration
 
-Current version 2.0.0 has all configuration parameters in `com.filipmikolajzeglen.video.VideoPlayerConfiguration`.
+Current version 2.1.0 has all configuration parameters in `com.filipmikolajzeglen.video.VideoPlayerConfiguration`.
 In future this configuration will be moved to application.properties and then used for additional config view.
 
 **PRIMARY_COLOR** is a String representing color of time slider and volume slider saved as hex.
 
 - `PRIMARY_COLOR = "#7C9EF7"`
 
-**EPISODES_LIMIT_OF_A_SINGLE_SERIES_PER_DAY** is a variable used to set amount of episode from single series allowed to play
+**MAX_SINGLE_SERIES_PER_DAY** is a variable used to set amount of episode from single series allowed to play
 per day. For now default value is 2, and it means that two episodes from single series will be play one by one. 
 
-- `EPISODES_LIMIT_OF_A_SINGLE_SERIES_PER_DAY = 2`
+- `MAX_SINGLE_SERIES_PER_DAY = 2`
 
-**MAXIMUM_NUMBER_OF_EPISODES_IN_THE_SCHEDULE_PER_DAY** is a variable used to set max amount of all videos allowed to play
+**MAX_EPISODES_PER_DAY** is a variable used to set max amount of all videos allowed to play
 per day
 
-- `MAXIMUM_NUMBER_OF_EPISODES_IN_THE_SCHEDULE_PER_DAY = 30`
+- `MAX_EPISODES_PER_DAY = 30`
 
 **VIDEO_MAIN_SOURCE** is static variable used to tell FMZ Video player where is a main directory with all videos
 
@@ -76,7 +76,7 @@ Local videos must follow this pattern:
   <img src="src/main/resources/FMZVideoPlayerScreen1.png">
 </p>
 
-## How to run version 2.0.0
+## How to run version 2.1.0
 Until there is an interface that allows easy management of the software, the only sensible option to use the player is 
 by configuring the FMZ Video Player and building the artifact yourself
 
@@ -90,7 +90,7 @@ by configuring the FMZ Video Player and building the artifact yourself
 - Adding Web Client to remote playing videos
 - Upload FMZ Video Player exe
 
-### Version 2.0.0
+### Version 2.1.0
 - Replaced external video players with own built-in player.
 - Added FMZDatabase a dedicated built-in database created to store information about episodes and their watched status
 - Added functionality to recognize which episode should be run next time

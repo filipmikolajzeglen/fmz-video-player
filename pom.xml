@@ -11,11 +11,15 @@
     <name>fmz-video-player</name>
 
     <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.9.1</junit.version>
         <javafx.version>19</javafx.version>
         <jackson.version>2.15.2</jackson.version>
         <controlsfx.version>9.0.0</controlsfx.version>
+        <lombok-version>1.18.28</lombok-version>
     </properties>
 
     <dependencies>
@@ -56,6 +60,13 @@
             <groupId>org.controlsfx</groupId>
             <artifactId>controlsfx</artifactId>
             <version>${controlsfx.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok-version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

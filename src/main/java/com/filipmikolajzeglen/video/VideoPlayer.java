@@ -43,7 +43,7 @@ import static com.filipmikolajzeglen.video.VideoPlayerConfiguration.*;
 
 public class VideoPlayer implements Initializable {
 
-    private final Logger logger = new Logger();
+    private static final Logger LOGGER = new Logger();
 
     @FXML
     private StackPane stackPaneParent;
@@ -127,17 +127,17 @@ public class VideoPlayer implements Initializable {
     }
 
     private void logInitialization() {
-        logger.info("Initialize FMZ Video Player with videos:");
-        logger.info(videoPlayerService.createVideoScheduleLog());
+        LOGGER.info("Initialize FMZ Video Player with videos:");
+        LOGGER.info(videoPlayerService.createVideoScheduleLog());
     }
 
     private void assertButtonPlayPauseRestartInitialized() {
         if (buttonPlayPauseRestart == null) {
-            logger.error("buttonPlayPauseRestart was NULL");
+            LOGGER.error("buttonPlayPauseRestart was NULL");
             throw new IllegalStateException("buttonPlayPauseRestart must be initialized");
         }
 
-        logger.info("buttonPlayPauseRestart was correctly initialized");
+        LOGGER.info("buttonPlayPauseRestart was correctly initialized");
         setUpButtonHandlers();
     }
 
@@ -149,8 +149,8 @@ public class VideoPlayer implements Initializable {
 
             Platform.runLater(mediaPlayer::play);
         } catch (InterruptedException e) {
-            logger.info("Something goes wrong during waiting for ready status");
-            logger.error(e.getMessage());
+            LOGGER.info("Something goes wrong during waiting for ready status");
+            LOGGER.error(e.getMessage());
         }
 
     }
@@ -165,12 +165,12 @@ public class VideoPlayer implements Initializable {
             mediaPlayer.stop();
             mediaPlayer.dispose();
             mediaPlayer = null;
-            logger.info("Listeners were removed. Media player was stopped and disposed then set to NULL");
+            LOGGER.info("Listeners were removed. Media player was stopped and disposed then set to NULL");
         }
     }
 
     private void initializeMediaPlayer(String videoPath) {
-        logger.info("Initialize media player. Current video path: " + videoPath);
+        LOGGER.info("Initialize media player. Current video path: " + videoPath);
         media = new Media(new File(videoPath).toURI().toString());
         mediaPlayer = new MediaPlayer(media);
         mediaView.setMediaPlayer(mediaPlayer);
@@ -183,7 +183,7 @@ public class VideoPlayer implements Initializable {
             @Override
             public void run() {
                 if (mediaPlayer.getTotalDuration().lessThanOrEqualTo(Duration.ZERO)) {
-                    logger.error("Total duration was 00:00 - Started new initialization");
+                    LOGGER.error("Total duration was 00:00 - Started new initialization");
                     initializeMediaPlayer(videoPath);
                 }
             }
@@ -192,8 +192,8 @@ public class VideoPlayer implements Initializable {
         mediaPlayer.setOnError(new Runnable() {
             @Override
             public void run() {
-                logger.error("Error occurred in media player: " + mediaPlayer.getError().getMessage());
-                logger.warning("Try to initialize media player once again after error");
+                LOGGER.error("Error occurred in media player: " + mediaPlayer.getError().getMessage());
+                LOGGER.warning("Try to initialize media player once again after error");
                 initializeMediaPlayer(videoPath);
             }
         });
@@ -215,7 +215,7 @@ public class VideoPlayer implements Initializable {
 
     private void initializeVideoInfo(Video video) {
         String fullEpisodeInfo = String.format("%s - %s", video.getSeriesName().toUpperCase(), video.getEpisodeName());
-        logger.info("Current video info: " + fullEpisodeInfo);
+        LOGGER.info("Current video info: " + fullEpisodeInfo);
         labelCurrentEpisode.setText(fullEpisodeInfo);
     }
 
@@ -228,13 +228,13 @@ public class VideoPlayer implements Initializable {
             configurePlayPauseRestartAction();
             playByDefault();
         } else {
-            logger.info("Next video does not exist, set RESTART button");
+            LOGGER.info("Next video does not exist, set RESTART button");
             showRestartButton();
         }
     }
 
     private void initializeAllControlsSvgOnTheBeginning() {
-        logger.info("Initialize all controls svg on the beginning");
+        LOGGER.info("Initialize all controls svg on the beginning");
         setButtonPauseSVG();
         setButtonNextSVG();
         setLabelVolume2SVG();
@@ -334,11 +334,11 @@ public class VideoPlayer implements Initializable {
                     double currentTime = mediaPlayer.getCurrentTime().toSeconds();
                     if (Math.abs(currentTime - newValue.doubleValue()) > 0.5) {
                         mediaPlayer.seek(Duration.seconds(newValue.doubleValue()));
-                        logger.info("Moved slider time to: " + getFormattedCurrentVideoTime());
+                        LOGGER.info("Moved slider time to: " + getFormattedCurrentVideoTime());
                     }
                     addColorToSliderTime(sliderTime, newValue);
                 } else {
-                    logger.error("sliderTime.valueProperty(): mediaPlayer is currently NULL");
+                    LOGGER.error("sliderTime.valueProperty(): mediaPlayer is currently NULL");
                 }
             }
         };
@@ -370,10 +370,10 @@ public class VideoPlayer implements Initializable {
                 currentVideo.setWatched(true);
                 videoPlayerService.getDatabase().save(currentVideo);
                 if (pathToVideoIterator.hasNext() && videoIterator.hasNext()) {
-                    logger.info("====================== NEXT VIDEO IS INITIALIZING ======================");
+                    LOGGER.info("====================== NEXT VIDEO IS INITIALIZING ======================");
                     initializeMediaPlayer(pathToVideoIterator, videoIterator);
                 } else {
-                    logger.info("======================  ALL VIDEOS WERE WATCHED  =======================");
+                    LOGGER.info("======================  ALL VIDEOS WERE WATCHED  =======================");
                     showRestartButton();
                 }
             }
@@ -382,21 +382,21 @@ public class VideoPlayer implements Initializable {
 
     private void handlePlayPauseRestart() {
         bindCurrentTimeLabel();
-        logger.info("Is end of video: " + atEndOfVideo);
+        LOGGER.info("Is end of video: " + atEndOfVideo);
         if (atEndOfVideo) {
-            logger.info("Slider time value was set to 0");
+            LOGGER.info("Slider time value was set to 0");
             sliderTime.setValue(0);
             atEndOfVideo = false;
             isPlaying = false;
         }
 
         if (isPlaying) {
-            logger.info("Video is pause. Button PLAY was set");
+            LOGGER.info("Video is pause. Button PLAY was set");
             setButtonPlaySVG();
             mediaPlayer.pause();
             isPlaying = false;
         } else {
-            logger.info("Video is playing. Button PAUSE was set");
+            LOGGER.info("Video is playing. Button PAUSE was set");
             setButtonPauseSVG();
             mediaPlayer.play();
             isPlaying = true;
@@ -407,16 +407,16 @@ public class VideoPlayer implements Initializable {
         Stage stage = (Stage) stackPaneParent.getScene().getWindow();
 
         if (stage.isFullScreen()) {
-            logger.info("Fullscreen was exited");
+            LOGGER.info("Fullscreen was exited");
             stage.setFullScreen(false);
             setLabelEnterFullscreenSVG();
         } else {
-            logger.info("Fullscreen was entered");
+            LOGGER.info("Fullscreen was entered");
             stage.setFullScreen(true);
             setLabelExitFullscreenSVG();
             stage.addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {
                 if (keyEvent.getCode() == KeyCode.ESCAPE) {
-                    logger.info("Button ESCAPE was clicked");
+                    LOGGER.info("Button ESCAPE was clicked");
                     setLabelExitFullscreenSVG();
                 }
             });
@@ -425,24 +425,24 @@ public class VideoPlayer implements Initializable {
 
     private void handleSpeedClick() {
         if (mediaPlayer == null) {
-            logger.error("Media player was NULL during handling speed click");
+            LOGGER.error("Media player was NULL during handling speed click");
             return;
         }
 
         if (SPEED_LEVEL_1.equals(labelSpeed.getText())) {
-            logger.info("Speed video was set to " + SPEED_LEVEL_1);
+            LOGGER.info("Speed video was set to " + SPEED_LEVEL_1);
             mediaPlayer.setRate(SPEED_LEVEL_2_VALUE);
             labelSpeed.setText(SPEED_LEVEL_2);
         } else if (SPEED_LEVEL_2.equals(labelSpeed.getText())) {
-            logger.info("Speed video was set to " + SPEED_LEVEL_2);
+            LOGGER.info("Speed video was set to " + SPEED_LEVEL_2);
             mediaPlayer.setRate(SPEED_LEVEL_3_VALUE);
             labelSpeed.setText(SPEED_LEVEL_3);
         } else if (SPEED_LEVEL_3.equals(labelSpeed.getText())) {
-            logger.info("Speed video was set to " + SPEED_LEVEL_3);
+            LOGGER.info("Speed video was set to " + SPEED_LEVEL_3);
             mediaPlayer.setRate(SPEED_LEVEL_4_VALUE);
             labelSpeed.setText(SPEED_LEVEL_4);
         } else {
-            logger.info("Speed video was restart to " + SPEED_LEVEL_1);
+            LOGGER.info("Speed video was restart to " + SPEED_LEVEL_1);
             mediaPlayer.setRate(SPEED_LEVEL_1_VALUE);
             labelSpeed.setText(SPEED_LEVEL_1);
         }
@@ -450,18 +450,18 @@ public class VideoPlayer implements Initializable {
 
     private void handleVolumeClick() {
         if (mediaPlayer == null || sliderVolume == null) {
-            logger.error("Media player or slider volume was NULL during handling volume click");
+            LOGGER.error("Media player or slider volume was NULL during handling volume click");
             return;
         }
 
         if (isMuted) {
-            logger.info("Unmuted video volume");
+            LOGGER.info("Unmuted video volume");
             setLabelVolume1SVG();
             mediaPlayer.setVolume(DEFAULT_VOLUME_VALUE);
             sliderVolume.setValue(DEFAULT_VOLUME_VALUE);
             isMuted = false;
         } else {
-            logger.info("Muted video volume");
+            LOGGER.info("Muted video volume");
             setLabelVolumeMuteSVG();
             mediaPlayer.setVolume(MUTE_VOLUME_VALUE);
             sliderVolume.setValue(MUTE_VOLUME_VALUE);
@@ -479,7 +479,7 @@ public class VideoPlayer implements Initializable {
             sliderVolume.setValue(mediaPlayer.getVolume());
             addColorToSliderVolume(sliderVolume);
         } else {
-            logger.error("Media player was NULL during handling volume mouse entered");
+            LOGGER.error("Media player was NULL during handling volume mouse entered");
         }
     }
 
@@ -495,7 +495,7 @@ public class VideoPlayer implements Initializable {
         mediaPlayer.totalDurationProperty().addListener((observableValue, oldDuration, newDuration) -> {
             sliderTime.setMax(newDuration.toSeconds());
             labelTotalTime.setText(getTime(newDuration));
-            logger.info("Total duartion was set to: " + labelTotalTime.getText());
+            LOGGER.info("Total duartion was set to: " + labelTotalTime.getText());
         });
     }
 
@@ -512,14 +512,14 @@ public class VideoPlayer implements Initializable {
         buttonPlayPauseRestart.setOnAction(actionEvent -> {
             bindCurrentTimeLabel();
             if (atEndOfVideo) {
-                logger.info("Video is restarted");
+                LOGGER.info("Video is restarted");
                 resetVideoIfEnded();
             }
             if (isPlaying) {
-                logger.info("Video is paused");
+                LOGGER.info("Video is paused");
                 pause();
             } else {
-                logger.info("Video is played");
+                LOGGER.info("Video is played");
                 play();
             }
         });
@@ -561,7 +561,7 @@ public class VideoPlayer implements Initializable {
 
     @FXML
     private void buttonNextClicked(MouseEvent event) {
-        logger.info("====================== NEXT VIDEO IS INITIALIZING ======================");
+        LOGGER.info("====================== NEXT VIDEO IS INITIALIZING ======================");
         initializeMediaPlayer(pathToVideoIterator, videoIterator);
     }
 
@@ -616,7 +616,7 @@ public class VideoPlayer implements Initializable {
                 }
             }, mediaPlayer.currentTimeProperty()));
         } else {
-            logger.error("bindCurrentTimeLabel: mediaPlayer is currently NULL");
+            LOGGER.error("bindCurrentTimeLabel: mediaPlayer is currently NULL");
         }
     }
 

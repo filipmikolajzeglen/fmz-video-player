@@ -1,11 +1,21 @@
 package com.filipmikolajzeglen.video;
 
 import com.filipmikolajzeglen.database.FMZIdentifiable;
+import lombok.*;
 
 import java.io.File;
 import java.io.Serializable;
 import java.util.Objects;
 
+import static lombok.AccessLevel.PRIVATE;
+
+@Getter
+@Setter
+@EqualsAndHashCode(of = "id")
+@Builder(setterPrefix = "with")
+@NoArgsConstructor
+@AllArgsConstructor(access = PRIVATE)
+@ToString
 public class Video implements Serializable, FMZIdentifiable {
 
     private String id;
@@ -17,138 +27,53 @@ public class Video implements Serializable, FMZIdentifiable {
     private String path;
     private boolean isWatched;
 
-    public Video() {
+    public static Video fromDirectoryAndFileName(File directory, String filename) {
+        return Video.builder()
+                .withId(createId(directory, filename))
+                .withSeriesName(extractSeriesName(directory))
+                .withEpisodeName(extractEpisodeName(filename))
+                .withSeasonNumber(extractSeasonNumber(filename))
+                .withEpisodeNumber(extractEpisodeNumber(filename))
+                .withExtension(extractExtension(filename))
+                .withPath(buildPath(directory, filename))
+                .withIsWatched(false)
+                .build();
     }
 
-    public Video(File directory, String currentVideo) {
-        this.seriesName = extractSeriesName(directory);
-        this.episodeName = extractEpisodeName(currentVideo);
-        this.seasonNumber = extractSeasonNumber(currentVideo);
-        this.episodeNumber = extractEpisodeNumber(currentVideo);
-        this.extension = extractExtension(currentVideo);
-        this.path = buildPath(directory, currentVideo);
-        this.id = createId();
-        this.isWatched = false;
-    }
-
-    private String extractSeriesName(File directory) {
+    private static String extractSeriesName(File directory) {
         return directory.getName();
     }
 
-    private String extractEpisodeName(String videoName) {
+    private static String extractEpisodeName(String videoName) {
         return videoName.substring(7, videoName.length() - 4).replace("-", " ");
     }
 
-    private String extractSeasonNumber(String videoName) {
+    private static String extractSeasonNumber(String videoName) {
         return videoName.substring(0, 3);
     }
 
-    private String extractEpisodeNumber(String videoName) {
+    private static String extractEpisodeNumber(String videoName) {
         return videoName.substring(3, 6);
     }
 
-    private String extractExtension(String videoName) {
+    private static String extractExtension(String videoName) {
         return videoName.substring(videoName.length() - 3);
     }
 
-    private String buildPath(File directory, String videoName) {
+    private static String buildPath(File directory, String videoName) {
         return directory.getAbsolutePath() + "\\" + videoName;
     }
 
-    private String createId() {
-        return String.format("%s%s-%s", this.seasonNumber, this.episodeNumber, this.seriesName);
+    private static String createId(File directory, String filename) {
+        return String.format("%s%s-%s",
+                extractSeasonNumber(filename),
+                extractEpisodeNumber(filename),
+                extractSeriesName(directory));
     }
 
     @Override
     public String getId() {
         return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getSeriesName() {
-        return seriesName;
-    }
-
-    public void setSeriesName(String seriesName) {
-        this.seriesName = seriesName;
-    }
-
-    public String getEpisodeName() {
-        return episodeName;
-    }
-
-    public void setEpisodeName(String episodeName) {
-        this.episodeName = episodeName;
-    }
-
-    public String getEpisodeNumber() {
-        return episodeNumber;
-    }
-
-    public void setEpisodeNumber(String episodeNumber) {
-        this.episodeNumber = episodeNumber;
-    }
-
-    public String getSeasonNumber() {
-        return seasonNumber;
-    }
-
-    public void setSeasonNumber(String seasonNumber) {
-        this.seasonNumber = seasonNumber;
-    }
-
-    public String getExtension() {
-        return extension;
-    }
-
-    public void setExtension(String extension) {
-        this.extension = extension;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public boolean isWatched() {
-        return isWatched;
-    }
-
-    public void setWatched(boolean watched) {
-        isWatched = watched;
-    }
-
-    @Override
-    public String toString() {
-        return "\nVideo { " +
-                "id: '" + id + '\'' +
-                ", videoName: '" + seriesName + '\'' +
-                ", episodeName: '" + episodeName + '\'' +
-                ", episodeNumber: '" + episodeNumber + '\'' +
-                ", seasonNumber: '" + seasonNumber + '\'' +
-                ", videoExtension: '" + extension + '\'' +
-                ", videoPath: '" + path + '\'' +
-                ", isWatched: " + isWatched +
-                " }";
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Video)) return false;
-        Video video = (Video) o;
-        return id.equals(video.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 
 }
