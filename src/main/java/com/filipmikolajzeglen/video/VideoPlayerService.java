@@ -39,8 +39,6 @@ class VideoPlayerService {
         return DATABASE;
     }
 
-
-
     public List<String> createPathsToAllVideos() {
         List<Video> videos = createVideosSchedule();
 
