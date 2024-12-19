@@ -6,7 +6,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.stage.Window;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -18,32 +21,40 @@ import static com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlayerConfigurati
 import static com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlayerConfiguration.APPLICATION_ERROR;
 import static java.util.Objects.requireNonNull;
 
-public class FMZVideoPlayerApplication extends Application {
+public class FMZVideoPlayerApplication extends Application
+{
 
-    private static final Logger logger = new Logger();
+   private static final Logger logger = new Logger();
 
-    @Override
-    public void start(Stage primaryStage) {
-        try {
-            Parent root = FXMLLoader.load(requireNonNull(getClass().getResource(APPLICATION_FXML)));
-            if (root == null) {
-                throw new IOException(APPLICATION_ERROR_LOAD);
-            }
+   @Override
+   public void start(Stage primaryStage)
+   {
+      try
+      {
+         Parent root = FXMLLoader.load(requireNonNull(getClass().getResource(APPLICATION_FXML)));
+         if (root == null)
+         {
+            throw new IOException(APPLICATION_ERROR_LOAD);
+         }
 
-            Scene scene = new Scene(root, 1920, 1200);
-            primaryStage.setTitle(APPLICATION_TITLE);
-            primaryStage.getIcons().add(new Image(APPLICATION_ICON));
-            primaryStage.setScene(scene);
-            primaryStage.setFullScreen(true);
-            primaryStage.show();
-        } catch (IOException e) {
-            logger.error(APPLICATION_ERROR + e.getCause());
-            logger.error(APPLICATION_ERROR + Arrays.toString(e.getStackTrace()));
-        }
-    }
+         Scene scene = new Scene(root, 1920, 1200);
+         primaryStage.setTitle(APPLICATION_TITLE);
+         primaryStage.getIcons().add(new Image(APPLICATION_ICON));
+         primaryStage.setScene(scene);
+         primaryStage.setAlwaysOnTop(true);
+         primaryStage.setFullScreen(true);
+         primaryStage.show();
+      }
+      catch (IOException e)
+      {
+         logger.error(APPLICATION_ERROR + e.getCause());
+         logger.error(APPLICATION_ERROR + Arrays.toString(e.getStackTrace()));
+      }
+   }
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+   public static void main(String[] args)
+   {
+      launch(args);
+   }
 
 }
