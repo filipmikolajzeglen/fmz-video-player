@@ -1,30 +1,27 @@
 package com.filipmikolajzeglen.fmzvideoplayer;
 
-import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.stage.Window;
+import static com.filipmikolajzeglen.fmzvideoplayer.FMZVideoPlayerConfiguration.UI.APPLICATION_ERROR;
+import static com.filipmikolajzeglen.fmzvideoplayer.FMZVideoPlayerConfiguration.UI.APPLICATION_ERROR_LOAD;
+import static com.filipmikolajzeglen.fmzvideoplayer.FMZVideoPlayerConfiguration.UI.APPLICATION_FXML;
+import static com.filipmikolajzeglen.fmzvideoplayer.FMZVideoPlayerConfiguration.UI.APPLICATION_ICON;
+import static com.filipmikolajzeglen.fmzvideoplayer.FMZVideoPlayerConfiguration.UI.APPLICATION_TITLE;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.util.Arrays;
 
-import static com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlayerConfiguration.APPLICATION_FXML;
-import static com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlayerConfiguration.APPLICATION_ERROR_LOAD;
-import static com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlayerConfiguration.APPLICATION_TITLE;
-import static com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlayerConfiguration.APPLICATION_ICON;
-import static com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlayerConfiguration.APPLICATION_ERROR;
-import static java.util.Objects.requireNonNull;
+import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
 
 public class FMZVideoPlayerApplication extends Application
 {
-
-   private static final Logger logger = new Logger();
+   private static final Logger LOGGER = new Logger();
 
    @Override
    public void start(Stage primaryStage)
@@ -36,25 +33,42 @@ public class FMZVideoPlayerApplication extends Application
          {
             throw new IOException(APPLICATION_ERROR_LOAD);
          }
-
-         Scene scene = new Scene(root, 1920, 1200);
-         primaryStage.setTitle(APPLICATION_TITLE);
-         primaryStage.getIcons().add(new Image(APPLICATION_ICON));
-         primaryStage.setScene(scene);
-         primaryStage.setAlwaysOnTop(true);
-         primaryStage.setFullScreen(true);
-         primaryStage.show();
+         initializeStage(primaryStage, root);
+         addFocusListener(primaryStage);
       }
       catch (IOException e)
       {
-         logger.error(APPLICATION_ERROR + e.getCause());
-         logger.error(APPLICATION_ERROR + Arrays.toString(e.getStackTrace()));
+         LOGGER.error(APPLICATION_ERROR + e.getCause());
+         LOGGER.error(APPLICATION_ERROR + Arrays.toString(e.getStackTrace()));
       }
+   }
+
+   private void initializeStage(Stage stage, Parent root)
+   {
+      Scene scene = new Scene(root, 1920, 1200);
+      stage.setTitle(APPLICATION_TITLE);
+      stage.getIcons().add(new Image(APPLICATION_ICON));
+      stage.setScene(scene);
+      stage.setAlwaysOnTop(true);
+      stage.setFullScreen(true);
+      stage.show();
+   }
+
+   private void addFocusListener(Stage stage)
+   {
+      stage.focusedProperty().addListener((obs, wasFocused, isFocused) -> {
+         if (!isFocused && stage.isFullScreen())
+         {
+            Platform.runLater(() -> {
+               stage.setAlwaysOnTop(false);
+               stage.setAlwaysOnTop(true);
+            });
+         }
+      });
    }
 
    public static void main(String[] args)
    {
       launch(args);
    }
-
 }

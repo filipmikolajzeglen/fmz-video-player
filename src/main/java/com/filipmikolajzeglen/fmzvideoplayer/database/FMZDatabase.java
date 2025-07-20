@@ -1,17 +1,14 @@
 package com.filipmikolajzeglen.fmzvideoplayer.database;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
  * FMZDatabase is a generic file-based database utility class. It provides the ability to perform basic CRUD operations
@@ -22,176 +19,89 @@ import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
  *
  * @param <DOCUMENT> the type of documents to store which must be serializable and identifiable
  */
-public class FMZDatabase<DOCUMENT extends FMZIdentifiable & Serializable>
+@Setter
+@RequiredArgsConstructor
+public class FMZDatabase<DOCUMENT>
 {
 
    private static final Logger LOGGER = new Logger();
 
-   private String filename;
-   private String directoryPath;
    private String databaseName;
    private String tableName;
+   private String directoryPath;
+   private String filename;
+   private final Class<DOCUMENT> documentClass;
+   private final ObjectMapper objectMapper = new ObjectMapper();
+   private List<DOCUMENT> data = new ArrayList<>();
 
    public void initialize()
    {
-      File directory = new File(directoryPath + File.separator + databaseName);
-      if (!directory.exists())
-      {
-         LOGGER.info(String.format("Directory path for built-in database '%s' is creating.", databaseName));
-         directory.mkdirs();
-      }
-      this.filename = directoryPath + File.separator + databaseName + File.separator + tableName + ".txt";
-
+      this.filename = directoryPath + File.separator + databaseName + "_" + tableName + ".json";
       File file = new File(filename);
-      if (!file.exists())
+      if (file.exists())
       {
          try
          {
-            LOGGER.info(String.format("File txt representing collection '%s' is creating.", tableName));
-            file.createNewFile();
-            saveAll(new ArrayList<>());
+            data = objectMapper.readValue(file,
+                  objectMapper.getTypeFactory().constructCollectionType(List.class, documentClass));
+            LOGGER.info("FMZDatabase: Data loaded from file " + filename);
          }
          catch (IOException e)
          {
-            LOGGER.error(String.format("Error occurred when initializing documents:\n%s", e.getMessage()));
+            LOGGER.error("FMZDatabase: Error while loading data: " + e.getMessage());
+            data = new ArrayList<>();
          }
+      }
+      else
+      {
+         data = new ArrayList<>();
+         LOGGER.info("FMZDatabase: Created new database file " + filename);
+         saveAll(data);
       }
    }
 
-   public void save(DOCUMENT document)
+   public void save(DOCUMENT item)
    {
-      ObjectMapper mapper = new ObjectMapper();
+      int index = data.indexOf(item);
+      if (index >= 0)
+      {
+         data.set(index, item);
+      }
+      else
+      {
+         data.add(item);
+      }
+      saveAll(data);
+   }
+
+   public void saveAll(List<DOCUMENT> items)
+   {
+      data = new ArrayList<>(items);
       try
       {
-         List<DOCUMENT> currentData = loadDataFromFile();
-
-         int existingIndex = -1;
-         for (int i = 0; i < currentData.size(); i++)
-         {
-            if (currentData.get(i).equals(document))
-            {
-               existingIndex = i;
-               break;
-            }
-         }
-
-         if (existingIndex != -1)
-         {
-            currentData.remove(existingIndex);
-            currentData.add(existingIndex, document);
-         }
-         else
-         {
-            currentData.add(document);
-         }
-
-         mapper.writerWithDefaultPrettyPrinter().writeValue(new File(filename), currentData);
-         LOGGER.info(String.format("Document with id '%s' was saved successful in collection '%s'.", document.getId(),
-               tableName));
+         objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(filename), data);
+         LOGGER.info("FMZDatabase: Data saved to file " + filename);
       }
       catch (IOException e)
       {
-         LOGGER.error(String.format("Error occurred when saving documents:\n%s", e.getMessage()));
+         LOGGER.error("FMZDatabase: Error while saving: " + e.getMessage());
       }
-   }
-
-   public void saveAll(List<DOCUMENT> documents)
-   {
-      ObjectMapper mapper = new ObjectMapper();
-      try
-      {
-         List<DOCUMENT> currentData = loadDataFromFile();
-
-         for (DOCUMENT document : documents)
-         {
-            if (!currentData.contains(document))
-            {
-               currentData.add(document);
-            }
-         }
-         mapper.writerWithDefaultPrettyPrinter().writeValue(new File(filename), currentData);
-         LOGGER.info(String.format("All documents were saved successful in collection '%s'.", tableName));
-      }
-      catch (IOException e)
-      {
-         LOGGER.error(String.format("Error occurred when saving all documents:\n%s", e.getMessage()));
-      }
-   }
-
-   public void delete(DOCUMENT document)
-   {
-      ObjectMapper mapper = new ObjectMapper();
-      try
-      {
-         List<DOCUMENT> currentData = loadDataFromFile();
-         currentData.remove(document);
-         mapper.writerWithDefaultPrettyPrinter().writeValue(new File(filename), currentData);
-         LOGGER.info(
-               String.format("Document with id '%s' was removed successful from collection '%s'.", document.getId(),
-                     tableName));
-      }
-      catch (IOException e)
-      {
-         LOGGER.error(String.format("Error occurred when deleting documents:\n%s", e.getMessage()));
-      }
-   }
-
-   public Optional<DOCUMENT> find(DOCUMENT document)
-   {
-      List<DOCUMENT> currentData = loadDataFromFile();
-      return currentData.stream().filter(currentDocument -> currentDocument.equals(document)).findFirst();
-   }
-
-   public Optional<DOCUMENT> findById(String id)
-   {
-      List<DOCUMENT> currentData = loadDataFromFile();
-      return currentData.stream().filter(document -> Objects.equals(document.getId(), id)).findFirst();
    }
 
    public List<DOCUMENT> findAll()
    {
-      LOGGER.info(String.format("Finding all documents from collection '%s'.", tableName));
-      return loadDataFromFile();
+      return new ArrayList<>(data);
    }
 
-   private List<DOCUMENT> loadDataFromFile()
+   public void delete(DOCUMENT item)
    {
-      ObjectMapper mapper = new ObjectMapper();
-      try
-      {
-         File file = new File(filename);
-         if (file.length() > 0)
-         {
-            LOGGER.info(String.format("Collection '%s' is loading.", tableName));
-            return mapper.readValue(file, new TypeReference<ArrayList<DOCUMENT>>()
-            {
-            });
-         }
-         else
-         {
-            LOGGER.info(String.format("Collection '%s' is empty.", tableName));
-            return new ArrayList<>();
-         }
-      }
-      catch (IOException e)
-      {
-         LOGGER.error(String.format("Error occurred when loading data from file:\n%s", e.getMessage()));
-         return new ArrayList<>();
-      }
+      data.remove(item);
+      saveAll(data);
    }
 
-   public void setDirectoryPath(String directoryPath)
+   public void clear()
    {
-      this.directoryPath = directoryPath;
-   }
-
-   public void setDatabaseName(String databaseName)
-   {
-      this.databaseName = databaseName;
-   }
-
-   public void setTableName(String tableName)
-   {
-      this.tableName = tableName;
+      data.clear();
+      saveAll(data);
    }
 }

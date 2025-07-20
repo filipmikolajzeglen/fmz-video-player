@@ -1,9 +1,12 @@
 package com.filipmikolajzeglen.fmzvideoplayer.logger;
 
+import static com.filipmikolajzeglen.fmzvideoplayer.logger.LoggerLevel.ERROR;
+import static com.filipmikolajzeglen.fmzvideoplayer.logger.LoggerLevel.INFO;
+import static com.filipmikolajzeglen.fmzvideoplayer.logger.LoggerLevel.RUNNING;
+import static com.filipmikolajzeglen.fmzvideoplayer.logger.LoggerLevel.WARNING;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
-import static com.filipmikolajzeglen.fmzvideoplayer.logger.LoggerLevel.*;
 
 /**
  * A simple logging class for videos.

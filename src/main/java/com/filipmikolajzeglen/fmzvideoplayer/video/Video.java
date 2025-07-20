@@ -1,12 +1,17 @@
 package com.filipmikolajzeglen.fmzvideoplayer.video;
 
-import com.filipmikolajzeglen.fmzvideoplayer.database.FMZIdentifiable;
-import lombok.*;
+import static lombok.AccessLevel.PRIVATE;
 
 import java.io.File;
 import java.io.Serializable;
 
-import static lombok.AccessLevel.PRIVATE;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
@@ -15,7 +20,7 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor
 @AllArgsConstructor(access = PRIVATE)
 @ToString
-public class Video implements Serializable, FMZIdentifiable
+public class Video implements Serializable
 {
    private String id;
    private String seriesName;
@@ -82,12 +87,6 @@ public class Video implements Serializable, FMZIdentifiable
    private static String buildPath(File directory, String videoName)
    {
       return directory.getAbsolutePath() + "\\" + videoName;
-   }
-
-   @Override
-   public String getId()
-   {
-      return id;
    }
 
 }

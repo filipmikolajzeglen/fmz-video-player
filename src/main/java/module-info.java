@@ -11,4 +11,5 @@ module com.filip.tvscheduler.fmztvscheduler {
     exports com.filipmikolajzeglen.fmzvideoplayer.database;
     exports com.filipmikolajzeglen.fmzvideoplayer.video to com.fasterxml.jackson.databind;
     opens com.filipmikolajzeglen.fmzvideoplayer.video to javafx.fxml;
+    opens com.filipmikolajzeglen.fmzvideoplayer to javafx.fxml;
 }

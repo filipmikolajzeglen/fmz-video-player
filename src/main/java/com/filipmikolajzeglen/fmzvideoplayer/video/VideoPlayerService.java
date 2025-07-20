@@ -1,92 +1,62 @@
 package com.filipmikolajzeglen.fmzvideoplayer.video;
 
-import com.filipmikolajzeglen.fmzvideoplayer.database.FMZDatabase;
-import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static java.util.Objects.requireNonNull;
+import com.filipmikolajzeglen.fmzvideoplayer.FMZVideoPlayerConfiguration;
+import com.filipmikolajzeglen.fmzvideoplayer.database.FMZDatabase;
+import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@Getter
+@RequiredArgsConstructor
 class VideoPlayerService
 {
-
    private static final Logger LOGGER = new Logger();
-   private static final FMZDatabase<Video> DATABASE = new FMZDatabase<>();
+   private final FMZDatabase<Video> database;
 
-   public void initializeFMZDB()
+   void initializeFMZDB()
    {
-      DATABASE.setDatabaseName(VideoPlayerConfiguration.FMZ_DATABASE_NAME);
-      DATABASE.setTableName(VideoPlayerConfiguration.FMZ_TABLE_NAME);
-      DATABASE.setDirectoryPath(VideoPlayerConfiguration.FMZ_DIRECTORY_PATH);
-      DATABASE.initialize();
-      DATABASE.saveAll(getAllVideoFromMainSource());
+      database.initialize();
+      if (database.findAll().isEmpty())
+      {
+         LOGGER.warning("FMZDatabase is empty, loading all videos from main source");
+         database.saveAll(getAllVideoFromMainSource());
+      }
    }
 
-   public FMZDatabase<Video> getDatabase()
+   List<Video> createVideosSchedule()
    {
-      return DATABASE;
-   }
-
-   public List<String> createPathsToAllVideos()
-   {
-      List<Video> videos = createVideosSchedule();
-
-      return videos.stream()
-            .map(Video::getPath)
+      return getAllUnwatchedVideo().stream()
+            .collect(Collectors.groupingBy(Video::getSeriesName))
+            .entrySet().stream()
+            .sorted(Map.Entry.comparingByKey())
+            .flatMap(entry -> entry.getValue().stream()
+                  .limit(FMZVideoPlayerConfiguration.Playback.MAX_SINGLE_SERIES_PER_DAY))
+            .limit(FMZVideoPlayerConfiguration.Playback.MAX_EPISODES_PER_DAY)
             .collect(Collectors.toList());
    }
 
-   public List<Video> createVideosSchedule()
+   List<Video> getAllUnwatchedVideo()
    {
-      List<Video> allUnwatchedVideos = getAllUnwatchedVideo();
-      List<Video> videosSchedule = new ArrayList<>();
-
-      allUnwatchedVideos.forEach(video -> {
-         if (isReachedMaximumNumberOfEpisodesInTheSchedulePerDay(videosSchedule))
-         {
-            return;
-         }
-
-         if (!isReachedEpisodesLimitOfASingleSeriesPerDay(videosSchedule, video) && !video.isWatched())
-         {
-            videosSchedule.add(video);
-         }
-      });
-
-      return videosSchedule;
-   }
-
-   public List<Video> getAllUnwatchedVideo()
-   {
-      return DATABASE.findAll().stream()
+      return database.findAll().stream()
             .filter(video -> !video.isWatched())
             .collect(Collectors.toList());
    }
 
-   private boolean isReachedMaximumNumberOfEpisodesInTheSchedulePerDay(List<Video> videosSchedule)
+   List<Video> getAllVideoFromMainSource()
    {
-      return videosSchedule.size() == VideoPlayerConfiguration.MAX_EPISODES_PER_DAY;
-   }
-
-   private boolean isReachedEpisodesLimitOfASingleSeriesPerDay(List<Video> videosSchedule, Video currentVideo)
-   {
-      return videosSchedule.stream()
-            .filter(video -> video.getSeriesName().equals(currentVideo.getSeriesName()))
-            .count() == VideoPlayerConfiguration.MAX_SINGLE_SERIES_PER_DAY;
-   }
-
-   public List<Video> getAllVideoFromMainSource()
-   {
-      File directory = new File(VideoPlayerConfiguration.VIDEO_MAIN_SOURCE);
+      File directory = new File(FMZVideoPlayerConfiguration.Paths.VIDEO_MAIN_SOURCE);
       File[] listFiles = requireNonNull(directory.listFiles());
 
       return Arrays.stream(listFiles)
@@ -123,16 +93,5 @@ class VideoPlayerService
          LOGGER.error("An IO exception occurred " + e);
          return "";
       }
-   }
-
-   public String createVideoScheduleLog()
-   {
-      String startLine = "List of videos in schedule:  ";
-      AtomicInteger videoNumber = new AtomicInteger(1);
-
-      return startLine + createVideosSchedule().stream()
-            .map(video -> String.format("[%s. %s - %s]",
-                  videoNumber.getAndIncrement(), video.getSeriesName().toUpperCase(), video.getEpisodeName()))
-            .collect(Collectors.joining("\n", "\n", ""));
    }
 }
