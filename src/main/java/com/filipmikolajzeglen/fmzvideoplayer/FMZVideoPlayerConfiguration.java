@@ -4,11 +4,12 @@ public class FMZVideoPlayerConfiguration
 {
    public static final class UI
    {
-      public static final String PRIMARY_COLOR = "#7C9EF7";
+      public static String PRIMARY_COLOR = "#7C9EF7";
       public static final String GRADIENT_COLOR = "rgba(255, 255, 255, 0.28)";
       public static final String APPLICATION_TITLE = "FMZ Video Player";
       public static final String APPLICATION_ICON = "fmzPlayerIcon.png";
       public static final String APPLICATION_FXML = "/com/filipmikolajzeglen/fmzvideoplayer/fmz-video-player.fxml";
+      public static final String APPLICATION_STARTUP_FXML = "/com/filipmikolajzeglen/fmzvideoplayer/fmz-startup-config.fxml";
       public static final String APPLICATION_ERROR = "Cannot start the application: ";
    }
 

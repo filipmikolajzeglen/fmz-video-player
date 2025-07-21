@@ -15,8 +15,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -24,6 +26,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
@@ -75,6 +78,10 @@ public class StartupConfigController
    private SVGPath previewNextIcon;
    @FXML
    private SVGPath previewVolumeIcon;
+   @FXML
+   private ColorPicker primaryColorPicker;
+   @FXML
+   private Slider colorPreviewSlider;
 
    @FXML
    public void initialize()
@@ -117,9 +124,44 @@ public class StartupConfigController
       iconStyleComboBox.setValue("Filled");
       iconStyleComboBox.valueProperty().addListener((obs, oldVal, newVal) -> updateIconPreview());
       updateIconPreview();
+
+      primaryColorPicker.valueProperty().addListener((obs, oldColor, newColor) -> {
+         if (newColor != null)
+         {
+            updateSliderPreviewColor(newColor);
+         }
+      });
+
+      updateSliderPreviewColor(primaryColorPicker.getValue());
    }
 
-   private void updateIconPreview() {
+   private void updateSliderPreviewColor(Color color)
+   {
+      String hexColor = toHexString(color);
+      // Styl CSS, który koloruje ścieżkę slidera do połowy
+      String style = String.format("-fx-background-color: linear-gradient(to right, %s 50%%, #D3D3D3 50%%);", hexColor);
+
+      // Aplikujemy styl do "ścieżki" (track) slidera
+      // Używamy lookup, aby znaleźć wewnętrzny element slidera
+      if (colorPreviewSlider.lookup(".track") != null)
+      {
+         colorPreviewSlider.lookup(".track").setStyle(style);
+      }
+      else
+      {
+         // Jeśli .track nie jest jeszcze dostępny, spróbuj ponownie za chwilę
+         // To zabezpieczenie na wypadek, gdyby skórka nie była gotowa
+         colorPreviewSlider.skinProperty().addListener((obs, oldSkin, newSkin) -> {
+            if (newSkin != null && colorPreviewSlider.lookup(".track") != null)
+            {
+               colorPreviewSlider.lookup(".track").setStyle(style);
+            }
+         });
+      }
+   }
+
+   private void updateIconPreview()
+   {
       String selectedStyle = iconStyleComboBox.getValue();
       String pathPrefix = "Empty".equals(selectedStyle) ? "/svg/empty" : "/svg/filled";
 
@@ -179,6 +221,15 @@ public class StartupConfigController
          maxSeriesSpinner.getValueFactory().setValue(config.getMaxSingleSeriesPerDay());
          maxEpisodesSpinner.getValueFactory().setValue(config.getMaxEpisodesPerDay());
          videoMainSourceField.setText(config.getVideoMainSourcePath());
+
+         if (config.getIconStyle() != null)
+         {
+            iconStyleComboBox.setValue(config.getIconStyle());
+         }
+         if (config.getPrimaryColor() != null)
+         {
+            primaryColorPicker.setValue(Color.web(config.getPrimaryColor()));
+         }
       }
    }
 
@@ -187,7 +238,9 @@ public class StartupConfigController
       PlayerConfiguration config = new PlayerConfiguration(
             maxSeriesSpinner.getValue(),
             maxEpisodesSpinner.getValue(),
-            videoMainSourceField.getText()
+            videoMainSourceField.getText(),
+            iconStyleComboBox.getValue(),
+            toHexString(primaryColorPicker.getValue())
       );
       configDatabase.saveAll(List.of(config));
    }
@@ -232,11 +285,17 @@ public class StartupConfigController
    private void onPlayClicked()
    {
       String selectedStyle = iconStyleComboBox.getValue();
-      if ("Empty".equals(selectedStyle)) {
+      if ("Empty".equals(selectedStyle))
+      {
          FMZVideoPlayerConfiguration.Icons.PATH_TO_ICONS = "/svg/empty";
-      } else {
+      }
+      else
+      {
          FMZVideoPlayerConfiguration.Icons.PATH_TO_ICONS = "/svg/filled";
       }
+
+      Color selectedColor = primaryColorPicker.getValue();
+      FMZVideoPlayerConfiguration.UI.PRIMARY_COLOR = toHexString(selectedColor);
 
       String mainSource = videoMainSourceField.getText();
       File file = new File(mainSource);
@@ -249,5 +308,13 @@ public class StartupConfigController
       Stage stage = (Stage) videoMainSourceField.getScene().getWindow();
       stage.close();
       FMZVideoPlayerApplication.launchMainPlayer();
+   }
+
+   private String toHexString(Color color)
+   {
+      int r = ((int) Math.round(color.getRed() * 255));
+      int g = ((int) Math.round(color.getGreen() * 255));
+      int b = ((int) Math.round(color.getBlue() * 255));
+      return String.format("#%02X%02X%02X", r, g, b);
    }
 }

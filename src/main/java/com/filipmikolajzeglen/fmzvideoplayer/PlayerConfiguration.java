@@ -12,4 +12,6 @@ public class PlayerConfiguration
    private int maxSingleSeriesPerDay;
    private int maxEpisodesPerDay;
    private String videoMainSourcePath;
+   private String iconStyle;
+   private String primaryColor;
 }

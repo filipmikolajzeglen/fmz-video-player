@@ -1,50 +1,44 @@
-# FMZ Video player - 1.0.0-SNAPSHOT
+# FMZ Video player - your local TV
 
-## Software prepared to generate private tv
-
-This unique software allows you to generate a private TV station experience based on your local video sources.
-FMZ Video player curates a complete schedule prepared from your local video collection and configuration preferences.
-This fantastic piece of software was born from a sense of nostalgia, with features that let you relive the experience of classic TV channels such as FoxKids, Jetix, and CartoonNetwork.
-
+One day, I started missing the times when I could watch cartoons on FoxKids, Jetix, and Cartoon Network. That's when I decided to take the first step toward creating software that would help me relive those childhood memories. I hope that, just like me, you'll find FMZ Video Player useful too.
 <p align="center">
   <img src="src/main/resources/fmzPlayerIcon.png">
 </p>
 
-## Configuration
+## Quick Start
 
-Current version 2.1.0 has all configuration parameters in `video.com.filipmikolajzeglen.fmzvideoplayer.FMZVideoPlayerConfiguration`.
-In future this configuration will be moved to application.properties and then used for additional config view.
+Tab "Quick Start" is designed to help you quickly set up the player and start watching your favorite videos. 
+Here, you can add a main video source, configure max episodes of series per day, max all episodes per day, and start watching TV.
+Quick Start Tab also shows you the current series available in the main video source and the number of episodes available in the series.
 
-**PRIMARY_COLOR** is a String expressing the hex code for the color of time and volume sliders.
+<p align="center">
+  <img src="src/main/resources/PlayerConfiguration-QuickStart.png">
+</p>
 
-- `PRIMARY_COLOR = "#7C9EF7"`
+## Advanced Settings
 
-**MAX_SINGLE_SERIES_PER_DAY** regulates the number of episodes from a single series that can be played back-to-back per day. By default, this is set to 2.
+Tab "Advanced Settings" is designed to help you configure the player in detail. 
+Here, you can choose the video icons theme and primary color for the player. 
+In future versions, you will be able to configure the video player settings, such as audio normalization or advanced
+video schedule settings. There will be set custom configuration for every day of the week, 
+allowing you to set different video sources for each day, as well as the ability to add ads between episodes.
 
-- `MAX_SINGLE_SERIES_PER_DAY = 2`
+<p align="center">
+  <img src="src/main/resources/PlayerConfiguration-AdvancedSettings.png">
+</p>
 
-**MAX_EPISODES_PER_DAY** caps the total number of videos that can be played in a day.
+## Audio Normalization
 
-- `MAX_EPISODES_PER_DAY = 30`
+There is built-in audio normalization feature that allows you to adjust the volume of all videos to a similar level.
+In future versions, this feature will be available in the advanced settings tab. 
+The below animation shows when the audio normalization works.
 
-**VIDEO_MAIN_SOURCE** is a static variable directing FMZ Video Player to the primary directory with all videos.
+<img src="src/main/resources/AudioNormalization.gif">
 
-- `VIDEO_MAIN_SOURCE = "E:\\FoxKids"`
-
-**FMZ_DATABASE_NAME** names the integrated database supplied by FMZDatabase.
-
-- `FMZ_DATABASE_NAME = "FMZDB"`
-
-**FMZ_TABLE_NAME** provides the name for the table in the built-in database.
-
-- `FMZ_TABLE_NAME = "FoxKids"`
-
-**FMZ_DIRECTORY_PATH** specifies the location for the creation of the database.
-
-- `FMZ_DIRECTORY_PATH = "E:\\"`
+## Naming convention
 
 The software is designed to use this structure:
-    
+
     ├── MAIN_DIRECTORY
     │      ├── VIDEO_SERIES_1
     │      ├── VIDEO_SERIES_2
@@ -65,34 +59,25 @@ Local videos must be named in this format:
 
        SXXEYY-Episode-name
        SEASON XX EPISODE YY-EPISODE-NAME
-       
+
        For example:
        S01E01-The-Blade-Raider
 
 <p align="center">
-  <img src="src/main/resources/FMZVideoPlayerScreen1.png">
+  <img src="src/main/resources/FMZVideoPlayerScreen.png">
 </p>
 
-## Running Version 2.1.0
-Until an interface is designed for easy software management, the only feasible option to use the player is by configuring FMZ Video Player and building the artifact yourself:
+## Running Version 1.0.0
+1. Build a project using Maven `mvn clean install`.
+2. After building the project, navigate to the target folder and move the **fmz-video-player-1.0.0-SNAPSHOT.jar** file, for instance, to the Desktop.
+3. Open a terminal in the folder containing the .jar file and use the command `java -jar fmz-video-player-1.0.0-SNAPSHOT.jar` or double-click the .jar file to run it.
 
-1. Open IDE and provide configuration in `video.com.filipmikolajzeglen.fmzvideoplayer.FMZVideoPlayerConfiguration`.
-2. Build project using Maven `mvn clean install`.
-3. After building the project, navigate to the target folder and move the **fmz-video-player-2.1.0-SNAPSHOT.jar** file, for instance, to the Desktop.
-4. Open a terminal in the folder containing the .jar file and use the command `java -jar fmz-video-player-2.1.0-SNAPSHOT.jar`.
-
-## Future Plans
-- Developing an additional config panel for simplified FMZ Video Player configuration.
-- Integrating a Web Client for remote video playback.
-- Offering FMZ Video Player in .exe format.
-
-### Version 2.1.0
-- Replaced external video players with an integrated, built-in player.
-- Introduced FMZDatabase, a dedicated built-in database created to store episode information and their playback status.
-- Added functionality to interpret which episode should be run next.
-- Enhanced built-in Logger for reporting FMZ Video Player events.
-- Overall project cleanup.
-
-### Version 1.0.0
-- Introduced a schedule based on local video sources.
-- Introduced a simple logger.
+### Plans
+- Clean up this mess in the code ( ͡° ʖ̯ ͡°)
+- Adding an advanced schedule for videos (Mon, Tue, Wed, Thu, Fri, Sat, Sun)
+- Ability to play ads between episodes
+- Option to configure episode previews
+- Ability to build custom schedules without using the automation tool
+- Activation/Deactivation of audio normalization
+- Removal of video speed configuration and replacement with dynamic settings access
+- Control of the Player via a mobile app

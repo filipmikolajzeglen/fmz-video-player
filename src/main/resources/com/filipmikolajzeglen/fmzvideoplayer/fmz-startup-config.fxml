@@ -1,20 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.String?><?import javafx.collections.FXCollections?><?import javafx.scene.control.Button?><?import javafx.scene.control.ComboBox?><?import javafx.scene.control.Label?><?import javafx.scene.control.Spinner?><?import javafx.scene.control.TableColumn?><?import javafx.scene.control.TableView?><?import javafx.scene.control.TextField?><?import javafx.scene.control.ToggleButton?><?import javafx.scene.control.ToggleGroup?><?import javafx.scene.layout.BorderPane?><?import javafx.scene.layout.ColumnConstraints?><?import javafx.scene.layout.GridPane?><?import javafx.scene.layout.HBox?><?import javafx.scene.layout.StackPane?><?import javafx.scene.layout.VBox?><?import javafx.scene.shape.SVGPath?>
-<BorderPane prefHeight="540.0" prefWidth="810.0" stylesheets="@../../../css/style.css"
-      xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.filipmikolajzeglen.fmzvideoplayer.StartupConfigController">
+<?import java.lang.String?><?import javafx.collections.FXCollections?><?import javafx.scene.control.Button?><?import javafx.scene.control.ColorPicker?><?import javafx.scene.control.ComboBox?><?import javafx.scene.control.Hyperlink?><?import javafx.scene.control.Label?><?import javafx.scene.control.Slider?><?import javafx.scene.control.Spinner?><?import javafx.scene.control.TableColumn?><?import javafx.scene.control.TableView?><?import javafx.scene.control.TextField?><?import javafx.scene.control.ToggleButton?><?import javafx.scene.control.ToggleGroup?><?import javafx.scene.image.Image?><?import javafx.scene.image.ImageView?><?import javafx.scene.layout.BorderPane?><?import javafx.scene.layout.ColumnConstraints?><?import javafx.scene.layout.GridPane?><?import javafx.scene.layout.HBox?><?import javafx.scene.layout.RowConstraints?><?import javafx.scene.layout.StackPane?><?import javafx.scene.layout.VBox?><?import javafx.scene.paint.Color?><?import javafx.scene.shape.Circle?><?import javafx.scene.shape.SVGPath?>
+<BorderPane prefHeight="540.0" prefWidth="810.0" stylesheets="@../../../css/style.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.filipmikolajzeglen.fmzvideoplayer.StartupConfigController">
 
    <!-- Lewy panel z zakładkami -->
    <left>
-      <VBox prefWidth="200.0"
-            style="-fx-background-color: #f4f4f4; -fx-border-color: #cccccc; -fx-border-width: 0 1 0 0;">
-         <ToggleButton fx:id="quickStartTab" alignment="CENTER_LEFT" selected="true" styleClass="tab-button"
-               text="Quick Start">
+      <VBox prefWidth="200.0" style="-fx-background-color: #f4f4f4; -fx-border-color: #cccccc; -fx-border-width: 0 1 0 0;">
+         <ToggleButton fx:id="quickStartTab" alignment="CENTER_LEFT" selected="true" styleClass="tab-button" text="Quick Start">
             <graphic>
-               <SVGPath
-                     content="m14.95 10.04-2.29-1.53c-.72-.48-1.65-.53-2.42-.12s-1.24 1.2-1.24 2.07v3.06c0 .87.48 1.66 1.24 2.07.35.19.73.28 1.11.28.46 0 .91-.13 1.3-.4l2.29-1.53c.66-.44 1.05-1.17 1.05-1.96s-.39-1.52-1.05-1.96zm-1.11 2.25-2.29 1.53c-.15.1-.29.06-.36.02s-.19-.13-.19-.31v-3.06c0-.18.12-.27.19-.31.04-.02.1-.04.17-.04.06 0 .12.02.19.06l2.29 1.53c.14.09.16.22.16.29s-.02.2-.16.29z M12 2c-5.51 0-10 4.49-10 10s4.49 10 10 10 10-4.49 10-10-4.49-10-10-10zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"
-                     fill="#1c1c1c" scaleX="0.7" scaleY="0.7" />
+               <SVGPath content="m14.95 10.04-2.29-1.53c-.72-.48-1.65-.53-2.42-.12s-1.24 1.2-1.24 2.07v3.06c0 .87.48 1.66 1.24 2.07.35.19.73.28 1.11.28.46 0 .91-.13 1.3-.4l2.29-1.53c.66-.44 1.05-1.17 1.05-1.96s-.39-1.52-1.05-1.96zm-1.11 2.25-2.29 1.53c-.15.1-.29.06-.36.02s-.19-.13-.19-.31v-3.06c0-.18.12-.27.19-.31.04-.02.1-.04.17-.04.06 0 .12.02.19.06l2.29 1.53c.14.09.16.22.16.29s-.02.2-.16.29z M12 2c-5.51 0-10 4.49-10 10s4.49 10 10 10 10-4.49 10-10-4.49-10-10-10zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" fill="#1c1c1c" scaleX="0.7" scaleY="0.7" />
             </graphic>
             <toggleGroup>
                <ToggleGroup fx:id="tabsGroup" />
@@ -23,16 +17,12 @@
 
          <ToggleButton fx:id="advancedTab" styleClass="tab-button" text="Advanced Settings" toggleGroup="$tabsGroup">
             <graphic>
-               <SVGPath
-                     content="m12 8a4 4 0 1 0 4 4 4 4 0 0 0 -4-4zm0 6a2 2 0 1 1 2-2 2 2 0 0 1 -2 2zm8.7-5a.31.31 0 0 1 -.29-.2c-.06-.16-.12-.32-.19-.48a.3.3 0 0 1 .05-.32 2.29 2.29 0 0 0 0-3.26l-1-1a2.35 2.35 0 0 0 -3.26 0 .3.3 0 0 1 -.34 0l-.48-.19a.31.31 0 0 1 -.19-.25 2.3 2.3 0 0 0 -2.3-2.3h-1.4a2.3 2.3 0 0 0 -2.3 2.3.31.31 0 0 1 -.2.29l-.48.19a.3.3 0 0 1 -.34 0 2.35 2.35 0 0 0 -3.26 0l-1 1a2.29 2.29 0 0 0 .01 3.22.3.3 0 0 1 0 .35c-.07.16-.13.32-.19.47a.31.31 0 0 1 -.24.18 2.3 2.3 0 0 0 -2.3 2.3v1.4a2.3 2.3 0 0 0 2.3 2.3.31.31 0 0 1 .29.2c.06.16.12.32.19.48a.3.3 0 0 1 0 .35 2.29 2.29 0 0 0 0 3.26l1 1a2.35 2.35 0 0 0 3.26 0 .3.3 0 0 1 .34 0l.48.19a.31.31 0 0 1 .2.29 2.3 2.3 0 0 0 2.24 2.23h1.4a2.3 2.3 0 0 0 2.3-2.3.31.31 0 0 1 .2-.29l.48-.19a.3.3 0 0 1 .34 0 2.35 2.35 0 0 0 3.26 0l1-1a2.29 2.29 0 0 0 0-3.26.3.3 0 0 1 -.05-.35c.07-.16.13-.32.19-.47a.31.31 0 0 1 .28-.14 2.3 2.3 0 0 0 2.3-2.3v-1.4a2.3 2.3 0 0 0 -2.3-2.3zm.3 3.7a.31.31 0 0 1 -.3.3 2.3 2.3 0 0 0 -2.16 1.49 2.39 2.39 0 0 1 -.15.37 2.29 2.29 0 0 0 .47 2.59.3.3 0 0 1 .09.21.33.33 0 0 1 -.09.22l-1 1a.26.26 0 0 1 -.42 0 2.29 2.29 0 0 0 -2.58-.46 2.39 2.39 0 0 1 -.37.15 2.29 2.29 0 0 0 -1.49 2.13.31.31 0 0 1 -.3.3h-1.4a.31.31 0 0 1 -.3-.3 2.29 2.29 0 0 0 -1.49-2.16 2.39 2.39 0 0 1 -.37-.15 2.34 2.34 0 0 0 -1-.21 2.28 2.28 0 0 0 -1.62.67c-.16.16-.28.12-.42 0l-1-1a.31.31 0 0 1 0-.44 2.28 2.28 0 0 0 .47-2.58 2.39 2.39 0 0 1 -.15-.37 2.3 2.3 0 0 0 -2.12-1.46.31.31 0 0 1 -.3-.3v-1.4a.31.31 0 0 1 .3-.3 2.3 2.3 0 0 0 2.16-1.49 2.39 2.39 0 0 1 .15-.37 2.29 2.29 0 0 0 -.47-2.59.3.3 0 0 1 -.09-.21.33.33 0 0 1 .09-.22l1-1a.26.26 0 0 1 .42 0 2.29 2.29 0 0 0 2.58.46 2.39 2.39 0 0 1 .37-.15 2.29 2.29 0 0 0 1.49-2.13.31.31 0 0 1 .3-.3h1.4a.31.31 0 0 1 .3.3 2.29 2.29 0 0 0 1.49 2.16 2.39 2.39 0 0 1 .37.15 2.29 2.29 0 0 0 2.58-.46.26.26 0 0 1 .42 0l1 1a.31.31 0 0 1 0 .44 2.28 2.28 0 0 0 -.47 2.58 2.39 2.39 0 0 1 .15.37 2.3 2.3 0 0 0 2.16 1.46.31.31 0 0 1 .3.3z"
-                     fill="#1c1c1c" scaleX="0.7" scaleY="0.7" />
+               <SVGPath content="m12 8a4 4 0 1 0 4 4 4 4 0 0 0 -4-4zm0 6a2 2 0 1 1 2-2 2 2 0 0 1 -2 2zm8.7-5a.31.31 0 0 1 -.29-.2c-.06-.16-.12-.32-.19-.48a.3.3 0 0 1 .05-.32 2.29 2.29 0 0 0 0-3.26l-1-1a2.35 2.35 0 0 0 -3.26 0 .3.3 0 0 1 -.34 0l-.48-.19a.31.31 0 0 1 -.19-.25 2.3 2.3 0 0 0 -2.3-2.3h-1.4a2.3 2.3 0 0 0 -2.3 2.3.31.31 0 0 1 -.2.29l-.48.19a.3.3 0 0 1 -.34 0 2.35 2.35 0 0 0 -3.26 0l-1 1a2.29 2.29 0 0 0 .01 3.22.3.3 0 0 1 0 .35c-.07.16-.13.32-.19.47a.31.31 0 0 1 -.24.18 2.3 2.3 0 0 0 -2.3 2.3v1.4a2.3 2.3 0 0 0 2.3 2.3.31.31 0 0 1 .29.2c.06.16.12.32.19.48a.3.3 0 0 1 0 .35 2.29 2.29 0 0 0 0 3.26l1 1a2.35 2.35 0 0 0 3.26 0 .3.3 0 0 1 .34 0l.48.19a.31.31 0 0 1 .2.29 2.3 2.3 0 0 0 2.24 2.23h1.4a2.3 2.3 0 0 0 2.3-2.3.31.31 0 0 1 .2-.29l.48-.19a.3.3 0 0 1 .34 0 2.35 2.35 0 0 0 3.26 0l1-1a2.29 2.29 0 0 0 0-3.26.3.3 0 0 1 -.05-.35c.07-.16.13-.32.19-.47a.31.31 0 0 1 .28-.14 2.3 2.3 0 0 0 2.3-2.3v-1.4a2.3 2.3 0 0 0 -2.3-2.3zm.3 3.7a.31.31 0 0 1 -.3.3 2.3 2.3 0 0 0 -2.16 1.49 2.39 2.39 0 0 1 -.15.37 2.29 2.29 0 0 0 .47 2.59.3.3 0 0 1 .09.21.33.33 0 0 1 -.09.22l-1 1a.26.26 0 0 1 -.42 0 2.29 2.29 0 0 0 -2.58-.46 2.39 2.39 0 0 1 -.37.15 2.29 2.29 0 0 0 -1.49 2.13.31.31 0 0 1 -.3.3h-1.4a.31.31 0 0 1 -.3-.3 2.29 2.29 0 0 0 -1.49-2.16 2.39 2.39 0 0 1 -.37-.15 2.34 2.34 0 0 0 -1-.21 2.28 2.28 0 0 0 -1.62.67c-.16.16-.28.12-.42 0l-1-1a.31.31 0 0 1 0-.44 2.28 2.28 0 0 0 .47-2.58 2.39 2.39 0 0 1 -.15-.37 2.3 2.3 0 0 0 -2.12-1.46.31.31 0 0 1 -.3-.3v-1.4a.31.31 0 0 1 .3-.3 2.3 2.3 0 0 0 2.16-1.49 2.39 2.39 0 0 1 .15-.37 2.29 2.29 0 0 0 -.47-2.59.3.3 0 0 1 -.09-.21.33.33 0 0 1 .09-.22l1-1a.26.26 0 0 1 .42 0 2.29 2.29 0 0 0 2.58.46 2.39 2.39 0 0 1 .37-.15 2.29 2.29 0 0 0 1.49-2.13.31.31 0 0 1 .3-.3h1.4a.31.31 0 0 1 .3.3 2.29 2.29 0 0 0 1.49 2.16 2.39 2.39 0 0 1 .37.15 2.29 2.29 0 0 0 2.58-.46.26.26 0 0 1 .42 0l1 1a.31.31 0 0 1 0 .44 2.28 2.28 0 0 0 -.47 2.58 2.39 2.39 0 0 1 .15.37 2.3 2.3 0 0 0 2.16 1.46.31.31 0 0 1 .3.3z" fill="#1c1c1c" scaleX="0.7" scaleY="0.7" />
             </graphic>
          </ToggleButton>
          <ToggleButton fx:id="aboutTab" styleClass="tab-button" text="About" toggleGroup="$tabsGroup">
             <graphic>
-               <SVGPath
-                     content="m12 1a11 11 0 1 0 11 11 11 11 0 0 0 -11-11zm0 20a9 9 0 1 1 9-9 9 9 0 0 1 -9 9zm1-10v7a1 1 0 0 1 -2 0v-7a1 1 0 0 1 2 0zm0-5v1a1 1 0 1 1 -2 0v-1a1 1 0 0 1 2 0z"
-                     fill="#1c1c1c" scaleX="0.7" scaleY="0.7" />
+               <SVGPath content="m12 1a11 11 0 1 0 11 11 11 11 0 0 0 -11-11zm0 20a9 9 0 1 1 9-9 9 9 0 0 1 -9 9zm1-10v7a1 1 0 0 1 -2 0v-7a1 1 0 0 1 2 0zm0-5v1a1 1 0 1 1 -2 0v-1a1 1 0 0 1 2 0z" fill="#1c1c1c" scaleX="0.7" scaleY="0.7" />
             </graphic>
          </ToggleButton>
       </VBox>
@@ -44,9 +34,8 @@
          <center>
             <StackPane>
                <!-- Zawartość zakładki "Quick Start" -->
-               <VBox fx:id="quickStartContent" alignment="TOP_CENTER" spacing="30"
-                     style="-fx-padding: 11 40 40 40; -fx-background-color: white;">
-                  <GridPane hgap="20" vgap="10" maxWidth="Infinity">
+               <VBox fx:id="quickStartContent" alignment="TOP_CENTER" spacing="30" style="-fx-padding: 11 40 40 40; -fx-background-color: white;">
+                  <GridPane hgap="20" maxWidth="Infinity" vgap="10">
                      <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" percentWidth="50.0" />
                         <ColumnConstraints hgrow="SOMETIMES" percentWidth="50.0" />
@@ -57,20 +46,23 @@
                      <Label fx:id="maxEpisodesLabel" text="Max episodes per day" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
                      <!-- Wiersz 1: Spinnery -->
-                     <Spinner fx:id="maxSeriesSpinner" editable="true" initialValue="2" max="100" min="1" maxWidth="Infinity" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                     <Spinner fx:id="maxEpisodesSpinner" editable="true" initialValue="30" max="100" min="1" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                     <Spinner fx:id="maxSeriesSpinner" editable="true" initialValue="2" max="100" maxWidth="Infinity" min="1" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                     <Spinner fx:id="maxEpisodesSpinner" editable="true" initialValue="30" max="100" maxWidth="Infinity" min="1" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                     <rowConstraints>
+                        <RowConstraints />
+                        <RowConstraints />
+                     </rowConstraints>
                   </GridPane>
 
                   <HBox maxWidth="Infinity" spacing="10">
                      <StackPane HBox.hgrow="ALWAYS">
                         <TextField fx:id="videoMainSourceField" HBox.hgrow="ALWAYS" />
-                        <Label fx:id="videoMainSourcePrompt" style="-fx-text-fill: #888;"
-                              text="  Path to video resources" StackPane.alignment="CENTER_LEFT" />
+                        <Label fx:id="videoMainSourcePrompt" style="-fx-text-fill: #888;" text="  Path to video resources" StackPane.alignment="CENTER_LEFT" />
                      </StackPane>
                      <Button onAction="#onChooseFolderClicked" text="..." />
                   </HBox>
 
-                  <TableView fx:id="seriesTable" maxWidth="Infinity" VBox.vgrow="ALWAYS" styleClass="no-focus-table">
+                  <TableView fx:id="seriesTable" maxWidth="Infinity" styleClass="no-focus-table" VBox.vgrow="ALWAYS">
                      <columns>
                         <TableColumn fx:id="seriesNameColumn" text="Series Name" />
                         <TableColumn fx:id="episodeCountColumn" text="Episodes" />
@@ -79,45 +71,97 @@
 
                </VBox>
 
-               <!-- Zawartość zakładki "Advanced Settings" -->
-               <VBox fx:id="advancedContent" alignment="TOP_LEFT" managed="false" spacing="20"
+               <!-- Zawartość zakładki "About" -->
+               <VBox fx:id="aboutContent" managed="false" spacing="20"
                      style="-fx-padding: 11 40 40 40; -fx-background-color: white;" visible="false">
-                  <HBox alignment="CENTER_LEFT" maxWidth="Infinity" spacing="15">
-                     <Label text="Icon style:" />
-                     <ComboBox fx:id="iconStyleComboBox" prefWidth="100.0">
-                        <items>
-                           <FXCollections fx:factory="observableArrayList">
-                              <String fx:value="Filled" />
-                              <String fx:value="Empty" />
-                           </FXCollections>
-                        </items>
-                     </ComboBox>
-                     <HBox alignment="CENTER_LEFT" spacing="10">
+                  <Label text="About creator" style="-fx-font-weight: bold; -fx-font-size: 20px" />
+                  <HBox alignment="CENTER" spacing="40">
+
+                     <!-- Sekcja tekstowa po lewej stronie -->
+                     <VBox spacing="15" HBox.hgrow="ALWAYS">
+                        <Label text="Hi, I'm Filip — the creator of this video player. One day, I started missing the times when I could watch cartoons on FoxKids, Jetix, and Cartoon Network. That's when I decided to take the first step toward creating software that would help me relive those childhood memories. I hope that, just like me, you'll find FMZ Video Player useful too."
+                              wrapText="true" style="-fx-font-size: 14px;" />
+                        <VBox spacing="5">
+                           <Label text="Contact:" style="-fx-font-weight: bold;" />
+                           <Label text="https://github.com/filipmikolajzeglen" />
+                           <Label text="Discord: filipmikolajgabriel" />
+                        </VBox>
+                     </VBox>
+
+                     <!-- Sekcja z obrazem po prawej stronie -->
+                     <ImageView fitHeight="150.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
+                        <clip>
+                           <Circle radius="75" centerX="75" centerY="75" />
+                        </clip>
+                        <Image url="@/jiji.png" />
+                     </ImageView>
+                  </HBox>
+                  <Label text="Future plans" style="-fx-font-weight: bold; -fx-font-size: 20px" />
+                  <VBox spacing="15" HBox.hgrow="ALWAYS">
+                     <VBox spacing="5">
+                        <Label text="- Adding an advanced schedule for videos (Mon, Tue, Wed, Thu, Fri, Sat, Sun)" />
+                        <Label text="- Ability to play ads between episodes" />
+                        <Label text="- Option to configure episode previews" />
+                        <Label text="- Ability to build custom schedules without using the automation tool" />
+                        <Label text="- Activation/Deactivation of audio normalization" />
+                        <Label text="- Removal of video speed configuration and replacement with dynamic settings access" />
+                        <Label text="- Control of the Player via a mobile app" />
+                     </VBox>
+                  </VBox>
+               </VBox>
+
+               <!-- Zawartość zakładki "Advanced Settings" -->
+               <VBox fx:id="advancedContent" alignment="TOP_CENTER" managed="false" spacing="30"
+                     style="-fx-padding: 11 40 40 40; -fx-background-color: white;" visible="false">
+                  <GridPane hgap="20" maxWidth="Infinity" vgap="10">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="20.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="25.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="55.0" />
+                     </columnConstraints>
+
+                     <!-- Wiersz 0: Styl ikon -->
+                     <Label text="Icon style:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+                     <HBox alignment="CENTER_LEFT" spacing="15" GridPane.rowIndex="0" GridPane.columnIndex="1">
+                        <ComboBox fx:id="iconStyleComboBox" prefWidth="120.0">
+                           <items>
+                              <FXCollections fx:factory="observableArrayList">
+                                 <String fx:value="Filled" />
+                                 <String fx:value="Empty" />
+                              </FXCollections>
+                           </items>
+                        </ComboBox>
+                     </HBox>
+                     <HBox alignment="CENTER_LEFT" spacing="15" GridPane.rowIndex="0" GridPane.columnIndex="2">
                         <SVGPath fx:id="previewPlayIcon" fill="#4d4d4d" scaleX="0.8" scaleY="0.8" />
                         <SVGPath fx:id="previewPauseIcon" fill="#4d4d4d" scaleX="0.8" scaleY="0.8" />
                         <SVGPath fx:id="previewNextIcon" fill="#4d4d4d" scaleX="0.8" scaleY="0.8" />
                         <SVGPath fx:id="previewVolumeIcon" fill="#4d4d4d" scaleX="0.8" scaleY="0.8" />
                      </HBox>
-                  </HBox>
+
+                     <!-- Wiersz 1: Kolor główny -->
+                     <Label text="Primary color:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+                     <ColorPicker fx:id="primaryColorPicker" prefWidth="120.0" GridPane.rowIndex="1" GridPane.columnIndex="1">
+                        <value>
+                           <Color red="0.486" green="0.619" blue="0.968" />
+                        </value>
+                     </ColorPicker>
+
+                     <!-- DODANO: Podgląd slidera w trzeciej kolumnie -->
+                     <Slider fx:id="colorPreviewSlider" disable="true" value="50" GridPane.rowIndex="1" GridPane.columnIndex="2" />
+
+                  </GridPane>
                </VBox>
 
-               <!-- Zawartość zakładki "About" -->
-               <VBox fx:id="aboutContent" alignment="CENTER" managed="false" spacing="20"
-                     style="-fx-background-color: white;" visible="false">
-                  <Label style="-fx-font-size: 18px;" text="author Filip" />
-               </VBox>
             </StackPane>
          </center>
 
          <!-- Dolny panel z przyciskiem Play -->
          <bottom>
             <HBox alignment="BOTTOM_RIGHT" style="-fx-padding: 0 40 30 0; -fx-background-color: white;">
-               <Button fx:id="playButton" minHeight="40" minWidth="120" onAction="#onPlayClicked"
-                     style="-fx-font-size: 16px;" text="Play">
+               <Button fx:id="playButton" minHeight="40" minWidth="120" onAction="#onPlayClicked" style="-fx-font-size: 16px;" text="Play">
                   <graphic>
-                     <SVGPath
-                           content="m20.85 12c0 .98-.45 1.86-1.24 2.43l-11.82 7.09c-.53.38-1.14.57-1.76.57-.46 0-.93-.11-1.37-.33-1-.51-1.63-1.54-1.63-2.67v-14.18c0-1.13.63-2.16 1.63-2.67 1.01-.52 2.21-.43 3.13.24l11.82 7.09c.79.57 1.24 1.45 1.24 2.43z"
-                           fill="#000000a8" scaleX="0.6" scaleY="0.6" />
+                     <SVGPath content="m20.85 12c0 .98-.45 1.86-1.24 2.43l-11.82 7.09c-.53.38-1.14.57-1.76.57-.46 0-.93-.11-1.37-.33-1-.51-1.63-1.54-1.63-2.67v-14.18c0-1.13.63-2.16 1.63-2.67 1.01-.52 2.21-.43 3.13.24l11.82 7.09c.79.57 1.24 1.45 1.24 2.43z" fill="#000000a8" scaleX="0.6" scaleY="0.6" />
                   </graphic>
                </Button>
             </HBox>
