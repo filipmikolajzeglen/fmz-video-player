@@ -9,7 +9,6 @@ public class FMZVideoPlayerConfiguration
       public static final String APPLICATION_TITLE = "FMZ Video Player";
       public static final String APPLICATION_ICON = "fmzPlayerIcon.png";
       public static final String APPLICATION_FXML = "/com/filipmikolajzeglen/fmzvideoplayer/fmz-video-player.fxml";
-      public static final String APPLICATION_ERROR_LOAD = "Cannot load " + APPLICATION_FXML;
       public static final String APPLICATION_ERROR = "Cannot start the application: ";
    }
 
@@ -41,26 +40,26 @@ public class FMZVideoPlayerConfiguration
 
    public static final class Icons
    {
-      private static final String PATH_TO_ICONS = "/svg/filled";
-      public static final String PLAY = PATH_TO_ICONS + "/play.svg";
-      public static final String PAUSE = PATH_TO_ICONS + "/pause.svg";
-      public static final String NEXT = PATH_TO_ICONS + "/next.svg";
-      public static final String REPLAY = PATH_TO_ICONS + "/replay.svg";
-      public static final String FULLSCREEN = PATH_TO_ICONS + "/fullscreen.svg";
-      public static final String MINIMIZE = PATH_TO_ICONS + "/minimize.svg";
-      public static final String MUTE = PATH_TO_ICONS + "/mute.svg";
-      public static final String VOLUME1 = PATH_TO_ICONS + "/volume1.svg";
-      public static final String VOLUME2 = PATH_TO_ICONS + "/volume2.svg";
-      public static final String NORMALIZE1 = PATH_TO_ICONS + "/normalize1.svg";
-      public static final String NORMALIZE2 = PATH_TO_ICONS + "/normalize2.svg";
-      public static final String NORMALIZE3 = PATH_TO_ICONS + "/normalize3.svg";
-      public static final String NORMALIZE4 = PATH_TO_ICONS + "/normalize4.svg";
-      public static final String NORMALIZE5 = PATH_TO_ICONS + "/normalize5.svg";
-      public static final String NORMALIZE6 = PATH_TO_ICONS + "/normalize6.svg";
-      public static final String NORMALIZE7 = PATH_TO_ICONS + "/normalize7.svg";
-      public static final String NORMALIZE8 = PATH_TO_ICONS + "/normalize8.svg";
-      public static final String NORMALIZE9 = PATH_TO_ICONS + "/normalize9.svg";
-      public static final String NORMALIZE10 = PATH_TO_ICONS + "/normalize10.svg";
-      public static final String NORMALIZE11 = PATH_TO_ICONS + "/normalize11.svg";
+      public static String PATH_TO_ICONS = "/svg/filled";
+      public static String PLAY() { return PATH_TO_ICONS + "/play.svg"; }
+      public static String PAUSE() { return PATH_TO_ICONS + "/pause.svg"; }
+      public static String NEXT() { return PATH_TO_ICONS + "/next.svg"; }
+      public static String REPLAY() { return PATH_TO_ICONS + "/replay.svg"; }
+      public static String FULLSCREEN() { return PATH_TO_ICONS + "/fullscreen.svg"; }
+      public static String MINIMIZE() { return PATH_TO_ICONS + "/minimize.svg"; }
+      public static String MUTE() { return PATH_TO_ICONS + "/mute.svg"; }
+      public static String VOLUME1() { return PATH_TO_ICONS + "/volume1.svg"; }
+      public static String VOLUME2() { return PATH_TO_ICONS + "/volume2.svg"; }
+      public static String NORMALIZE1() { return PATH_TO_ICONS + "/normalize1.svg"; }
+      public static String NORMALIZE2() { return PATH_TO_ICONS + "/normalize2.svg"; }
+      public static String NORMALIZE3() { return PATH_TO_ICONS + "/normalize3.svg"; }
+      public static String NORMALIZE4() { return PATH_TO_ICONS + "/normalize4.svg"; }
+      public static String NORMALIZE5() { return PATH_TO_ICONS + "/normalize5.svg"; }
+      public static String NORMALIZE6() { return PATH_TO_ICONS + "/normalize6.svg"; }
+      public static String NORMALIZE7() { return PATH_TO_ICONS + "/normalize7.svg"; }
+      public static String NORMALIZE8() { return PATH_TO_ICONS + "/normalize8.svg"; }
+      public static String NORMALIZE9() { return PATH_TO_ICONS + "/normalize9.svg"; }
+      public static String NORMALIZE10() { return PATH_TO_ICONS + "/normalize10.svg"; }
+      public static String NORMALIZE11() { return PATH_TO_ICONS + "/normalize11.svg"; }
    }
 }

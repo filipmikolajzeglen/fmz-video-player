@@ -6,7 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.shape.SVGPath;
 
-class VideoPlayerIcons
+public class VideoPlayerIcons
 {
    private static final String SVG_PATH_START_TAG = "<path";
    private static final String SVG_PATH_D_ATTRIBUTE = "d=\"";
@@ -32,7 +32,7 @@ class VideoPlayerIcons
       label.setGraphic(svgPath);
    }
 
-   private static String loadSvgContent(String resourcePath)
+   public static String loadSvgContent(String resourcePath)
    {
       try (InputStream is = VideoPlayerIcons.class.getResourceAsStream(resourcePath))
       {

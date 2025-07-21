@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?><?import javafx.scene.layout.*?><?import javafx.scene.shape.*?>
-
+<?import java.lang.String?><?import javafx.collections.FXCollections?><?import javafx.scene.control.Button?><?import javafx.scene.control.ComboBox?><?import javafx.scene.control.Label?><?import javafx.scene.control.Spinner?><?import javafx.scene.control.TableColumn?><?import javafx.scene.control.TableView?><?import javafx.scene.control.TextField?><?import javafx.scene.control.ToggleButton?><?import javafx.scene.control.ToggleGroup?><?import javafx.scene.layout.BorderPane?><?import javafx.scene.layout.ColumnConstraints?><?import javafx.scene.layout.GridPane?><?import javafx.scene.layout.HBox?><?import javafx.scene.layout.StackPane?><?import javafx.scene.layout.VBox?><?import javafx.scene.shape.SVGPath?>
 <BorderPane prefHeight="540.0" prefWidth="810.0" stylesheets="@../../../css/style.css"
       xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.filipmikolajzeglen.fmzvideoplayer.StartupConfigController">
@@ -47,8 +46,6 @@
                <!-- Zawartość zakładki "Quick Start" -->
                <VBox fx:id="quickStartContent" alignment="TOP_CENTER" spacing="30"
                      style="-fx-padding: 11 40 40 40; -fx-background-color: white;">
-
-                  <!-- Pusty GridPane zastąpiony kompletnym, z zawartością -->
                   <GridPane hgap="20" vgap="10" maxWidth="Infinity">
                      <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" percentWidth="50.0" />
@@ -64,7 +61,6 @@
                      <Spinner fx:id="maxEpisodesSpinner" editable="true" initialValue="30" max="100" min="1" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   </GridPane>
 
-                  <!-- Stare HBoxy zostały usunięte. Pole ścieżki pozostaje. -->
                   <HBox maxWidth="Infinity" spacing="10">
                      <StackPane HBox.hgrow="ALWAYS">
                         <TextField fx:id="videoMainSourceField" HBox.hgrow="ALWAYS" />
@@ -74,7 +70,6 @@
                      <Button onAction="#onChooseFolderClicked" text="..." />
                   </HBox>
 
-                  <!-- ZMIANA: Dodano VBox.vgrow i usunięto prefWidth z kolumn -->
                   <TableView fx:id="seriesTable" maxWidth="Infinity" VBox.vgrow="ALWAYS" styleClass="no-focus-table">
                      <columns>
                         <TableColumn fx:id="seriesNameColumn" text="Series Name" />
@@ -85,9 +80,25 @@
                </VBox>
 
                <!-- Zawartość zakładki "Advanced Settings" -->
-               <VBox fx:id="advancedContent" alignment="CENTER" managed="false" spacing="20"
-                     style="-fx-background-color: white;" visible="false">
-                  <Label style="-fx-font-size: 18px;" text="Under development" />
+               <VBox fx:id="advancedContent" alignment="TOP_LEFT" managed="false" spacing="20"
+                     style="-fx-padding: 11 40 40 40; -fx-background-color: white;" visible="false">
+                  <HBox alignment="CENTER_LEFT" maxWidth="Infinity" spacing="15">
+                     <Label text="Icon style:" />
+                     <ComboBox fx:id="iconStyleComboBox" prefWidth="100.0">
+                        <items>
+                           <FXCollections fx:factory="observableArrayList">
+                              <String fx:value="Filled" />
+                              <String fx:value="Empty" />
+                           </FXCollections>
+                        </items>
+                     </ComboBox>
+                     <HBox alignment="CENTER_LEFT" spacing="10">
+                        <SVGPath fx:id="previewPlayIcon" fill="#4d4d4d" scaleX="0.8" scaleY="0.8" />
+                        <SVGPath fx:id="previewPauseIcon" fill="#4d4d4d" scaleX="0.8" scaleY="0.8" />
+                        <SVGPath fx:id="previewNextIcon" fill="#4d4d4d" scaleX="0.8" scaleY="0.8" />
+                        <SVGPath fx:id="previewVolumeIcon" fill="#4d4d4d" scaleX="0.8" scaleY="0.8" />
+                     </HBox>
+                  </HBox>
                </VBox>
 
                <!-- Zawartość zakładki "About" -->

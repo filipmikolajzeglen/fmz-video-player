@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.filipmikolajzeglen.fmzvideoplayer.database.FMZDatabase;
+import com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlayerIcons;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -14,6 +15,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
@@ -22,6 +24,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.SVGPath;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
@@ -34,7 +37,6 @@ public class StartupConfigController
    private TableColumn<SeriesInfo, String> seriesNameColumn;
    @FXML
    private TableColumn<SeriesInfo, Integer> episodeCountColumn;
-   // Istniejące pola FXML
    @FXML
    private TextField videoMainSourceField;
    @FXML
@@ -49,7 +51,6 @@ public class StartupConfigController
    private Label videoMainSourcePrompt;
    @FXML
    private Button playButton;
-   // Pola dla zakładek i paneli zawartości
    @FXML
    private ToggleGroup tabsGroup;
    @FXML
@@ -64,15 +65,22 @@ public class StartupConfigController
    private VBox advancedContent;
    @FXML
    private VBox aboutContent;
+   @FXML
+   private ComboBox<String> iconStyleComboBox;
+   @FXML
+   private SVGPath previewPlayIcon;
+   @FXML
+   private SVGPath previewPauseIcon;
+   @FXML
+   private SVGPath previewNextIcon;
+   @FXML
+   private SVGPath previewVolumeIcon;
 
    @FXML
    public void initialize()
    {
-      // ### POCZĄTEK ZMIANY: Bindowanie szerokości kolumn ###
-      // To sprawi, że pusta trzecia kolumna zniknie, a dwie istniejące wypełnią całą szerokość
-      seriesNameColumn.prefWidthProperty().bind(seriesTable.widthProperty().multiply(0.70)); // 70% szerokości
-      episodeCountColumn.prefWidthProperty().bind(seriesTable.widthProperty().multiply(0.262)); // 30% szerokości
-      // ### KONIEC ZMIANY ###
+      seriesNameColumn.prefWidthProperty().bind(seriesTable.widthProperty().multiply(0.70));
+      episodeCountColumn.prefWidthProperty().bind(seriesTable.widthProperty().multiply(0.262));
 
       seriesNameColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getName()));
       episodeCountColumn.setCellValueFactory(
@@ -105,9 +113,22 @@ public class StartupConfigController
       {
          updateSeriesTable(videoMainSourceField.getText());
       }
+
+      iconStyleComboBox.setValue("Filled");
+      iconStyleComboBox.valueProperty().addListener((obs, oldVal, newVal) -> updateIconPreview());
+      updateIconPreview();
    }
 
-   // Reszta klasy bez zmian
+   private void updateIconPreview() {
+      String selectedStyle = iconStyleComboBox.getValue();
+      String pathPrefix = "Empty".equals(selectedStyle) ? "/svg/empty" : "/svg/filled";
+
+      previewPlayIcon.setContent(VideoPlayerIcons.loadSvgContent(pathPrefix + "/play.svg"));
+      previewPauseIcon.setContent(VideoPlayerIcons.loadSvgContent(pathPrefix + "/pause.svg"));
+      previewNextIcon.setContent(VideoPlayerIcons.loadSvgContent(pathPrefix + "/next.svg"));
+      previewVolumeIcon.setContent(VideoPlayerIcons.loadSvgContent(pathPrefix + "/volume2.svg"));
+   }
+
    private void updateSeriesTable(String path)
    {
       List<SeriesInfo> series = getSeriesFolders(path);
@@ -210,6 +231,13 @@ public class StartupConfigController
    @FXML
    private void onPlayClicked()
    {
+      String selectedStyle = iconStyleComboBox.getValue();
+      if ("Empty".equals(selectedStyle)) {
+         FMZVideoPlayerConfiguration.Icons.PATH_TO_ICONS = "/svg/empty";
+      } else {
+         FMZVideoPlayerConfiguration.Icons.PATH_TO_ICONS = "/svg/filled";
+      }
+
       String mainSource = videoMainSourceField.getText();
       File file = new File(mainSource);
       FMZVideoPlayerConfiguration.Paths.VIDEO_MAIN_SOURCE = mainSource;

@@ -26,7 +26,7 @@ class PlaybackButtonController
 
    void initializeNextButton()
    {
-      VideoPlayerIcons.setButtonSVG(buttonNext, buttonNextSVG, FMZVideoPlayerConfiguration.Icons.NEXT);
+      VideoPlayerIcons.setButtonSVG(buttonNext, buttonNextSVG, FMZVideoPlayerConfiguration.Icons.NEXT());
    }
 
    void setToPlay()
@@ -34,7 +34,7 @@ class PlaybackButtonController
       buttonPlayPauseRestartSVG.setTranslateY(-0.1);
       buttonPlayPauseRestartSVG.setTranslateX(-0.1);
       VideoPlayerIcons.setButtonSVG(buttonPlayPauseRestart, buttonPlayPauseRestartSVG,
-            FMZVideoPlayerConfiguration.Icons.PLAY);
+            FMZVideoPlayerConfiguration.Icons.PLAY());
    }
 
    void setToPause()
@@ -42,12 +42,12 @@ class PlaybackButtonController
       buttonPlayPauseRestartSVG.setTranslateX(1);
       buttonPlayPauseRestartSVG.setTranslateY(-1);
       VideoPlayerIcons.setButtonSVG(buttonPlayPauseRestart, buttonPlayPauseRestartSVG,
-            FMZVideoPlayerConfiguration.Icons.PAUSE);
+            FMZVideoPlayerConfiguration.Icons.PAUSE());
    }
 
    void setToReplay()
    {
       VideoPlayerIcons.setButtonSVG(buttonPlayPauseRestart, buttonPlayPauseRestartSVG,
-            FMZVideoPlayerConfiguration.Icons.REPLAY);
+            FMZVideoPlayerConfiguration.Icons.REPLAY());
    }
 }

@@ -146,12 +146,12 @@ class AudioNormalizer
       }
 
       private static final List<String> ICON_PATHS = List.of(
-            FMZVideoPlayerConfiguration.Icons.NORMALIZE1, FMZVideoPlayerConfiguration.Icons.NORMALIZE2,
-            FMZVideoPlayerConfiguration.Icons.NORMALIZE3, FMZVideoPlayerConfiguration.Icons.NORMALIZE4,
-            FMZVideoPlayerConfiguration.Icons.NORMALIZE5, FMZVideoPlayerConfiguration.Icons.NORMALIZE6,
-            FMZVideoPlayerConfiguration.Icons.NORMALIZE7, FMZVideoPlayerConfiguration.Icons.NORMALIZE8,
-            FMZVideoPlayerConfiguration.Icons.NORMALIZE9, FMZVideoPlayerConfiguration.Icons.NORMALIZE10,
-            FMZVideoPlayerConfiguration.Icons.NORMALIZE11
+            FMZVideoPlayerConfiguration.Icons.NORMALIZE1(), FMZVideoPlayerConfiguration.Icons.NORMALIZE2(),
+            FMZVideoPlayerConfiguration.Icons.NORMALIZE3(), FMZVideoPlayerConfiguration.Icons.NORMALIZE4(),
+            FMZVideoPlayerConfiguration.Icons.NORMALIZE5(), FMZVideoPlayerConfiguration.Icons.NORMALIZE6(),
+            FMZVideoPlayerConfiguration.Icons.NORMALIZE7(), FMZVideoPlayerConfiguration.Icons.NORMALIZE8(),
+            FMZVideoPlayerConfiguration.Icons.NORMALIZE9(), FMZVideoPlayerConfiguration.Icons.NORMALIZE10(),
+            FMZVideoPlayerConfiguration.Icons.NORMALIZE11()
       );
 
       void start()

@@ -148,17 +148,17 @@ class VolumeController
 
    private void setLabelVolume1SVG()
    {
-      VideoPlayerIcons.setLabelVolumeSVG(labelVolume, labelVolumeSVG, FMZVideoPlayerConfiguration.Icons.VOLUME1, -1.0);
+      VideoPlayerIcons.setLabelVolumeSVG(labelVolume, labelVolumeSVG, FMZVideoPlayerConfiguration.Icons.VOLUME1(), -1.0);
    }
 
    private void setLabelVolume2SVG()
    {
-      VideoPlayerIcons.setLabelVolumeSVG(labelVolume, labelVolumeSVG, FMZVideoPlayerConfiguration.Icons.VOLUME2, 0.0);
+      VideoPlayerIcons.setLabelVolumeSVG(labelVolume, labelVolumeSVG, FMZVideoPlayerConfiguration.Icons.VOLUME2(), 0.0);
    }
 
    private void setLabelVolumeMuteSVG()
    {
-      VideoPlayerIcons.setLabelVolumeSVG(labelVolume, labelVolumeSVG, FMZVideoPlayerConfiguration.Icons.MUTE, -0.2);
+      VideoPlayerIcons.setLabelVolumeSVG(labelVolume, labelVolumeSVG, FMZVideoPlayerConfiguration.Icons.MUTE(), -0.2);
    }
 
    private void addColorToSliderVolume()
