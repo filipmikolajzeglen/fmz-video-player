@@ -18,8 +18,8 @@ public class FMZVideoPlayerConfiguration
       public static final double DEFAULT_VOLUME_VALUE = 0.5;
       public static final double MUTE_VOLUME_VALUE = 0.0;
       public static final double RESET_TIME_VALUE = 1;
-      public static final int MAX_SINGLE_SERIES_PER_DAY = 2;
-      public static final int MAX_EPISODES_PER_DAY = 30;
+      public static int MAX_SINGLE_SERIES_PER_DAY = 2;
+      public static int MAX_EPISODES_PER_DAY = 30;
 
       public static final String SPEED_LEVEL_1 = "1X";
       public static final double SPEED_LEVEL_1_VALUE = 1.0;
@@ -33,10 +33,10 @@ public class FMZVideoPlayerConfiguration
 
    public static final class Paths
    {
-      public static final String VIDEO_MAIN_SOURCE = "E:\\FoxKids";
-      public static final String FMZ_DATABASE_NAME = "FMZDB";
-      public static final String FMZ_TABLE_NAME = "FoxKids";
-      public static final String FMZ_DIRECTORY_PATH = "E:\\";
+      public static String VIDEO_MAIN_SOURCE = "E:\\FoxKids";
+      public static String FMZ_DATABASE_NAME = "FMZDB";
+      public static String FMZ_TABLE_NAME = "FoxKids";
+      public static String FMZ_DIRECTORY_PATH = "E:\\";
    }
 
    public static final class Icons

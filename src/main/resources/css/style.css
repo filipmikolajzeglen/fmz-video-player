@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.cdnfonts.com/css/config-condensed');
+
+.root {
+   -fx-font-family: 'Roboto Condensed';
+   -fx-font-size: 14px;
+}
+
+.tab-button {
+   -fx-background-color: transparent;
+   -fx-alignment: center-left;
+   -fx-padding: 12 15;
+   -fx-font-size: 15px;
+   -fx-font-color: #1c1c1c;
+   -fx-border-radius: 0px;
+   -fx-background-radius: 0;
+   -fx-max-width: infinity;
+}
+
+.tab-button:selected {
+   -fx-background-color: #cccccc;
+}
+
+.tab-button:hover {
+   -fx-background-color: #e0e0e0;
+}
+
+.tab-button:selected:hover {
+   -fx-background-color: #cccccc;
+}
+
+.no-focus-table:focused {
+   -fx-focus-color: transparent;
+   -fx-faint-focus-color: transparent;
+}

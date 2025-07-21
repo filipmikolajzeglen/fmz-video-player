@@ -1,7 +1,6 @@
 package com.filipmikolajzeglen.fmzvideoplayer;
 
 import static com.filipmikolajzeglen.fmzvideoplayer.FMZVideoPlayerConfiguration.UI.APPLICATION_ERROR;
-import static com.filipmikolajzeglen.fmzvideoplayer.FMZVideoPlayerConfiguration.UI.APPLICATION_ERROR_LOAD;
 import static com.filipmikolajzeglen.fmzvideoplayer.FMZVideoPlayerConfiguration.UI.APPLICATION_FXML;
 import static com.filipmikolajzeglen.fmzvideoplayer.FMZVideoPlayerConfiguration.UI.APPLICATION_ICON;
 import static com.filipmikolajzeglen.fmzvideoplayer.FMZVideoPlayerConfiguration.UI.APPLICATION_TITLE;
@@ -28,13 +27,13 @@ public class FMZVideoPlayerApplication extends Application
    {
       try
       {
-         Parent root = FXMLLoader.load(requireNonNull(getClass().getResource(APPLICATION_FXML)));
-         if (root == null)
-         {
-            throw new IOException(APPLICATION_ERROR_LOAD);
-         }
-         initializeStage(primaryStage, root);
-         addFocusListener(primaryStage);
+         Parent root = FXMLLoader.load(requireNonNull(getClass().getResource("/com/filipmikolajzeglen/fmzvideoplayer/fmz-startup-config.fxml")));
+         Scene scene = new Scene(root);
+         primaryStage.setTitle("FMZ Video Player Configuration");
+         primaryStage.getIcons().add(new Image(APPLICATION_ICON));
+         primaryStage.setScene(scene);
+         primaryStage.setResizable(false);
+         primaryStage.show();
       }
       catch (IOException e)
       {
@@ -43,26 +42,24 @@ public class FMZVideoPlayerApplication extends Application
       }
    }
 
-   private void initializeStage(Stage stage, Parent root)
+   public static void launchMainPlayer()
    {
-      Scene scene = new Scene(root, 1920, 1200);
-      stage.setTitle(APPLICATION_TITLE);
-      stage.getIcons().add(new Image(APPLICATION_ICON));
-      stage.setScene(scene);
-      stage.setAlwaysOnTop(true);
-      stage.setFullScreen(true);
-      stage.show();
-   }
-
-   private void addFocusListener(Stage stage)
-   {
-      stage.focusedProperty().addListener((obs, wasFocused, isFocused) -> {
-         if (!isFocused && stage.isFullScreen())
+      Platform.runLater(() -> {
+         try
          {
-            Platform.runLater(() -> {
-               stage.setAlwaysOnTop(false);
-               stage.setAlwaysOnTop(true);
-            });
+            Stage stage = new Stage();
+            Parent root = FXMLLoader.load(requireNonNull(FMZVideoPlayerApplication.class.getResource(APPLICATION_FXML)));
+            Scene scene = new Scene(root, 1920, 1200);
+            stage.setTitle(APPLICATION_TITLE);
+            stage.getIcons().add(new Image(APPLICATION_ICON));
+            stage.setScene(scene);
+            stage.setAlwaysOnTop(true);
+            stage.setFullScreen(true);
+            stage.show();
+         }
+         catch (IOException e)
+         {
+            new Logger().error(APPLICATION_ERROR + e.getCause());
          }
       });
    }

@@ -8,7 +8,8 @@
     <groupId>com.filipmikolajzeglen</groupId>
     <artifactId>fmz-video-player</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <name>fmz-video-player</name>
+
+    <name>FMZ - Video Player - Desktop</name>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -72,6 +73,22 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.svg</include>
+                    <include>**/*.fxml</include>
+                    <include>**/*.css</include>
+                    <include>**/*.png</include>
+                    <include>**/*.jpg</include>
+                    <include>**/*.gif</include>
+                    <include>**/*.otf</include>
+                    <include>**/*.ttf</include>
+                </includes>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -80,8 +97,16 @@
                 <configuration>
                     <source>11</source>
                     <target>11</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
@@ -104,7 +129,6 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
     </build>
 </project>
