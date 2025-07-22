@@ -15,6 +15,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -82,6 +83,10 @@ public class StartupConfigController
    private ColorPicker primaryColorPicker;
    @FXML
    private Slider colorPreviewSlider;
+   @FXML
+   private CheckBox commercialsEnabledCheckBox;
+   @FXML
+   private Spinner<Integer> commercialsCountSpinner;
 
    @FXML
    public void initialize()
@@ -125,6 +130,7 @@ public class StartupConfigController
       iconStyleComboBox.valueProperty().addListener((obs, oldVal, newVal) -> updateIconPreview());
       updateIconPreview();
 
+      commercialsCountSpinner.disableProperty().bind(Bindings.not(commercialsEnabledCheckBox.selectedProperty()));
       primaryColorPicker.valueProperty().addListener((obs, oldColor, newColor) -> {
          if (newColor != null)
          {
@@ -138,19 +144,14 @@ public class StartupConfigController
    private void updateSliderPreviewColor(Color color)
    {
       String hexColor = toHexString(color);
-      // Styl CSS, który koloruje ścieżkę slidera do połowy
       String style = String.format("-fx-background-color: linear-gradient(to right, %s 50%%, #D3D3D3 50%%);", hexColor);
 
-      // Aplikujemy styl do "ścieżki" (track) slidera
-      // Używamy lookup, aby znaleźć wewnętrzny element slidera
       if (colorPreviewSlider.lookup(".track") != null)
       {
          colorPreviewSlider.lookup(".track").setStyle(style);
       }
       else
       {
-         // Jeśli .track nie jest jeszcze dostępny, spróbuj ponownie za chwilę
-         // To zabezpieczenie na wypadek, gdyby skórka nie była gotowa
          colorPreviewSlider.skinProperty().addListener((obs, oldSkin, newSkin) -> {
             if (newSkin != null && colorPreviewSlider.lookup(".track") != null)
             {
@@ -187,6 +188,8 @@ public class StartupConfigController
          if (dirs != null)
          {
             return Arrays.stream(dirs)
+                  .filter(dir -> !dir.getName()
+                        .equalsIgnoreCase(FMZVideoPlayerConfiguration.Paths.COMMERCIALS_FOLDER_NAME))
                   .map(dir -> new SeriesInfo(
                         dir.getName(),
                         countVideoFiles(dir)
@@ -221,6 +224,7 @@ public class StartupConfigController
          maxSeriesSpinner.getValueFactory().setValue(config.getMaxSingleSeriesPerDay());
          maxEpisodesSpinner.getValueFactory().setValue(config.getMaxEpisodesPerDay());
          videoMainSourceField.setText(config.getVideoMainSourcePath());
+         commercialsEnabledCheckBox.setSelected(config.isAdsEnabled());
 
          if (config.getIconStyle() != null)
          {
@@ -240,7 +244,9 @@ public class StartupConfigController
             maxEpisodesSpinner.getValue(),
             videoMainSourceField.getText(),
             iconStyleComboBox.getValue(),
-            toHexString(primaryColorPicker.getValue())
+            toHexString(primaryColorPicker.getValue()),
+            commercialsEnabledCheckBox.isSelected(),
+            commercialsCountSpinner.getValue()
       );
       configDatabase.saveAll(List.of(config));
    }
@@ -304,6 +310,10 @@ public class StartupConfigController
       FMZVideoPlayerConfiguration.Paths.FMZ_TABLE_NAME = file.getName();
       FMZVideoPlayerConfiguration.Playback.MAX_SINGLE_SERIES_PER_DAY = maxSeriesSpinner.getValue();
       FMZVideoPlayerConfiguration.Playback.MAX_EPISODES_PER_DAY = maxEpisodesSpinner.getValue();
+
+      FMZVideoPlayerConfiguration.Playback.COMMERCIALS_ENABLED = commercialsEnabledCheckBox.isSelected();
+      FMZVideoPlayerConfiguration.Playback.COMMERCIAL_COUNT_BETWEEN_EPISODES = commercialsCountSpinner.getValue();
+
       savePlayerConfiguration();
       Stage stage = (Stage) videoMainSourceField.getScene().getWindow();
       stage.close();

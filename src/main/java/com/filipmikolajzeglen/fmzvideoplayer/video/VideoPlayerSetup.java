@@ -1,7 +1,6 @@
 package com.filipmikolajzeglen.fmzvideoplayer.video;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import com.filipmikolajzeglen.fmzvideoplayer.FMZVideoPlayerConfiguration;
 import com.filipmikolajzeglen.fmzvideoplayer.database.FMZDatabase;
@@ -52,6 +51,8 @@ class VideoPlayerSetup
       videoPlayer.setMediaViewResizer(MediaViewResizer.of(videoPlayer));
       videoPlayer.setFadeOutManager(FadeOutManager.of(videoPlayer));
       videoPlayer.setPlaybackButtonController(PlaybackButtonController.of(videoPlayer));
+      videoPlayer.setCommercialsManager(new CommercialsManager());
+      videoPlayer.setAudioNormalizationManager(AudioNormalizationManager.of(videoPlayer));
    }
 
    private void initializeBusinessLogic()
@@ -65,6 +66,10 @@ class VideoPlayerSetup
 
    private void startFirstVideoIfAvailable()
    {
+      if (FMZVideoPlayerConfiguration.Playback.COMMERCIALS_ENABLED)
+      {
+         videoPlayer.getCommercialsManager().loadCommercials();
+      }
       PlaylistManager playlistManager = videoPlayer.getPlaylistManager();
       if (playlistManager.getPlaylistSize() > 0)
       {
@@ -84,7 +89,6 @@ class VideoPlayerSetup
          videoPlayer.initializeMediaPlayer(firstVideoPath);
          videoPlayer.initializeAllControlsSvgOnTheBeginning();
          videoPlayer.setUpButtonHandlers();
-         CompletableFuture.runAsync(videoPlayer::waitForMediaPlayerReadyAndPlay);
       }
    }
 }

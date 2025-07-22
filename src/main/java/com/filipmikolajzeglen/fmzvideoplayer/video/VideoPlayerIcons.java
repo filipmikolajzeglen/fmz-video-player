@@ -2,62 +2,86 @@ package com.filipmikolajzeglen.fmzvideoplayer.video;
 
 import java.io.InputStream;
 
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.shape.SVGPath;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
+import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
+import javafx.scene.control.Labeled;
+import javafx.scene.shape.SVGPath;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
+/**
+ * Klasa narzędziowa do ładowania danych ścieżek z plików SVG i przypisywania ich do kontrolek JavaFX. Używa
+ * standardowego parsera XML do solidnej i bezpiecznej analizy plików SVG.
+ */
 public class VideoPlayerIcons
 {
-   private static final String SVG_PATH_START_TAG = "<path";
-   private static final String SVG_PATH_D_ATTRIBUTE = "d=\"";
-   private static final String SVG_PATH_END_QUOTE = "\"";
+
+   private static final Logger LOGGER = new Logger();
    private static final String EMPTY_SVG_CONTENT = "";
 
-   static void setButtonSVG(Button button, SVGPath svgPath, String resourcePath)
+   /**
+    * Ustawia grafikę SVG dla dowolnej kontrolki typu Labeled (np. Button, Label).
+    *
+    * @param control      Kontrolka, której grafika ma zostać ustawiona.
+    * @param svgPath      Obiekt SVGPath, który ma przechowywać ikonę.
+    * @param resourcePath Ścieżka do pliku SVG w zasobach.
+    */
+   public static void setControlSVG(Labeled control, SVGPath svgPath, String resourcePath)
    {
       svgPath.setContent(loadSvgContent(resourcePath));
-      button.setGraphic(svgPath);
+      control.setGraphic(svgPath);
    }
 
-   static void setLabelSVG(Label label, SVGPath svgPath, String resourcePath)
-   {
-      svgPath.setContent(loadSvgContent(resourcePath));
-      label.setGraphic(svgPath);
-   }
-
-   static void setLabelVolumeSVG(Label label, SVGPath svgPath, String resourcePath, double translateX)
-   {
-      svgPath.setContent(loadSvgContent(resourcePath));
-      svgPath.setTranslateX(translateX);
-      label.setGraphic(svgPath);
-   }
-
+   /**
+    * Ładuje zawartość atrybutu 'd' z pierwszej ścieżki (<path>) w pliku SVG.
+    *
+    * @param resourcePath Ścieżka do pliku SVG.
+    * @return Zawartość atrybutu 'd' lub pusty string w przypadku błędu.
+    */
    public static String loadSvgContent(String resourcePath)
    {
       try (InputStream is = VideoPlayerIcons.class.getResourceAsStream(resourcePath))
       {
          if (is == null)
          {
+            LOGGER.warning("Nie można odnaleźć zasobu SVG: " + resourcePath);
             return EMPTY_SVG_CONTENT;
          }
-         String svg = new String(is.readAllBytes());
-         return extractPathD(svg);
+         return extractPathDataFromStream(is);
       }
       catch (Exception e)
       {
+         LOGGER.error("Błąd podczas ładowania lub parsowania pliku SVG: " + resourcePath);
+         LOGGER.error(e.getMessage());
          return EMPTY_SVG_CONTENT;
       }
    }
 
-   private static String extractPathD(String svg)
+   /**
+    * Parsuje strumień danych SVG za pomocą parsera XML i wyodrębnia dane ścieżki.
+    *
+    * @param svgStream Strumień wejściowy z danymi pliku SVG.
+    * @return Dane ścieżki z atrybutu 'd'.
+    * @throws Exception w przypadku błędów parsowania.
+    */
+   private static String extractPathDataFromStream(InputStream svgStream) throws Exception
    {
-      int pathIndex = svg.indexOf(SVG_PATH_START_TAG);
-      int dIndex = svg.indexOf(SVG_PATH_D_ATTRIBUTE, pathIndex);
-      int dEnd = svg.indexOf(SVG_PATH_END_QUOTE, dIndex + 3);
-      if (pathIndex < 0 || dIndex < 0 || dEnd <= dIndex)
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      DocumentBuilder builder = factory.newDocumentBuilder();
+      Document doc = builder.parse(svgStream);
+      doc.getDocumentElement().normalize();
+
+      NodeList pathNodes = doc.getElementsByTagName("path");
+      if (pathNodes.getLength() > 0)
       {
-         return EMPTY_SVG_CONTENT;
+         Element pathElement = (Element) pathNodes.item(0);
+         return pathElement.getAttribute("d");
       }
-      return svg.substring(dIndex + 3, dEnd);
+
+      LOGGER.warning("Nie znaleziono tagu <path> w pliku SVG.");
+      return EMPTY_SVG_CONTENT;
    }
 }

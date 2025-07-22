@@ -18,7 +18,7 @@ class EpisodeInfoController
    {
       if (video == null)
       {
-         labelCurrentEpisode.setText("Brak informacji o odcinku");
+         labelCurrentEpisode.setText("Reklama");
          return;
       }
       String info = String.format("%s - %s",

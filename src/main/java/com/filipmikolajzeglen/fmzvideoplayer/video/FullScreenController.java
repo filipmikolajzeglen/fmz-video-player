@@ -59,11 +59,11 @@ class FullScreenController
 
    private void setLabelEnterFullscreenSVG()
    {
-      VideoPlayerIcons.setLabelSVG(fullScreenLabel, fullScreenSVGPath, FMZVideoPlayerConfiguration.Icons.FULLSCREEN());
+      VideoPlayerIcons.setControlSVG(fullScreenLabel, fullScreenSVGPath, FMZVideoPlayerConfiguration.Icons.FULLSCREEN());
    }
 
    private void setLabelMinimizeSVG()
    {
-      VideoPlayerIcons.setLabelSVG(fullScreenLabel, fullScreenSVGPath, FMZVideoPlayerConfiguration.Icons.MINIMIZE());
+      VideoPlayerIcons.setControlSVG(fullScreenLabel, fullScreenSVGPath, FMZVideoPlayerConfiguration.Icons.MINIMIZE());
    }
 }

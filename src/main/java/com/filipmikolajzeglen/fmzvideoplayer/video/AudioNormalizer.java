@@ -177,7 +177,7 @@ class AudioNormalizer
       void toggleIcon()
       {
          String iconPath = ICON_PATHS.get(iconIndex);
-         VideoPlayerIcons.setLabelVolumeSVG(volumeLabel, volumeLabelSvg, iconPath, 0.0);
+         VideoPlayerIcons.setControlSVG(volumeLabel, volumeLabelSvg, iconPath);
          iconIndex = (iconIndex + 1) % ICON_PATHS.size();
       }
    }

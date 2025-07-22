@@ -1,5 +1,6 @@
 package com.filipmikolajzeglen.fmzvideoplayer.video;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;
@@ -43,6 +44,25 @@ class SliderController
       bindSliderValueListener();
       bindMediaPlayerTotalDurationListener();
       bindMediaPlayerCurrentDurationListener();
+   }
+
+   void unbindListeners()
+   {
+      removeListener(sliderTime.valueChangingProperty(), sliderValueChangingListener);
+      removeListener(sliderTime.valueProperty(), sliderValueListener);
+      if (mediaPlayer != null)
+      {
+         removeListener(mediaPlayer.totalDurationProperty(), mediaPlayerTotalDurationListener);
+         removeListener(mediaPlayer.currentTimeProperty(), mediaPlayerCurrentDurationListener);
+      }
+   }
+
+   private <T> void removeListener(ObservableValue<T> property, javafx.beans.value.ChangeListener<T> listener)
+   {
+      if (listener != null)
+      {
+         property.removeListener(listener);
+      }
    }
 
    private void bindSliderValueChangingListener()
@@ -91,32 +111,12 @@ class SliderController
       mediaPlayer.currentTimeProperty().addListener(mediaPlayerCurrentDurationListener);
    }
 
-   void unbindListeners()
-   {
-      removeListener(sliderTime.valueChangingProperty(), sliderValueChangingListener);
-      removeListener(sliderTime.valueProperty(), sliderValueListener);
-      if (mediaPlayer != null)
-      {
-         removeListener(mediaPlayer.totalDurationProperty(), mediaPlayerTotalDurationListener);
-         removeListener(mediaPlayer.currentTimeProperty(), mediaPlayerCurrentDurationListener);
-      }
-   }
-
-   private <T> void removeListener(ObservableValue<T> property, javafx.beans.value.ChangeListener<T> listener)
-   {
-      if (listener != null)
-      {
-         property.removeListener(listener);
-      }
-   }
-
    private void bindCurrentTimeLabel()
    {
       if (mediaPlayer != null)
       {
          labelCurrentTime.textProperty().bind(
-               javafx.beans.binding.Bindings.createStringBinding(
-                     () -> TimeFormatter.format(mediaPlayer.getCurrentTime()) + " / ",
+               Bindings.createStringBinding(() -> TimeFormatter.format(mediaPlayer.getCurrentTime()) + " / ",
                      mediaPlayer.currentTimeProperty()
                )
          );

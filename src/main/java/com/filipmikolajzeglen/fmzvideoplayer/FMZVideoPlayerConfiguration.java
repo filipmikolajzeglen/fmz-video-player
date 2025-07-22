@@ -29,6 +29,9 @@ public class FMZVideoPlayerConfiguration
       public static final double SPEED_LEVEL_3_VALUE = 1.1;
       public static final String SPEED_LEVEL_4 = "1.15X";
       public static final double SPEED_LEVEL_4_VALUE = 1.15;
+
+      public static int COMMERCIAL_COUNT_BETWEEN_EPISODES = 4;
+      public static boolean COMMERCIALS_ENABLED = false;
    }
 
    public static final class Paths
@@ -37,6 +40,7 @@ public class FMZVideoPlayerConfiguration
       public static String FMZ_DATABASE_NAME = "FMZDB";
       public static String FMZ_TABLE_NAME = "FoxKids";
       public static String FMZ_DIRECTORY_PATH = "E:\\";
+      public static final String COMMERCIALS_FOLDER_NAME = "Commercials";
    }
 
    public static final class Icons

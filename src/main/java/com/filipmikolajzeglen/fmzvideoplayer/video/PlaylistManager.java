@@ -69,6 +69,7 @@ class PlaylistManager
       if (!playlist.isEmpty())
       {
          currentIndex = 0;
+         LOGGER.info("====================== START YOUR AWESOME TV ======================");
          LOGGER.info("Reset playlist to first video");
       }
    }
@@ -90,4 +91,5 @@ class PlaylistManager
       }
       return log.toString();
    }
+
 }

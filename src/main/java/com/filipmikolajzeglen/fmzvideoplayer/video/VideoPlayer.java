@@ -1,14 +1,15 @@
 package com.filipmikolajzeglen.fmzvideoplayer.video;
 
-import static javafx.scene.media.MediaPlayer.*;
+import static javafx.scene.media.MediaPlayer.Status;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import com.filipmikolajzeglen.fmzvideoplayer.FMZVideoPlayerConfiguration;
 import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
 import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -97,31 +98,20 @@ public class VideoPlayer implements Initializable
    private MediaPlayerManager mediaPlayerManager;
    @Setter
    private VideoPlayerService videoPlayerService;
+   @Setter
+   private List<String> commercialPlaylist = new ArrayList<>();
+   @Setter
+   private boolean playingCommercial = false;
+   @Setter
+   private CommercialsManager commercialsManager;
+   @Setter
+   private AudioNormalizationManager audioNormalizationManager;
 
    @Override
    public void initialize(URL url, ResourceBundle resourceBundle)
    {
       VideoPlayerSetup videoPlayerSetup = new VideoPlayerSetup(this);
       videoPlayerSetup.setupAndStart();
-   }
-
-   void waitForMediaPlayerReadyAndPlay()
-   {
-      if (mediaPlayer == null)
-      {
-         LOGGER.error("MediaPlayer is null");
-         return;
-      }
-      mediaPlayer.statusProperty().addListener(this::onMediaPlayerStatusChanged);
-   }
-
-   private void onMediaPlayerStatusChanged(ObservableValue<? extends Status> obs, Status oldStatus, Status newStatus)
-   {
-      if (newStatus == Status.READY)
-      {
-         Platform.runLater(mediaPlayer::play);
-         LOGGER.info("MediaPlayer is ready and started playing.");
-      }
    }
 
    void initializeMediaPlayer(String videoPath)
@@ -152,7 +142,7 @@ public class VideoPlayer implements Initializable
 
    void handleNextClick()
    {
-      mediaPlayerManager.stopAudioNormalization(mediaPlayer);
+      audioNormalizationManager.stop(mediaPlayer);
       playbackController.next();
    }
 
@@ -164,8 +154,14 @@ public class VideoPlayer implements Initializable
 
    void playByDefault()
    {
-      mediaPlayer.setAutoPlay(true);
-      playbackButtonController.setToPause();
+      if (mediaPlayer != null && mediaPlayer.getStatus() == Status.READY)
+      {
+         Platform.runLater(() -> {
+            mediaPlayer.play();
+            setPlaying(true);
+            LOGGER.info("MediaPlayer playback started via playByDefault().");
+         });
+      }
    }
 
    void updateCurrentTimeLabelIfNeeded()
@@ -176,4 +172,57 @@ public class VideoPlayer implements Initializable
          labelCurrentTime.setText(TimeFormatter.format(mediaPlayer.getTotalDuration()) + " / ");
       }
    }
+
+   void play()
+   {
+      mediaPlayer.play();
+      playbackButtonController.setToPause();
+      setPlaying(true);
+      setAtEndOfVideo(false);
+   }
+
+   void pause()
+   {
+      mediaPlayer.pause();
+      playbackButtonController.setToPlay();
+      setPlaying(false);
+   }
+
+   void replay()
+   {
+      sliderTime.setValue(FMZVideoPlayerConfiguration.Playback.RESET_TIME_VALUE);
+      mediaPlayer.seek(javafx.util.Duration.ZERO);
+      play();
+   }
+
+   void handleEndOfPlaylist()
+   {
+      playbackButtonController.setToReplay();
+      setAtEndOfVideo(true);
+      setPlaying(false);
+   }
+
+   public void playNextEpisodeFromPlaylist()
+   {
+      if (playlistManager.hasNext())
+      {
+         Video nextVideo = playlistManager.getNextVideo();
+         String nextVideoPath = playlistManager.getCurrentVideoPath();
+
+         if (nextVideo != null && nextVideoPath != null)
+         {
+            LOGGER.info("Playing next episode: " + nextVideo.getEpisodeName());
+            episodeInfoController.updateInfo(nextVideo);
+            initializeMediaPlayer(nextVideoPath);
+            resetTimeSlider();
+            updateCurrentTimeLabelIfNeeded();
+         }
+      }
+      else
+      {
+         LOGGER.info("End of playlist. Setting REPLAY button.");
+         handleEndOfPlaylist();
+      }
+   }
+
 }

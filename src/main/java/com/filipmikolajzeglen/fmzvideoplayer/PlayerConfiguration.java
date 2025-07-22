@@ -14,4 +14,6 @@ public class PlayerConfiguration
    private String videoMainSourcePath;
    private String iconStyle;
    private String primaryColor;
+   private boolean adsEnabled;
+   private int adsCountBetweenEpisodes;
 }

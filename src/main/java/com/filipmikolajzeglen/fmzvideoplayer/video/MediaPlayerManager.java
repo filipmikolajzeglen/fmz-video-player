@@ -1,9 +1,10 @@
 package com.filipmikolajzeglen.fmzvideoplayer.video;
 
 import java.io.File;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
-import javafx.application.Platform;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
@@ -14,9 +15,10 @@ import lombok.RequiredArgsConstructor;
 class MediaPlayerManager
 {
    private static final Logger LOGGER = new Logger();
+   private static final int MAX_ERROR_RETRIES = 3;
 
    private final VideoPlayer videoPlayer;
-   private AudioNormalizer audioNormalizer;
+   private final Map<String, Integer> errorCounts = new ConcurrentHashMap<>();
 
    static MediaPlayerManager of(VideoPlayer videoPlayer)
    {
@@ -32,9 +34,28 @@ class MediaPlayerManager
 
       bindControllersTo(mediaPlayer);
       setupEventHandlers(mediaPlayer, videoPath);
-      applyAudioNormalization(mediaPlayer);
+      videoPlayer.getAudioNormalizationManager().apply(mediaPlayer);
 
       return mediaPlayer;
+   }
+
+   private void stopAndDisposePlayer(MediaPlayer mediaPlayer)
+   {
+      if (mediaPlayer != null)
+      {
+         videoPlayer.getVolumeController().unbindVolume();
+         if (videoPlayer.getSliderController() != null)
+         {
+            videoPlayer.getSliderController().unbindListeners();
+         }
+         mediaPlayer.setOnReady(null);
+         mediaPlayer.setOnError(null);
+         mediaPlayer.setOnEndOfMedia(null);
+         mediaPlayer.setAudioSpectrumListener(null);
+         mediaPlayer.stop();
+         mediaPlayer.dispose();
+         LOGGER.info("Listeners were removed. Media player was stopped and disposed.");
+      }
    }
 
    private void bindControllersTo(MediaPlayer mediaPlayer)
@@ -51,11 +72,21 @@ class MediaPlayerManager
    {
       mediaPlayer.setOnReady(() -> handleOnReady(mediaPlayer, videoPath));
       mediaPlayer.setOnError(() -> handleOnError(mediaPlayer, videoPath));
-      mediaPlayer.setOnEndOfMedia(this::handleOnEndOfMedia);
+      mediaPlayer.setOnEndOfMedia(() -> {
+         if (mediaPlayer == videoPlayer.getMediaPlayer())
+         {
+            handleOnEndOfMedia();
+         }
+         else
+         {
+            LOGGER.warning("onEndOfMedia event received for a disposed or old media player. Ignoring.");
+         }
+      });
    }
 
    private void handleOnReady(MediaPlayer mediaPlayer, String videoPath)
    {
+      errorCounts.remove(videoPath);
       if (mediaPlayer.getTotalDuration().lessThanOrEqualTo(Duration.ZERO))
       {
          LOGGER.error("Total duration was 00:00 - Started new initialization");
@@ -71,68 +102,29 @@ class MediaPlayerManager
 
    private void handleOnError(MediaPlayer mediaPlayer, String videoPath)
    {
-      stopAudioNormalization(mediaPlayer);
-      LOGGER.error("Error occurred in media player: " + mediaPlayer.getError().getMessage());
-      LOGGER.warning("Try to initialize media player once again after error");
-      videoPlayer.initializeMediaPlayer(videoPath);
+      videoPlayer.getAudioNormalizationManager().stop(mediaPlayer);
+      int currentFailures = errorCounts.getOrDefault(videoPath, 0) + 1;
+
+      if (currentFailures < MAX_ERROR_RETRIES)
+      {
+         errorCounts.put(videoPath, currentFailures);
+         LOGGER.error(String.format("Error in media player for '%s'. Attempt %d of %d.",
+               videoPath, currentFailures, MAX_ERROR_RETRIES));
+         videoPlayer.initializeMediaPlayer(videoPath);
+      }
+      else
+      {
+         LOGGER.error(String.format("Failed to play '%s' after %d attempts. Skipping file.",
+               videoPath, MAX_ERROR_RETRIES));
+         errorCounts.remove(videoPath);
+         handleOnEndOfMedia();
+      }
    }
 
    private void handleOnEndOfMedia()
    {
       LOGGER.info("Video has finished. Loading next video.");
-      stopAudioNormalization(videoPlayer.getMediaPlayer());
-      Video currentVideo = videoPlayer.getPlaylistManager().getCurrentVideo();
-      if (currentVideo != null)
-      {
-         currentVideo.setWatched(true);
-         videoPlayer.getVideoPlayerService().getDatabase().save(currentVideo);
-         LOGGER.info("Video marked as watched and saved to database: " + currentVideo.getId());
-      }
-
-      Platform.runLater(() -> videoPlayer.getPlaybackController().next());
-   }
-
-   private void applyAudioNormalization(MediaPlayer mediaPlayer)
-   {
-      Video currentVideo = videoPlayer.getPlaylistManager().getCurrentVideo();
-      if (currentVideo != null)
-      {
-         Double normalizedVolume = currentVideo.getAudioNormalizedVolume();
-         if (normalizedVolume != null)
-         {
-            mediaPlayer.setVolume(normalizedVolume);
-            LOGGER.info(String.format("Normalized volume was restored from database: %s", normalizedVolume));
-         }
-         else
-         {
-            audioNormalizer = AudioNormalizer.of(videoPlayer);
-            audioNormalizer.normalize(mediaPlayer);
-         }
-      }
-   }
-
-   void stopAudioNormalization(MediaPlayer mediaPlayer)
-   {
-      if (mediaPlayer != null && audioNormalizer != null && audioNormalizer.isNormalizing())
-      {
-         audioNormalizer.reset(mediaPlayer);
-         LOGGER.info("Audio normalization was stopped and cleaned for current episode.");
-      }
-   }
-
-   private void stopAndDisposePlayer(MediaPlayer mediaPlayer)
-   {
-      if (mediaPlayer != null)
-      {
-         videoPlayer.getVolumeController().unbindVolume();
-         if (videoPlayer.getSliderController() != null)
-         {
-            videoPlayer.getSliderController().unbindListeners();
-         }
-         mediaPlayer.setAudioSpectrumListener(null);
-         mediaPlayer.stop();
-         mediaPlayer.dispose();
-         LOGGER.info("Listeners were removed. Media player was stopped and disposed.");
-      }
+      videoPlayer.getAudioNormalizationManager().stop(videoPlayer.getMediaPlayer());
+      videoPlayer.getPlaybackController().next();
    }
 }

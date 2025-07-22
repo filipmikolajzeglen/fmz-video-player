@@ -1,5 +1,6 @@
 package com.filipmikolajzeglen.fmzvideoplayer.video;
 
+import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.MediaView;
@@ -22,29 +23,47 @@ class MediaViewResizer
       this.controlsPane = videoPlayer.getHBoxControls();
    }
 
+   /**
+    * Inicjuje proces bindowania wymiarów MediaView do sceny.
+    * Czeka, aż scena będzie dostępna, a następnie deleguje logikę bindowania.
+    */
    void bindToScene()
    {
+      mediaView.setPreserveRatio(false);
       parentPane.sceneProperty().addListener((observable, oldScene, newScene) -> {
          if (oldScene == null && newScene != null)
          {
-            mediaView.fitWidthProperty().bind(newScene.widthProperty());
-            if (controlsPane != null)
-            {
-               mediaView.fitHeightProperty().bind(
-                     newScene.heightProperty().subtract(controlsPane.heightProperty())
-               );
-            }
-            else
-            {
-               mediaView.fitHeightProperty().bind(newScene.heightProperty());
-            }
+            bindDimensions(newScene);
          }
       });
-      mediaView.setPreserveRatio(false);
    }
 
+   /**
+    * Prywatna metoda zawierająca logikę bindowania (CO bindować).
+    * @param scene Aktualna scena aplikacji.
+    */
+   private void bindDimensions(Scene scene)
+   {
+      mediaView.fitWidthProperty().bind(scene.widthProperty());
+
+      if (controlsPane != null)
+      {
+         mediaView.fitHeightProperty().bind(
+               scene.heightProperty().subtract(controlsPane.heightProperty())
+         );
+      }
+      else
+      {
+         mediaView.fitHeightProperty().bind(scene.heightProperty());
+      }
+   }
+
+   /**
+    * Pozwala na zewnętrzną zmianę trybu zachowania proporcji wideo.
+    */
    void setPreserveRatio(boolean preserve)
    {
       mediaView.setPreserveRatio(preserve);
    }
+
 }

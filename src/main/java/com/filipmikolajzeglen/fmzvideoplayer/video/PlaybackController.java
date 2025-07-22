@@ -1,5 +1,8 @@
 package com.filipmikolajzeglen.fmzvideoplayer.video;
 
+import java.util.List;
+import java.util.Optional;
+
 import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -34,52 +37,105 @@ class PlaybackController
    void play()
    {
       LOGGER.info("Video was resumed");
-      videoPlayer.getMediaPlayer().play();
-      videoPlayer.getPlaybackButtonController().setToPause();
-      videoPlayer.setPlaying(true);
+      videoPlayer.play();
    }
 
    void pause()
    {
       LOGGER.info("Video was paused");
-      videoPlayer.getMediaPlayer().pause();
-      videoPlayer.getPlaybackButtonController().setToPlay();
-      videoPlayer.setPlaying(false);
+      videoPlayer.pause();
    }
 
    void replay()
    {
       LOGGER.info("Video was replayed");
-      videoPlayer.getSliderTime().setValue(0);
-      videoPlayer.getMediaPlayer().seek(javafx.util.Duration.ZERO);
-      videoPlayer.getMediaPlayer().play();
-      videoPlayer.getPlaybackButtonController().setToPause();
-      videoPlayer.setAtEndOfVideo(false);
-      videoPlayer.setPlaying(true);
+      videoPlayer.replay();
    }
 
    void next()
    {
-      LOGGER.info("====================== NEXT VIDEO IS INITIALIZING ======================");
-      if (videoPlayer.getPlaylistManager().hasNext())
+      if (videoPlayer.isPlayingCommercial())
       {
-         Video nextVideo = videoPlayer.getPlaylistManager().getNextVideo();
-         String nextVideoPath = videoPlayer.getPlaylistManager().getCurrentVideoPath();
-
-         if (nextVideo != null && nextVideoPath != null)
-         {
-            videoPlayer.getEpisodeInfoController().updateInfo(nextVideo);
-            videoPlayer.initializeMediaPlayer(nextVideoPath);
-            videoPlayer.resetTimeSlider();
-            videoPlayer.updateCurrentTimeLabelIfNeeded();
-         }
+         handleCommercialTransition();
       }
       else
       {
-         LOGGER.info("Next video does not exist, set REPLAY button");
-         videoPlayer.getPlaybackButtonController().setToReplay();
-         videoPlayer.setAtEndOfVideo(true);
-         videoPlayer.setPlaying(false);
+         handleEpisodeFinish();
       }
    }
+
+   private void handleCommercialTransition()
+   {
+      videoPlayer.getCommercialPlaylist().remove(0);
+
+      if (!videoPlayer.getCommercialPlaylist().isEmpty())
+      {
+         playNextCommercial();
+      }
+      else
+      {
+         finishCommercialBlockAndPlayNextEpisode();
+      }
+   }
+
+   private void playNextCommercial()
+   {
+      LOGGER.info("======================    NEXT COMMERCIAL    ======================");
+      String nextAdPath = videoPlayer.getCommercialPlaylist().get(0);
+      LOGGER.info("Playing next commercial: " + nextAdPath);
+      videoPlayer.getEpisodeInfoController().updateInfo(null);
+      videoPlayer.resetTimeSlider();
+      videoPlayer.initializeMediaPlayer(nextAdPath);
+   }
+
+   private void finishCommercialBlockAndPlayNextEpisode()
+   {
+      LOGGER.info("Commercial block finished. Proceeding to the episode.");
+      videoPlayer.setPlayingCommercial(false);
+      playNextEpisode();
+   }
+
+   private void handleEpisodeFinish()
+   {
+      markCurrentVideoAsWatched();
+
+      Optional<List<String>> commercialsToPlay = videoPlayer.getCommercialsManager()
+            .getCommercialsToPlay(videoPlayer.getPlaylistManager().hasNext());
+
+      commercialsToPlay.ifPresentOrElse(
+            this::startCommercialBlock,
+            this::playNextEpisode
+      );
+   }
+
+   private void markCurrentVideoAsWatched()
+   {
+      Video currentVideo = videoPlayer.getPlaylistManager().getCurrentVideo();
+      if (currentVideo != null)
+      {
+         currentVideo.setWatched(true);
+         videoPlayer.getVideoPlayerService().getDatabase().save(currentVideo);
+         LOGGER.info("Video marked as watched and saved to database: " + currentVideo.getId());
+      }
+   }
+
+   private void startCommercialBlock(List<String> commercialsToPlay)
+   {
+      LOGGER.info("====================== START COMMERCIAL BLOCK ======================");
+      LOGGER.info("Starting a commercial block with " + commercialsToPlay.size());
+      videoPlayer.setCommercialPlaylist(commercialsToPlay);
+      videoPlayer.setPlayingCommercial(true);
+
+      String firstAdPath = commercialsToPlay.get(0);
+      videoPlayer.getEpisodeInfoController().updateInfo(null);
+      videoPlayer.resetTimeSlider();
+      videoPlayer.initializeMediaPlayer(firstAdPath);
+   }
+
+   private void playNextEpisode()
+   {
+      LOGGER.info("======================       NEXT VIDEO       =======================");
+      videoPlayer.playNextEpisodeFromPlaylist();
+   }
+
 }
