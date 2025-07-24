@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.String?><?import javafx.collections.FXCollections?><?import javafx.scene.control.Button?><?import javafx.scene.control.CheckBox?><?import javafx.scene.control.ColorPicker?><?import javafx.scene.control.ComboBox?><?import javafx.scene.control.Label?><?import javafx.scene.control.ListView?><?import javafx.scene.control.Slider?><?import javafx.scene.control.Spinner?><?import javafx.scene.control.TableColumn?><?import javafx.scene.control.TableView?><?import javafx.scene.control.TextField?><?import javafx.scene.control.ToggleButton?><?import javafx.scene.control.ToggleGroup?><?import javafx.scene.image.Image?><?import javafx.scene.image.ImageView?><?import javafx.scene.layout.BorderPane?><?import javafx.scene.layout.ColumnConstraints?><?import javafx.scene.layout.GridPane?><?import javafx.scene.layout.HBox?><?import javafx.scene.layout.RowConstraints?><?import javafx.scene.layout.StackPane?><?import javafx.scene.layout.VBox?><?import javafx.scene.paint.Color?><?import javafx.scene.shape.Circle?><?import javafx.scene.shape.SVGPath?>
+<?import java.lang.String?><?import javafx.collections.FXCollections?><?import javafx.scene.control.Button?><?import javafx.scene.control.CheckBox?><?import javafx.scene.control.ColorPicker?><?import javafx.scene.control.ComboBox?><?import javafx.scene.control.Label?><?import javafx.scene.control.ListView?><?import javafx.scene.control.Slider?><?import javafx.scene.control.Spinner?><?import javafx.scene.control.TableColumn?><?import javafx.scene.control.TableView?><?import javafx.scene.control.TextArea?><?import javafx.scene.control.TextField?><?import javafx.scene.control.ToggleButton?><?import javafx.scene.control.ToggleGroup?><?import javafx.scene.image.Image?><?import javafx.scene.image.ImageView?><?import javafx.scene.layout.BorderPane?><?import javafx.scene.layout.ColumnConstraints?><?import javafx.scene.layout.GridPane?><?import javafx.scene.layout.HBox?><?import javafx.scene.layout.RowConstraints?><?import javafx.scene.layout.StackPane?><?import javafx.scene.layout.VBox?><?import javafx.scene.paint.Color?><?import javafx.scene.shape.Circle?><?import javafx.scene.shape.SVGPath?>
 <BorderPane prefHeight="540.0" prefWidth="810.0" stylesheets="@../../../css/style.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.filipmikolajzeglen.fmzvideoplayer.StartupConfigController">
 
    <!-- Lewy panel z zakładkami -->
@@ -8,7 +8,7 @@
       <VBox prefWidth="200.0" style="-fx-background-color: #f4f4f4; -fx-border-color: #cccccc; -fx-border-width: 0 1 0 0;">
          <ToggleButton fx:id="quickStartTab" alignment="CENTER_LEFT" selected="true" styleClass="tab-button" text="Quick Start">
             <graphic>
-               <SVGPath content="m14.95 10.04-2.29-1.53c-.72-.48-1.65-.53-2.42-.12s-1.24 1.2-1.24 2.07v3.06c0 .87.48 1.66 1.24 2.07.35.19.73.28 1.11.28.46 0 .91-.13 1.3-.4l2.29-1.53c.66-.44 1.05-1.17 1.05-1.96s-.39-1.52-1.05-1.96zm-1.11 2.25-2.29 1.53c-.15.1-.29.06-.36.02s-.19-.13-.19-.31v-3.06c0-.18.12-.27.19-.31.04-.02.1-.04.17-.04.06 0 .12.02.19.06l2.29 1.53c.14.09.16.22.16.29s-.02.2-.16.29z M12 2c-5.51 0-10 4.49-10 10s4.49 10 10 10 10-4.49 10-10-4.49-10-10-10zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" fill="#1c1c1c" scaleX="0.7" scaleY="0.7" />
+               <SVGPath content="m19.58 9.57-11.82-7.09c-.92-.66-2.12-.75-3.12-.24-1.01.52-1.63 1.54-1.63 2.67v14.18c0 1.13.63 2.16 1.63 2.67.43.22.9.33 1.37.33.62 0 1.23-.19 1.75-.57l11.82-7.09c.79-.57 1.24-1.46 1.24-2.43s-.45-1.86-1.24-2.43zm-1.17 3.24-11.82 7.09c-.31.23-.7.25-1.04.08s-.54-.51-.54-.89v-14.18c0-.38.2-.72.54-.89.15-.08.3-.11.46-.11.2 0 .41.06.58.19l11.82 7.09c.26.19.41.49.41.81s-.15.62-.42.81z" fill="#1c1c1c" scaleX="0.7" scaleY="0.7" />
             </graphic>
             <toggleGroup>
                <ToggleGroup fx:id="tabsGroup" />
@@ -27,7 +27,7 @@
             </graphic>
          </ToggleButton>
 
-         <ToggleButton fx:id="consoleLogTab" styleClass="tab-button" text="Console log" toggleGroup="$tabsGroup">
+         <ToggleButton fx:id="consoleLogTab" styleClass="tab-button" text="Console logs" toggleGroup="$tabsGroup">
             <graphic>
                <SVGPath content="m20 1h-16a3 3 0 0 0 -3 3v16a3 3 0 0 0 3 3h16a3 3 0 0 0 3-3v-16a3 3 0 0 0 -3-3z m1 19a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1-1v-16a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1z M9 14h9a1 1 0 0 1 0 2h-7a1 1 0 0 1 0-2z M 7.586,12 L 5.293,9.707 A 1,1 0 0 1 6.707,8.293 L 10.414,12 L 6.707,15.707 A 1,1 0 0 1 5.293,14.293 Z" fill="#1c1c1c" scaleX="0.7" scaleY="0.7" />
             </graphic>
@@ -35,7 +35,7 @@
 
          <ToggleButton fx:id="aboutTab" styleClass="tab-button" text="About" toggleGroup="$tabsGroup">
             <graphic>
-               <SVGPath content="m12 1a11 11 0 1 0 11 11 11 11 0 0 0 -11-11zm0 20a9 9 0 1 1 9-9 9 9 0 0 1 -9 9zm1-10v7a1 1 0 0 1 -2 0v-7a1 1 0 0 1 2 0zm0-5v1a1 1 0 1 1 -2 0v-1a1 1 0 0 1 2 0z" fill="#1c1c1c" scaleX="0.7" scaleY="0.7" />
+               <SVGPath content="m20 1h-16a3 3 0 0 0 -3 3v16a3 3 0 0 0 3 3h16a3 3 0 0 0 3-3v-16a3 3 0 0 0 -3-3zm1 19a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1-1v-16a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1zm-8-9v7a1 1 0 0 1 -2 0v-7a1 1 0 0 1 2 0zm0-5v1a1 1 0 1 1 -2 0v-1a1 1 0 0 1 2 0z" fill="#1c1c1c" scaleX="0.7" scaleY="0.7" />
             </graphic>
          </ToggleButton>
       </VBox>
@@ -102,6 +102,11 @@
                   </HBox>
                </VBox>
 
+               <!-- Zawartość zakładki "Console logs" -->
+               <VBox fx:id="consoleLogContent" alignment="TOP_LEFT" managed="false" spacing="15" style="-fx-padding: 11 40 40 40; -fx-background-color: white;" visible="false">
+                  <Label text="Console Log" style="-fx-font-weight: bold; -fx-font-size: 18px" />
+                  <TextArea fx:id="consoleLogTextArea" editable="false" wrapText="true" VBox.vgrow="ALWAYS" />
+               </VBox>
 
                <!-- Zawartość zakładki "About" -->
                <VBox fx:id="aboutContent" managed="false" spacing="20"

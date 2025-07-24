@@ -50,18 +50,31 @@ public class FMZVideoPlayerApplication extends Application
          try
          {
             Stage playerStage = new Stage();
-            // Musimy użyć instancji FXMLLoader, aby uzyskać dostęp do kontrolera
             FXMLLoader loader = new FXMLLoader(requireNonNull(FMZVideoPlayerApplication.class.getResource(APPLICATION_FXML)));
             Parent root = loader.load();
-            VideoPlayer videoPlayerController = loader.getController(); // Pobieramy kontroler
+            VideoPlayer videoPlayerController = loader.getController();
 
             initializeStage(playerStage, root);
             addFocusListener(playerStage);
 
-            // Zaktualizowany handler zamykania okna
+            // Poprawiona i bezpieczna obsługa zamykania
             playerStage.setOnCloseRequest(event -> {
-               videoPlayerController.shutdown(); // NAJPIERW zwalniamy zasoby
-               configurationStage.show();      // POTEM pokazujemy okno konfiguracji
+               // 1. Natychmiast ukryj okno odtwarzacza, aby dać użytkownikowi
+               // wrażenie natychmiastowej reakcji.
+               playerStage.hide();
+               // 2. Skonsumuj zdarzenie, aby uniknąć domyślnego zamknięcia.
+               event.consume();
+
+               // 3. Użyj Platform.runLater, aby bezpiecznie wykonać resztę operacji
+               // w wątku JavaFX, gdy tylko będzie to możliwe.
+               Platform.runLater(() -> {
+                  // Wywołaj shutdown, który bezpiecznie zatrzyma odtwarzacz.
+                  // To może zająć chwilę, ale nie zamrozi już UI.
+                  videoPlayerController.shutdown();
+
+                  // Pokaż okno konfiguracji DOPIERO PO całkowitym zamknięciu odtwarzacza.
+                  configurationStage.show();
+               });
             });
          }
          catch (IOException e)

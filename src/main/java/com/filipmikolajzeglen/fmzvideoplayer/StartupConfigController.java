@@ -10,7 +10,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.filipmikolajzeglen.fmzvideoplayer.database.FMZDatabase;
+import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
 import com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlayerIcons;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -27,6 +29,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
@@ -72,6 +75,8 @@ public class StartupConfigController
    @FXML
    private ToggleButton aboutTab;
    @FXML
+   private ToggleButton consoleLogTab;
+   @FXML
    private ToggleButton tvScheduleTab;
    @FXML
    private VBox quickStartContent;
@@ -109,10 +114,21 @@ public class StartupConfigController
    private GridPane scheduleGridPane;
    @FXML
    private HBox scheduleButtonsHBox;
+   @FXML
+   private VBox consoleLogContent;
+   @FXML
+   private TextArea consoleLogTextArea;
 
    @FXML
    public void initialize()
    {
+      // Zarejestruj słuchacza, który będzie aktualizował pole TextArea
+      Logger.addListener(plainMessage -> {
+         Platform.runLater(() -> {
+            consoleLogTextArea.appendText(plainMessage + "\n");
+         });
+      });
+
       seriesNameColumn.prefWidthProperty().bind(seriesTable.widthProperty().multiply(0.70));
       episodeCountColumn.prefWidthProperty().bind(seriesTable.widthProperty().multiply(0.262));
 
@@ -126,6 +142,7 @@ public class StartupConfigController
       tabMapping.put(advancedTab, advancedContent);
       tabMapping.put(aboutTab, aboutContent);
       tabMapping.put(tvScheduleTab, tvScheduleContent);
+      tabMapping.put(consoleLogTab, consoleLogContent);
 
       tabsGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
          if (newToggle == null)

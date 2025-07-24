@@ -7,6 +7,9 @@ import static com.filipmikolajzeglen.fmzvideoplayer.logger.LoggerLevel.WARNING;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * A simple logging class for videos.
@@ -27,6 +30,8 @@ public class Logger
    private static final String ANSI_RESET = "\u001B[0m";
    private static final String ANSI_BRIGHT_WHITE = "\u001b[37;1m";
    private static final int LOG_INVOKER_INDEX = 3;
+
+   public static final List<Consumer<String>> listeners = new ArrayList<>();
 
    public void info(String logMessage)
    {
@@ -62,5 +67,22 @@ public class Logger
             dateTime, levelColor, level.name(), ANSI_RESET, logMessage,
             ANSI_BRIGHT_WHITE, callerClass, callerLineNumber, ANSI_RESET);
       System.out.println(formattedMessage);
+
+      String plainMessage = String.format("[%s] %s %s", dateTime, level.name(), logMessage);
+      for (Consumer<String> listener : listeners)
+      {
+         listener.accept(plainMessage);
+      }
+   }
+
+   // KROK 2.3: Dodaj publiczne, statyczne metody do zarządzania słuchaczami
+   public static void addListener(Consumer<String> listener)
+   {
+      listeners.add(listener);
+   }
+
+   public static void removeListener(Consumer<String> listener)
+   {
+      listeners.remove(listener);
    }
 }
