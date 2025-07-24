@@ -361,8 +361,8 @@ public class StartupConfigController
 
       // 3. Zamknij okno konfiguracji i uruchom odtwarzacz
       Stage stage = (Stage) playButton.getScene().getWindow();
-      stage.close();
-      FMZVideoPlayerApplication.launchMainPlayer();
+      stage.hide();
+      FMZVideoPlayerApplication.launchMainPlayer(stage);
    }
 
    @FXML

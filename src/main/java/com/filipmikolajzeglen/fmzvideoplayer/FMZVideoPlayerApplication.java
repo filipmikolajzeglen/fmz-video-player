@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
+import com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlayer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -43,15 +44,25 @@ public class FMZVideoPlayerApplication extends Application
       }
    }
 
-   public static void launchMainPlayer()
+   public static void launchMainPlayer(Stage configurationStage)
    {
       Platform.runLater(() -> {
          try
          {
-            Stage stage = new Stage();
-            Parent root = FXMLLoader.load(requireNonNull(FMZVideoPlayerApplication.class.getResource(APPLICATION_FXML)));
-            initializeStage(stage, root);
-            addFocusListener(stage);
+            Stage playerStage = new Stage();
+            // Musimy użyć instancji FXMLLoader, aby uzyskać dostęp do kontrolera
+            FXMLLoader loader = new FXMLLoader(requireNonNull(FMZVideoPlayerApplication.class.getResource(APPLICATION_FXML)));
+            Parent root = loader.load();
+            VideoPlayer videoPlayerController = loader.getController(); // Pobieramy kontroler
+
+            initializeStage(playerStage, root);
+            addFocusListener(playerStage);
+
+            // Zaktualizowany handler zamykania okna
+            playerStage.setOnCloseRequest(event -> {
+               videoPlayerController.shutdown(); // NAJPIERW zwalniamy zasoby
+               configurationStage.show();      // POTEM pokazujemy okno konfiguracji
+            });
          }
          catch (IOException e)
          {

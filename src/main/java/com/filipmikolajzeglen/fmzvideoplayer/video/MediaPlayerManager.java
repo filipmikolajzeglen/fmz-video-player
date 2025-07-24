@@ -39,7 +39,7 @@ class MediaPlayerManager
       return mediaPlayer;
    }
 
-   private void stopAndDisposePlayer(MediaPlayer mediaPlayer)
+   void stopAndDisposePlayer(MediaPlayer mediaPlayer)
    {
       if (mediaPlayer != null)
       {

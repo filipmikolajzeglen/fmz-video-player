@@ -47,4 +47,8 @@ class FadeOutManager
       );
       fadeOutTimeline.play();
    }
+
+   public void cancel() {
+      delayFadeOut.stop();
+   }
 }

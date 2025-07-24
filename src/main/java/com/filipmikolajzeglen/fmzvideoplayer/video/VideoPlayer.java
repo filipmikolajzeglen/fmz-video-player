@@ -225,4 +225,15 @@ public class VideoPlayer implements Initializable
       }
    }
 
+   public void shutdown() {
+      LOGGER.info("Shutting down VideoPlayer resources...");
+      if (mediaPlayer != null) {
+         mediaPlayerManager.stopAndDisposePlayer(mediaPlayer); // Zatrzymuje i zwalnia MediaPlayer
+         LOGGER.info("MediaPlayer stopped and disposed.");
+      }
+      if (fadeOutManager != null) {
+         fadeOutManager.cancel(); // Anuluje timer w FadeOutManager
+         LOGGER.info("FadeOutManager timers cancelled.");
+      }
+   }
 }
