@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -132,4 +134,51 @@ class VideoPlayerService
             .limit(FMZVideoPlayerConfiguration.Playback.MAX_EPISODES_PER_DAY)
             .collect(Collectors.toList());
    }
+
+   // To jest przykład, który należy umieścić w klasie VideoPlayerService
+   public List<Video> createScheduleFromSeriesList(List<String> seriesNames)
+   {
+      // 1. Pobierz wszystkie nieobejrzane filmy i pogrupuj je według serii,
+      // upewniając się, że odcinki w każdej serii są posortowane.
+      Map<String, List<Video>> unwatchedVideosBySeries = getAllUnwatchedVideo().stream()
+            .sorted(Comparator.comparing(Video::getEpisodeNumber))
+            .collect(Collectors.groupingBy(Video::getSeriesName));
+
+      // Mapa do śledzenia indeksu następnego odcinka do pobrania dla każdej serii
+      Map<String, Integer> nextEpisodeIndexMap = new java.util.HashMap<>();
+
+      List<Video> customScheduleVideos = new ArrayList<>();
+
+      // 2. Iteruj po harmonogramie zdefiniowanym przez użytkownika
+      for (String seriesName : seriesNames)
+      {
+         // Pobierz listę nieobejrzanych odcinków dla bieżącej serii
+         List<Video> seriesEpisodes = unwatchedVideosBySeries.get(seriesName);
+         if (seriesEpisodes == null || seriesEpisodes.isEmpty())
+         {
+            LOGGER.warning("Brak nieobejrzanych odcinków dla serii: " + seriesName + " w harmonogramie.");
+            continue; // Pomiń, jeśli dla danej serii nie ma odcinków
+         }
+
+         // Pobierz aktualny indeks dla tej serii, domyślnie 0
+         int currentIndex = nextEpisodeIndexMap.getOrDefault(seriesName, 0);
+
+         // Sprawdź, czy jest jeszcze dostępny odcinek
+         if (currentIndex < seriesEpisodes.size())
+         {
+            // Dodaj następny odcinek do playlisty
+            customScheduleVideos.add(seriesEpisodes.get(currentIndex));
+            // Zaktualizuj indeks dla tej serii, aby następnym razem wziąć kolejny odcinek
+            nextEpisodeIndexMap.put(seriesName, currentIndex + 1);
+         }
+         else
+         {
+            LOGGER.warning(
+                  "Wszystkie nieobejrzane odcinki dla serii: " + seriesName + " zostały już dodane do harmonogramu.");
+         }
+      }
+
+      return customScheduleVideos;
+   }
+
 }

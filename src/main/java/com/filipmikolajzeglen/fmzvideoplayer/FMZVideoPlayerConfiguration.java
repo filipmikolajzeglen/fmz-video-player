@@ -1,5 +1,7 @@
 package com.filipmikolajzeglen.fmzvideoplayer;
 
+import java.util.List;
+
 public class FMZVideoPlayerConfiguration
 {
    public static final class UI
@@ -32,6 +34,9 @@ public class FMZVideoPlayerConfiguration
 
       public static int COMMERCIAL_COUNT_BETWEEN_EPISODES = 4;
       public static boolean COMMERCIALS_ENABLED = false;
+
+      public static boolean USE_CUSTOM_SCHEDULE = false;
+      public static List<String> CUSTOM_SCHEDULE = null;
    }
 
    public static final class Paths

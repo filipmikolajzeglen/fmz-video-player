@@ -1,5 +1,7 @@
 package com.filipmikolajzeglen.fmzvideoplayer;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,5 +17,7 @@ public class PlayerConfiguration
    private String iconStyle;
    private String primaryColor;
    private boolean adsEnabled;
-   private int adsCountBetweenEpisodes;
+   private int adsCount;
+   private boolean useCustomSchedule;
+   private List<String> customSchedule;
 }

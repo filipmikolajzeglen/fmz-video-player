@@ -58,11 +58,25 @@ class VideoPlayerSetup
    private void initializeBusinessLogic()
    {
       videoPlayer.getVideoPlayerService().initializeFMZDB();
-      List<Video> videos = videoPlayer.getVideoPlayerService().createVideosSchedule();
+      List<Video> videos;
+      if (FMZVideoPlayerConfiguration.Playback.USE_CUSTOM_SCHEDULE &&
+            FMZVideoPlayerConfiguration.Playback.CUSTOM_SCHEDULE != null &&
+            !FMZVideoPlayerConfiguration.Playback.CUSTOM_SCHEDULE.isEmpty())
+      {
+         // Użyj harmonogramu niestandardowego
+         videos = videoPlayer.getVideoPlayerService()
+               .createScheduleFromSeriesList(FMZVideoPlayerConfiguration.Playback.CUSTOM_SCHEDULE);
+      }
+      else
+      {
+         // Użyj harmonogramu generowanego automatycznie (Quick Start)
+         videos = videoPlayer.getVideoPlayerService().createVideosSchedule();
+      }
       PlaylistManager playlistManager = new PlaylistManager(videos);
       videoPlayer.setPlaylistManager(playlistManager);
       LOGGER.info(playlistManager.createPlaylistLog());
    }
+
 
    private void startFirstVideoIfAvailable()
    {
