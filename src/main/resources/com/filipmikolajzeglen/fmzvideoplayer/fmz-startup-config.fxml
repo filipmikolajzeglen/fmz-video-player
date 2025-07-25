@@ -124,42 +124,7 @@
                </VBox>
 
                <!-- Zawartość zakładki "About" -->
-               <VBox fx:id="aboutContent" managed="false" spacing="20"
-                     style="-fx-padding: 11 40 40 40; -fx-background-color: white;" visible="false">
-                  <Label text="About creator" style="-fx-font-weight: bold; -fx-font-size: 20px" />
-                  <HBox alignment="CENTER" spacing="40">
-
-                     <!-- Sekcja tekstowa po lewej stronie -->
-                     <VBox spacing="15" HBox.hgrow="ALWAYS" style="-fx-font-size: 14px;">
-                        <Label text="Hi, I'm Filip — the creator of this video player. One day, I started missing the times when I could watch cartoons on FoxKids, Jetix, and Cartoon Network. That's when I decided to take the first step toward creating software that would help me relive those childhood memories. I hope that, just like me, you'll find FMZ Video Player useful too."
-                              wrapText="true" />
-                        <VBox spacing="5">
-                           <Label text="Contact:" style="-fx-font-weight: bold; -fx-font-size: 16px;" />
-                           <Label text="- https://github.com/filipmikolajzeglen" />
-                           <Label text="- Discord: filipmikolajgabriel" />
-                        </VBox>
-                     </VBox>
-
-                     <!-- Sekcja z obrazem po prawej stronie -->
-                     <ImageView fitHeight="150.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
-                        <clip>
-                           <Circle radius="75" centerX="75" centerY="75" />
-                        </clip>
-                        <Image url="@/jiji.png" />
-                     </ImageView>
-                  </HBox>
-                  <Label text="Future plans" style="-fx-font-weight: bold; -fx-font-size: 20px" />
-                  <VBox spacing="15" HBox.hgrow="ALWAYS">
-                     <VBox spacing="5">
-                        <Label text="- Adding an advanced schedule for videos (Mon, Tue, Wed, Thu, Fri, Sat, Sun)" />
-                        <Label text="- Option to configure episode previews" />
-                        <Label text="- Ability to build custom schedules without using the automation tool" />
-                        <Label text="- Activation/Deactivation of audio normalization" />
-                        <Label text="- Removal of video speed configuration and replacement with dynamic settings access" />
-                        <Label text="- Control of the Player via a mobile app" />
-                     </VBox>
-                  </VBox>
-               </VBox>
+               <fx:include fx:id="aboutContent" source="tabs/about-tab.fxml"/>
 
                <!-- Zawartość zakładki "Advanced Settings" -->
                <VBox fx:id="advancedContent" alignment="TOP_CENTER" managed="false" spacing="30"
