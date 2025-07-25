@@ -7,6 +7,7 @@ module com.filip.tvscheduler.fmztvscheduler {
 
     requires static lombok;
    requires java.xml;
+   requires jcodec;
 
    exports com.filipmikolajzeglen.fmzvideoplayer;
     exports com.filipmikolajzeglen.fmzvideoplayer.database;

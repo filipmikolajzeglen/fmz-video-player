@@ -88,6 +88,7 @@
                      <columns>
                         <TableColumn fx:id="seriesNameColumn" text="Series Name" />
                         <TableColumn fx:id="episodeCountColumn" text="Episodes" />
+                        <TableColumn fx:id="totalWatchingTimeColumn" text="Total watching time" />
                      </columns>
                   </TableView>
                </VBox>

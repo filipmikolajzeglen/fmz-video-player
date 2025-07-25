@@ -35,7 +35,7 @@ class VideoPlayerSetup
       FMZDatabase<Video> database = new FMZDatabase<>(Video.class);
       database.setDatabaseName(FMZVideoPlayerConfiguration.Paths.FMZ_DATABASE_NAME);
       database.setTableName(FMZVideoPlayerConfiguration.Paths.FMZ_TABLE_NAME);
-      database.setDirectoryPath(FMZVideoPlayerConfiguration.Paths.FMZ_DIRECTORY_PATH);
+      database.setDirectoryPath(FMZVideoPlayerConfiguration.Paths.APP_DATA_DIRECTORY);
       return new VideoPlayerService(database);
    }
 

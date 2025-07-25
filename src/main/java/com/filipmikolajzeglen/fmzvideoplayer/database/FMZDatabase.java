@@ -74,12 +74,15 @@ public class FMZDatabase<DOCUMENT>
       saveAll(data);
    }
 
+   @SuppressWarnings("ResultOfMethodCallIgnored")
    public void saveAll(List<DOCUMENT> items)
    {
       data = new ArrayList<>(items);
       try
       {
-         objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(filename), data);
+         File file = new File(filename);
+         file.getParentFile().mkdirs();
+         objectMapper.writerWithDefaultPrettyPrinter().writeValue(file, data);
          LOGGER.info("FMZDatabase: Data saved to file " + filename);
       }
       catch (IOException e)
@@ -87,6 +90,7 @@ public class FMZDatabase<DOCUMENT>
          LOGGER.error("FMZDatabase: Error while saving: " + e.getMessage());
       }
    }
+
 
    public List<DOCUMENT> findAll()
    {

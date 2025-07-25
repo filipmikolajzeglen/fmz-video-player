@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import com.filipmikolajzeglen.fmzvideoplayer.database.FMZDatabase;
 import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
+import com.filipmikolajzeglen.fmzvideoplayer.video.VideoMetadataReader;
 import com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlayerIcons;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -20,6 +21,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -44,7 +46,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -53,7 +54,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Font;
@@ -75,6 +75,8 @@ public class StartupConfigController
    private TableColumn<SeriesInfo, String> seriesNameColumn;
    @FXML
    private TableColumn<SeriesInfo, Integer> episodeCountColumn;
+   @FXML
+   private TableColumn<SeriesInfo, String> totalWatchingTimeColumn;
    @FXML
    private TextField videoMainSourceField;
    @FXML
@@ -148,6 +150,58 @@ public class StartupConfigController
    @FXML
    private TextArea consoleLogTextArea;
 
+   /**
+    * Inner class representing information about a series.
+    */
+   public static class SeriesInfo
+   {
+      private final SimpleStringProperty name;
+      private final SimpleIntegerProperty episodeCount;
+      private final SimpleStringProperty totalWatchingTime;
+
+      public SeriesInfo(String name, int episodeCount)
+      {
+         this.name = new SimpleStringProperty(name);
+         this.episodeCount = new SimpleIntegerProperty(episodeCount);
+         this.totalWatchingTime = new SimpleStringProperty("...");
+      }
+
+      public String getName()
+      {
+         return name.get();
+      }
+
+      public SimpleStringProperty nameProperty()
+      {
+         return name;
+      }
+
+      public int getEpisodeCount()
+      {
+         return episodeCount.get();
+      }
+
+      public SimpleIntegerProperty episodeCountProperty()
+      {
+         return episodeCount;
+      }
+
+      public String getTotalWatchingTime()
+      {
+         return totalWatchingTime.get();
+      }
+
+      public SimpleStringProperty totalWatchingTimeProperty()
+      {
+         return totalWatchingTime;
+      }
+
+      public void setTotalWatchingTime(String time)
+      {
+         this.totalWatchingTime.set(time);
+      }
+   }
+
    @FXML
    public void initialize()
    {
@@ -158,12 +212,16 @@ public class StartupConfigController
          });
       });
 
-      seriesNameColumn.prefWidthProperty().bind(seriesTable.widthProperty().multiply(0.70));
-      episodeCountColumn.prefWidthProperty().bind(seriesTable.widthProperty().multiply(0.262));
+      // Ustawienie szerokości kolumn
+      seriesNameColumn.prefWidthProperty().bind(seriesTable.widthProperty().multiply(0.50));
+      episodeCountColumn.prefWidthProperty().bind(seriesTable.widthProperty().multiply(0.20));
+      totalWatchingTimeColumn.prefWidthProperty().bind(seriesTable.widthProperty().multiply(0.26));
 
-      seriesNameColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getName()));
-      episodeCountColumn.setCellValueFactory(
-            data -> new SimpleIntegerProperty(data.getValue().getEpisodeCount()).asObject());
+      // Bindowanie danych do kolumn
+      seriesNameColumn.setCellValueFactory(data -> data.getValue().nameProperty());
+      episodeCountColumn.setCellValueFactory(data -> data.getValue().episodeCountProperty().asObject());
+      totalWatchingTimeColumn.setCellValueFactory(data -> data.getValue().totalWatchingTimeProperty());
+
       videoMainSourceField.textProperty().addListener((obs, oldVal, newVal) -> updateSeriesData(newVal));
 
       tabMapping = new HashMap<>();
@@ -265,6 +323,9 @@ public class StartupConfigController
       List<SeriesInfo> series = getSeriesFolders(path);
       ObservableList<SeriesInfo> tableItems = FXCollections.observableArrayList(series);
       seriesTable.setItems(tableItems);
+
+      // Start duration calculation in the background
+      startDurationCalculation(path, tableItems);
 
       List<String> seriesNames = series.stream()
             .map(SeriesInfo::getName)
@@ -473,7 +534,7 @@ public class StartupConfigController
       configDatabase = new FMZDatabase<>(PlayerConfiguration.class);
       configDatabase.setDatabaseName(configFile.getName().replace(".json", ""));
       configDatabase.setDirectoryPath(configFile.getParent());
-      configDatabase.setTableName("Configuration");
+      configDatabase.setTableName(FMZVideoPlayerConfiguration.Paths.CONFIG_TABLE_NAME);
       configDatabase.initialize();
       if (!configDatabase.findAll().isEmpty())
       {
@@ -555,7 +616,6 @@ public class StartupConfigController
       String mainSource = videoMainSourceField.getText();
       File file = new File(mainSource);
       FMZVideoPlayerConfiguration.Paths.VIDEO_MAIN_SOURCE = mainSource;
-      FMZVideoPlayerConfiguration.Paths.FMZ_DIRECTORY_PATH = file.getParent();
       FMZVideoPlayerConfiguration.Paths.FMZ_TABLE_NAME = file.getName();
 
       // Ustawienia dla Quick Start
@@ -638,8 +698,6 @@ public class StartupConfigController
             (int) (color.getBlue() * 255));
    }
 
-   // --- Nowe metody i klasy dla widoku szczegółów serii ---
-
    public static class EpisodeInfo
    {
       private final SimpleStringProperty name;
@@ -687,12 +745,10 @@ public class StartupConfigController
    private void showSeriesDetailView(String basePath, SeriesInfo seriesInfo)
    {
       BorderPane detailView = new BorderPane();
-      detailView.setPadding(new Insets(0));
-      detailView.setBackground(Background.fill(Paint.valueOf("#ffffff")));
+      detailView.setPadding(new Insets(10));
 
-      // Lewa strona: Tabela z odcinkami
       TableView<EpisodeInfo> episodeTable = new TableView<>();
-      TableColumn<EpisodeInfo, String> nameColumn = new TableColumn<>("Episode name");
+      TableColumn<EpisodeInfo, String> nameColumn = new TableColumn<>("Tytuł odcinka");
       nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
       episodeTable.getColumns().add(nameColumn);
       nameColumn.prefWidthProperty().bind(episodeTable.widthProperty().multiply(0.98));
@@ -701,11 +757,9 @@ public class StartupConfigController
       episodeTable.setItems(FXCollections.observableArrayList(episodes));
       detailView.setCenter(episodeTable);
 
-      // Prawa strona: Okładka i przyciski
       VBox rightPane = new VBox(10);
       rightPane.setAlignment(Pos.TOP_CENTER);
       rightPane.setPadding(new Insets(0, 0, 0, 10));
-      rightPane.setBackground(Background.fill(Paint.valueOf("#ffffff")));
 
       Node coverView;
       File coverFile = findCoverFile(basePath, seriesInfo.getName());
@@ -726,15 +780,13 @@ public class StartupConfigController
          coverView = createCoverPlaceholder(seriesInfo.getName());
       }
 
-      Button playAllButton = new Button("Play all");
+      Button playAllButton = new Button("Odtwórz wszystko");
       playAllButton.setOnAction(event -> {
-         // Ustawienie specjalnej flagi, który serial ma być odtworzony
          FMZVideoPlayerConfiguration.Playback.PLAYLIST_TO_START = seriesInfo.getName();
-         // Wywołanie standardowej akcji startu
          onPlayClicked();
       });
 
-      Button backButton = new Button("Back to library");
+      Button backButton = new Button("Wróć do biblioteki");
       backButton.setOnAction(event -> libraryContent.setContent(libraryTilePane));
 
       rightPane.getChildren().addAll(coverView, playAllButton, backButton);
@@ -743,4 +795,62 @@ public class StartupConfigController
       libraryContent.setContent(detailView);
    }
 
+   private void startDurationCalculation(String basePath, ObservableList<SeriesInfo> seriesList)
+   {
+      Task<Void> task = new Task<>()
+      {
+         @Override
+         protected Void call()
+         {
+            for (SeriesInfo seriesInfo : seriesList)
+            {
+               if (isCancelled())
+               {
+                  break;
+               }
+
+               File seriesDir = new File(basePath, seriesInfo.getName());
+               File[] videoFiles = listVideoFiles(seriesDir);
+               long totalSeconds = Arrays.stream(videoFiles)
+                     .mapToLong(VideoMetadataReader::getDurationInSeconds)
+                     .sum();
+
+               String formattedDuration = formatDuration(totalSeconds);
+               Platform.runLater(() -> seriesInfo.setTotalWatchingTime(formattedDuration));
+            }
+            return null;
+         }
+      };
+      new Thread(task).start();
+   }
+
+   private File[] listVideoFiles(File dir)
+   {
+      if (dir == null || !dir.isDirectory())
+      {
+         return new File[0];
+      }
+      return dir.listFiles(file -> {
+         String name = file.getName().toLowerCase();
+         return file.isFile() && (name.endsWith(".mp4") || name.endsWith(".avi") || name.endsWith(".mkv"));
+      });
+   }
+
+   private String formatDuration(long totalSeconds)
+   {
+      if (totalSeconds <= 0)
+      {
+         return "0m";
+      }
+      long hours = totalSeconds / 3600;
+      long minutes = (totalSeconds % 3600) / 60;
+      if (hours > 0)
+      {
+         return String.format("%dh %02dm", hours, minutes);
+      }
+      else
+      {
+         return String.format("%dm", minutes);
+      }
+   }
 }

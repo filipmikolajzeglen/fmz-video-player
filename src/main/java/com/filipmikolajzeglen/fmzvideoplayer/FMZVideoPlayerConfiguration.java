@@ -1,5 +1,6 @@
 package com.filipmikolajzeglen.fmzvideoplayer;
 
+import java.io.File;
 import java.util.List;
 
 public class FMZVideoPlayerConfiguration
@@ -45,7 +46,8 @@ public class FMZVideoPlayerConfiguration
       public static String VIDEO_MAIN_SOURCE = "E:\\FoxKids";
       public static String FMZ_DATABASE_NAME = "FMZDB";
       public static String FMZ_TABLE_NAME = "FoxKids";
-      public static String FMZ_DIRECTORY_PATH = "E:\\";
+      public static final String APP_DATA_DIRECTORY = System.getenv("APPDATA") + File.separator + "FMZVideoPlayer";
+      public static final String CONFIG_TABLE_NAME = "Configuration";
       public static final String COMMERCIALS_FOLDER_NAME = "Commercials";
    }
 

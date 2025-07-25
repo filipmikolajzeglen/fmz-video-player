@@ -33,9 +33,11 @@ public class Video implements Serializable
    private boolean watched;
    private boolean reWatch;
    private int reWatchCount;
+   private long durationInSeconds;
 
    public static Video fromDirectoryAndFileName(File directory, String filename)
    {
+      File videoFile = new File(directory, filename);
       return Video.builder()
             .withId(createId(directory, filename))
             .withSeriesName(extractSeriesName(directory))
@@ -44,10 +46,10 @@ public class Video implements Serializable
             .withEpisodeNumber(extractEpisodeNumber(filename))
             .withExtension(extractExtension(filename))
             .withPath(buildPath(directory, filename))
-            .withAudioNormalizedVolume(null)
             .withWatched(false)
             .withReWatch(false)
             .withReWatchCount(0)
+            .withDurationInSeconds(VideoMetadataReader.getDurationInSeconds(videoFile))
             .build();
    }
 
