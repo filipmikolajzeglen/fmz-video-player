@@ -3,10 +3,12 @@ package com.filipmikolajzeglen.fmzvideoplayer;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import com.filipmikolajzeglen.fmzvideoplayer.database.FMZDatabase;
@@ -19,12 +21,16 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
@@ -34,18 +40,35 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
 public class StartupConfigController
 {
+   private static final Logger LOGGER = new Logger();
+
    private FMZDatabase<PlayerConfiguration> configDatabase;
-   private Map<Toggle, VBox> tabMapping;
+   private Map<Toggle, Region> tabMapping;
    @FXML
    private TableView<SeriesInfo> seriesTable;
    @FXML
@@ -71,6 +94,8 @@ public class StartupConfigController
    @FXML
    private ToggleButton quickStartTab;
    @FXML
+   private ToggleButton libraryTab;
+   @FXML
    private ToggleButton advancedTab;
    @FXML
    private ToggleButton aboutTab;
@@ -80,6 +105,10 @@ public class StartupConfigController
    private ToggleButton tvScheduleTab;
    @FXML
    private VBox quickStartContent;
+   @FXML
+   private ScrollPane libraryContent;
+   @FXML
+   private TilePane libraryTilePane;
    @FXML
    private VBox advancedContent;
    @FXML
@@ -139,6 +168,7 @@ public class StartupConfigController
 
       tabMapping = new HashMap<>();
       tabMapping.put(quickStartTab, quickStartContent);
+      tabMapping.put(libraryTab, libraryContent);
       tabMapping.put(advancedTab, advancedContent);
       tabMapping.put(aboutTab, aboutContent);
       tabMapping.put(tvScheduleTab, tvScheduleContent);
@@ -150,11 +180,21 @@ public class StartupConfigController
             tabsGroup.selectToggle(oldToggle);
             return;
          }
+
+         // Jeśli wybrano zakładkę Biblioteka, odśwież widok
+         if (newToggle == libraryTab)
+         {
+            // Zresetuj do głównego widoku kafelków
+            libraryContent.setContent(libraryTilePane);
+            // Odśwież dane
+            updateSeriesData(videoMainSourceField.getText());
+         }
+
          tabMapping.values().forEach(pane -> {
             pane.setVisible(false);
             pane.setManaged(false);
          });
-         VBox selectedPane = tabMapping.get(newToggle);
+         Region selectedPane = tabMapping.get(newToggle);
          if (selectedPane != null)
          {
             selectedPane.setVisible(true);
@@ -232,6 +272,168 @@ public class StartupConfigController
             .collect(Collectors.toList());
       ObservableList<String> comboItems = FXCollections.observableArrayList(seriesNames);
       seriesComboBox.setItems(comboItems);
+
+      updateLibraryView(path, series);
+   }
+
+   private void updateLibraryView(String basePath, List<SeriesInfo> series)
+   {
+      libraryTilePane.getChildren().clear();
+      for (SeriesInfo seriesInfo : series)
+      {
+         VBox seriesTile = createSeriesTile(basePath, seriesInfo);
+         libraryTilePane.getChildren().add(seriesTile);
+      }
+   }
+
+   private VBox createSeriesTile(String basePath, SeriesInfo seriesInfo)
+   {
+      VBox tileContainer = new VBox(5);
+      tileContainer.setAlignment(Pos.TOP_CENTER);
+      tileContainer.setOnMouseClicked(event -> {
+         if (event.getButton() == MouseButton.PRIMARY)
+         {
+            showSeriesDetailView(basePath, seriesInfo);
+         }
+      });
+
+      Node coverView;
+      File coverFile = findCoverFile(basePath, seriesInfo.getName());
+
+      if (coverFile != null)
+      {
+         try
+         {
+            Image coverImage = new Image(coverFile.toURI().toString(), 150, 225, false, true);
+            ImageView imageView = new ImageView(coverImage);
+            imageView.setFitWidth(150);
+            imageView.setFitHeight(225);
+
+            Rectangle clip = new Rectangle(150, 225);
+            clip.setArcWidth(10);
+            clip.setArcHeight(10);
+            imageView.setClip(clip);
+
+            coverView = imageView;
+         }
+         catch (Exception e)
+         {
+            LOGGER.error("Failed to load cover image: " + coverFile.getPath());
+            coverView = createCoverPlaceholder(seriesInfo.getName());
+         }
+      }
+      else
+      {
+         coverView = createCoverPlaceholder(seriesInfo.getName());
+      }
+
+      Label titleLabel = new Label(seriesInfo.getName());
+      titleLabel.setWrapText(true);
+      titleLabel.setTextAlignment(TextAlignment.CENTER);
+
+      // Kluczowe rozwiązanie: Wrapper `StackPane` z narzuconą szerokością.
+      // `StackPane` domyślnie wycentruje `titleLabel` wewnątrz siebie.
+      StackPane titleWrapper = new StackPane(titleLabel);
+      titleWrapper.setPrefWidth(150); // Ustawia szerokość identyczną jak dla okładki.
+
+      tileContainer.getChildren().addAll(coverView, titleWrapper);
+      return tileContainer;
+   }
+
+   private Node createCoverPlaceholder(String seriesName)
+   {
+      StackPane placeholder = new StackPane();
+      placeholder.setPrefSize(150, 225);
+      placeholder.setMinSize(150, 225);
+      placeholder.setMaxSize(150, 225);
+
+      Rectangle background = new Rectangle(150, 225);
+      background.setArcWidth(10);
+      background.setArcHeight(10);
+      background.setFill(generateRandomColor());
+
+      Text initials = new Text(getInitials(seriesName));
+      initials.setFont(Font.font("Arial", FontWeight.BOLD, 40));
+      initials.setFill(Color.WHITE);
+
+      placeholder.getChildren().addAll(background, initials);
+      StackPane.setAlignment(initials, Pos.CENTER);
+
+      return placeholder;
+   }
+
+   private File findCoverFile(String basePath, String seriesName)
+   {
+      File seriesDir = new File(basePath, seriesName);
+      File coverDir = new File(seriesDir, "Cover");
+
+      if (coverDir.exists() && coverDir.isDirectory())
+      {
+         File[] coverFiles = coverDir.listFiles(file -> {
+            String name = file.getName().toLowerCase();
+            return file.isFile() && (name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".jpeg"));
+         });
+
+         if (coverFiles != null && coverFiles.length > 0)
+         {
+            return Arrays.stream(coverFiles).findFirst().orElse(null);
+         }
+      }
+      return null;
+   }
+
+   private String getInitials(String name)
+   {
+      if (name == null || name.trim().isEmpty())
+      {
+         return "?";
+      }
+
+      // Usuwa wszystko, co nie jest literą, cyfrą ani białą spacją.
+      String cleanedName = name.replaceAll("[^a-zA-Z0-9\\s]", "");
+      String[] words = cleanedName.trim().split("\\s+");
+
+      // Filtruj puste stringi, które mogły powstać
+      List<String> validWords = Arrays.stream(words)
+            .filter(w -> !w.isEmpty())
+            .collect(Collectors.toList());
+
+      if (validWords.isEmpty())
+      {
+         return "?";
+      }
+
+      if (validWords.size() > 1)
+      {
+         // Dwa lub więcej słów: pierwsze litery pierwszych dwóch słów.
+         String firstInitial = validWords.get(0).substring(0, 1);
+         String secondInitial = validWords.get(1).substring(0, 1);
+         return (firstInitial + secondInitial).toUpperCase();
+      }
+      else
+      {
+         // Jedno słowo.
+         String word = validWords.get(0);
+         if (word.length() > 1)
+         {
+            // Zwróć pierwsze dwie litery.
+            return word.substring(0, 2).toUpperCase();
+         }
+         else
+         {
+            // Zwróć jedną literę.
+            return word.substring(0, 1).toUpperCase();
+         }
+      }
+   }
+
+   private Color generateRandomColor()
+   {
+      Random random = new Random();
+      double hue = random.nextDouble() * 360;
+      double saturation = 0.5 + random.nextDouble() * 0.2; // 0.5-0.7 for pleasant colors
+      double brightness = 0.5 + random.nextDouble() * 0.2; // 0.5-0.7 to avoid too light/dark
+      return Color.hsb(hue, saturation, brightness);
    }
 
    private List<SeriesInfo> getSeriesFolders(String mainPath)
@@ -435,4 +637,110 @@ public class StartupConfigController
             (int) (color.getGreen() * 255),
             (int) (color.getBlue() * 255));
    }
+
+   // --- Nowe metody i klasy dla widoku szczegółów serii ---
+
+   public static class EpisodeInfo
+   {
+      private final SimpleStringProperty name;
+
+      public EpisodeInfo(String name)
+      {
+         String displayName = name.lastIndexOf('.') > 0 ? name.substring(0, name.lastIndexOf('.')) : name;
+         this.name = new SimpleStringProperty(displayName);
+      }
+
+      public String getName()
+      {
+         return name.get();
+      }
+
+      public SimpleStringProperty nameProperty()
+      {
+         return name;
+      }
+   }
+
+   private List<EpisodeInfo> getEpisodesForSeries(String basePath, String seriesName)
+   {
+      File seriesDir = new File(basePath, seriesName);
+      if (!seriesDir.isDirectory())
+      {
+         return Collections.emptyList();
+      }
+      File[] videoFiles = seriesDir.listFiles(file -> {
+         String name = file.getName().toLowerCase();
+         return file.isFile() && (name.endsWith(".mp4") || name.endsWith(".avi") || name.endsWith(".mkv"));
+      });
+
+      if (videoFiles == null)
+      {
+         return Collections.emptyList();
+      }
+
+      return Arrays.stream(videoFiles)
+            .map(file -> new EpisodeInfo(file.getName()))
+            .sorted(Comparator.comparing(EpisodeInfo::getName))
+            .collect(Collectors.toList());
+   }
+
+   private void showSeriesDetailView(String basePath, SeriesInfo seriesInfo)
+   {
+      BorderPane detailView = new BorderPane();
+      detailView.setPadding(new Insets(0));
+      detailView.setBackground(Background.fill(Paint.valueOf("#ffffff")));
+
+      // Lewa strona: Tabela z odcinkami
+      TableView<EpisodeInfo> episodeTable = new TableView<>();
+      TableColumn<EpisodeInfo, String> nameColumn = new TableColumn<>("Episode name");
+      nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+      episodeTable.getColumns().add(nameColumn);
+      nameColumn.prefWidthProperty().bind(episodeTable.widthProperty().multiply(0.98));
+
+      List<EpisodeInfo> episodes = getEpisodesForSeries(basePath, seriesInfo.getName());
+      episodeTable.setItems(FXCollections.observableArrayList(episodes));
+      detailView.setCenter(episodeTable);
+
+      // Prawa strona: Okładka i przyciski
+      VBox rightPane = new VBox(10);
+      rightPane.setAlignment(Pos.TOP_CENTER);
+      rightPane.setPadding(new Insets(0, 0, 0, 10));
+      rightPane.setBackground(Background.fill(Paint.valueOf("#ffffff")));
+
+      Node coverView;
+      File coverFile = findCoverFile(basePath, seriesInfo.getName());
+      if (coverFile != null)
+      {
+         try
+         {
+            Image coverImage = new Image(coverFile.toURI().toString(), 150, 225, false, true);
+            coverView = new ImageView(coverImage);
+         }
+         catch (Exception e)
+         {
+            coverView = createCoverPlaceholder(seriesInfo.getName());
+         }
+      }
+      else
+      {
+         coverView = createCoverPlaceholder(seriesInfo.getName());
+      }
+
+      Button playAllButton = new Button("Play all");
+      playAllButton.setOnAction(event -> {
+         // Ustawienie specjalnej flagi, który serial ma być odtworzony
+         FMZVideoPlayerConfiguration.Playback.PLAYLIST_TO_START = seriesInfo.getName();
+         // Wywołanie standardowej akcji startu
+         onPlayClicked();
+      });
+
+      Button backButton = new Button("Back to library");
+      backButton.setOnAction(event -> libraryContent.setContent(libraryTilePane));
+
+      rightPane.getChildren().addAll(coverView, playAllButton, backButton);
+      detailView.setRight(rightPane);
+
+      libraryContent.setContent(detailView);
+   }
+
 }

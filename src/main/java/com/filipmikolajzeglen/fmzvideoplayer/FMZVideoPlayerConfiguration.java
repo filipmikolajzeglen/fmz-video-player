@@ -37,6 +37,7 @@ public class FMZVideoPlayerConfiguration
 
       public static boolean USE_CUSTOM_SCHEDULE = false;
       public static List<String> CUSTOM_SCHEDULE = null;
+      public static String PLAYLIST_TO_START = null;
    }
 
    public static final class Paths

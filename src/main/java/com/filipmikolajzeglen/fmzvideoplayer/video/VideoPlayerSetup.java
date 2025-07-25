@@ -59,7 +59,16 @@ class VideoPlayerSetup
    {
       videoPlayer.getVideoPlayerService().initializeFMZDB();
       List<Video> videos;
-      if (FMZVideoPlayerConfiguration.Playback.USE_CUSTOM_SCHEDULE &&
+
+      if (FMZVideoPlayerConfiguration.Playback.PLAYLIST_TO_START != null)
+      {
+         LOGGER.info(
+               "Creating playlist for a specific series: " + FMZVideoPlayerConfiguration.Playback.PLAYLIST_TO_START);
+         videos = videoPlayer.getVideoPlayerService().createPlaylistForSeries(FMZVideoPlayerConfiguration.Playback.PLAYLIST_TO_START);
+         // Wyczyszczenie flagi po jej użyciu
+         FMZVideoPlayerConfiguration.Playback.PLAYLIST_TO_START = null;
+      }
+      else if (FMZVideoPlayerConfiguration.Playback.USE_CUSTOM_SCHEDULE &&
             FMZVideoPlayerConfiguration.Playback.CUSTOM_SCHEDULE != null &&
             !FMZVideoPlayerConfiguration.Playback.CUSTOM_SCHEDULE.isEmpty())
       {
@@ -76,7 +85,6 @@ class VideoPlayerSetup
       videoPlayer.setPlaylistManager(playlistManager);
       LOGGER.info(playlistManager.createPlaylistLog());
    }
-
 
    private void startFirstVideoIfAvailable()
    {

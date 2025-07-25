@@ -107,7 +107,7 @@ class VideoPlayerService
       return applyGlobalEpisodeLimit(videosWithPerSeriesLimit);
    }
 
-   private List<Video> getAllUnwatchedVideo()
+   List<Video> getAllUnwatchedVideo()
    {
       return database.findAll().stream()
             .filter(video -> !video.isWatched())
@@ -179,6 +179,23 @@ class VideoPlayerService
       }
 
       return customScheduleVideos;
+   }
+
+   public List<Video> createPlaylistForSeries(String seriesName)
+   {
+      File mainDir = new File(FMZVideoPlayerConfiguration.Paths.VIDEO_MAIN_SOURCE);
+      File seriesDir = new File(mainDir, seriesName);
+
+      if (seriesDir.exists() && seriesDir.isDirectory())
+      {
+         LOGGER.info("Creating playlist for series: " + seriesName);
+         return getAllEpisodesOfCartoonFromDirectory(seriesDir);
+      }
+      else
+      {
+         LOGGER.warning("Directory for series not found: " + seriesName);
+         return Collections.emptyList();
+      }
    }
 
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.String?><?import javafx.collections.FXCollections?><?import javafx.scene.control.Button?><?import javafx.scene.control.CheckBox?><?import javafx.scene.control.ColorPicker?><?import javafx.scene.control.ComboBox?><?import javafx.scene.control.Label?><?import javafx.scene.control.ListView?><?import javafx.scene.control.Slider?><?import javafx.scene.control.Spinner?><?import javafx.scene.control.TableColumn?><?import javafx.scene.control.TableView?><?import javafx.scene.control.TextArea?><?import javafx.scene.control.TextField?><?import javafx.scene.control.ToggleButton?><?import javafx.scene.control.ToggleGroup?><?import javafx.scene.image.Image?><?import javafx.scene.image.ImageView?><?import javafx.scene.layout.BorderPane?><?import javafx.scene.layout.ColumnConstraints?><?import javafx.scene.layout.GridPane?><?import javafx.scene.layout.HBox?><?import javafx.scene.layout.RowConstraints?><?import javafx.scene.layout.StackPane?><?import javafx.scene.layout.VBox?><?import javafx.scene.paint.Color?><?import javafx.scene.shape.Circle?><?import javafx.scene.shape.SVGPath?>
-<BorderPane prefHeight="540.0" prefWidth="810.0" stylesheets="@../../../css/style.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.filipmikolajzeglen.fmzvideoplayer.StartupConfigController">
+<?import java.lang.String?><?import javafx.collections.FXCollections?><?import javafx.scene.control.Button?><?import javafx.scene.control.CheckBox?><?import javafx.scene.control.ColorPicker?><?import javafx.scene.control.ComboBox?><?import javafx.scene.control.Label?><?import javafx.scene.control.ListView?><?import javafx.scene.control.ScrollPane?><?import javafx.scene.control.Slider?><?import javafx.scene.control.Spinner?><?import javafx.scene.control.TableColumn?><?import javafx.scene.control.TableView?><?import javafx.scene.control.TextArea?><?import javafx.scene.control.TextField?><?import javafx.scene.control.ToggleButton?><?import javafx.scene.control.ToggleGroup?><?import javafx.scene.image.Image?><?import javafx.scene.image.ImageView?><?import javafx.scene.layout.BorderPane?><?import javafx.scene.layout.ColumnConstraints?><?import javafx.scene.layout.GridPane?><?import javafx.scene.layout.HBox?><?import javafx.scene.layout.RowConstraints?><?import javafx.scene.layout.StackPane?><?import javafx.scene.layout.TilePane?><?import javafx.scene.layout.VBox?><?import javafx.scene.paint.Color?><?import javafx.scene.shape.Circle?><?import javafx.scene.shape.SVGPath?>
+<BorderPane prefHeight="800.0" prefWidth="1240.0" stylesheets="@../../../css/style.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.filipmikolajzeglen.fmzvideoplayer.StartupConfigController">
 
    <!-- Lewy panel z zakładkami -->
    <left>
@@ -13,6 +13,16 @@
             <toggleGroup>
                <ToggleGroup fx:id="tabsGroup" />
             </toggleGroup>
+         </ToggleButton>
+
+         <ToggleButton fx:id="libraryTab" styleClass="tab-button" text="Library" toggleGroup="$tabsGroup">
+            <graphic>
+               <SVGPath content="m20 5h-16a3 3 0 0 0 -3 3v12a3 3 0 0 0 3 3h16a3 3 0 0 0 3-3v-12a3 3 0 0 0 -3-3z
+        m1 15a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1-1v-12a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1z
+        M 7 1 H 22 A 1 1 0 0 1 22 3 H 2 A 1 1 0 1 1 2 1 Z
+        M 15.85 13 l-6-3.6c-.37-.23-.83-.23-1.21-.01s-.61.61-.61 1.04v7.2c0 .43.23.83.61 1.04.18.11.38.16.59.16s.43-.06.61-.17l6-3.6c.36-.22.59-.61.59-1.03s-.22-.82-.59-1.03z
+        m-5.83 3.4v-4.79l3.99 2.39-3.71 2.22z" fill="#1c1c1c" scaleX="0.7" scaleY="0.7" />
+            </graphic>
          </ToggleButton>
 
          <ToggleButton fx:id="advancedTab" styleClass="tab-button" text="Advanced Settings" toggleGroup="$tabsGroup">
@@ -80,11 +90,15 @@
                         <TableColumn fx:id="episodeCountColumn" text="Episodes" />
                      </columns>
                   </TableView>
-
                </VBox>
 
+               <!-- Zawartość zakładki "Library" -->
+               <ScrollPane fx:id="libraryContent" fitToWidth="true" managed="false" style="-fx-background-color: white; -fx-padding: 10;" visible="false">
+                  <TilePane fx:id="libraryTilePane" hgap="20" vgap="20" style="-fx-background-color: white;"/>
+               </ScrollPane>
+
                <!-- Zawartość zakładki "TV Schedule" -->
-               <VBox fx:id="tvScheduleContent" alignment="TOP_LEFT" managed="false" spacing="15" style="-fx-padding: 11 40 40 40; -fx-background-color: white;" visible="false">
+               <VBox fx:id="tvScheduleContent" managed="false" spacing="15" style="-fx-padding: 11 40 40 40; -fx-background-color: white;" visible="false">
                   <CheckBox fx:id="useCustomScheduleCheckBox" text="Use custom schedule" style="-fx-font-size: 16px;" />
                   <GridPane fx:id="scheduleGridPane" hgap="10" vgap="10" maxWidth="Infinity">
                      <columnConstraints>
@@ -103,7 +117,7 @@
                </VBox>
 
                <!-- Zawartość zakładki "Console logs" -->
-               <VBox fx:id="consoleLogContent" alignment="TOP_LEFT" managed="false" spacing="15" style="-fx-padding: 11 40 40 40; -fx-background-color: white;" visible="false">
+               <VBox fx:id="consoleLogContent" managed="false" spacing="15" style="-fx-padding: 11 40 40 40; -fx-background-color: white;" visible="false">
                   <Label text="Console Log" style="-fx-font-weight: bold; -fx-font-size: 18px" />
                   <TextArea fx:id="consoleLogTextArea" editable="false" wrapText="true" VBox.vgrow="ALWAYS" />
                </VBox>
@@ -119,9 +133,9 @@
                         <Label text="Hi, I'm Filip — the creator of this video player. One day, I started missing the times when I could watch cartoons on FoxKids, Jetix, and Cartoon Network. That's when I decided to take the first step toward creating software that would help me relive those childhood memories. I hope that, just like me, you'll find FMZ Video Player useful too."
                               wrapText="true" />
                         <VBox spacing="5">
-                           <Label text="Contact:" style="-fx-font-weight: bold;" />
-                           <Label text="https://github.com/filipmikolajzeglen" />
-                           <Label text="Discord: filipmikolajgabriel" />
+                           <Label text="Contact:" style="-fx-font-weight: bold; -fx-font-size: 16px;" />
+                           <Label text="- https://github.com/filipmikolajzeglen" />
+                           <Label text="- Discord: filipmikolajgabriel" />
                         </VBox>
                      </VBox>
 
@@ -134,7 +148,7 @@
                      </ImageView>
                   </HBox>
                   <Label text="Future plans" style="-fx-font-weight: bold; -fx-font-size: 20px" />
-                  <VBox spacing="15" HBox.hgrow="ALWAYS" style="-fx-font-size: 13px;">
+                  <VBox spacing="15" HBox.hgrow="ALWAYS">
                      <VBox spacing="5">
                         <Label text="- Adding an advanced schedule for videos (Mon, Tue, Wed, Thu, Fri, Sat, Sun)" />
                         <Label text="- Option to configure episode previews" />
