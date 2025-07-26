@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?><?import javafx.collections.FXCollections?><?import javafx.scene.control.CheckBox?><?import javafx.scene.control.ColorPicker?><?import javafx.scene.control.ComboBox?><?import javafx.scene.control.Label?><?import javafx.scene.control.Slider?><?import javafx.scene.control.Spinner?><?import javafx.scene.layout.ColumnConstraints?><?import javafx.scene.layout.GridPane?><?import javafx.scene.layout.HBox?><?import javafx.scene.layout.VBox?><?import javafx.scene.paint.Color?><?import javafx.scene.shape.SVGPath?>
+<VBox fx:id="advancedContent" alignment="TOP_CENTER" managed="false" spacing="30"
+      style="-fx-padding: 11 40 40 40; -fx-background-color: white;" visible="false"
+      xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.filipmikolajzeglen.fmzvideoplayer.AdvancedSettingsTabController">
+    <GridPane hgap="20" maxWidth="Infinity" vgap="10">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" percentWidth="45.0" />
+            <ColumnConstraints hgrow="SOMETIMES" percentWidth="30.0" />
+            <ColumnConstraints hgrow="SOMETIMES" percentWidth="25.0" />
+        </columnConstraints>
+
+        <!-- Wiersz 0: Styl ikon -->
+        <Label text="UI Settings" style="-fx-font-weight: bold; -fx-font-size: 18px" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+        <Label text="Icon style:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+
+        <ComboBox fx:id="iconStyleComboBox" maxWidth="Infinity" GridPane.rowIndex="1" GridPane.columnIndex="1">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Filled" />
+                    <String fx:value="Empty" />
+                </FXCollections>
+            </items>
+        </ComboBox>
+
+        <HBox alignment="CENTER_LEFT" spacing="15" GridPane.rowIndex="1" GridPane.columnIndex="2">
+            <SVGPath fx:id="previewPlayIcon" fill="#4d4d4d" scaleX="0.8" scaleY="0.8" />
+            <SVGPath fx:id="previewPauseIcon" fill="#4d4d4d" scaleX="0.8" scaleY="0.8" />
+            <SVGPath fx:id="previewNextIcon" fill="#4d4d4d" scaleX="0.8" scaleY="0.8" />
+            <SVGPath fx:id="previewVolumeIcon" fill="#4d4d4d" scaleX="0.8" scaleY="0.8" />
+        </HBox>
+
+        <!-- Wiersz 1: Kolor główny -->
+        <Label text="Primary color:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+        <ColorPicker fx:id="primaryColorPicker" maxWidth="Infinity" GridPane.rowIndex="2" GridPane.columnIndex="1">
+            <value>
+                <Color red="0.486" green="0.619" blue="0.968" />
+            </value>
+        </ColorPicker>
+        <Slider fx:id="colorPreviewSlider" disable="true" value="50" GridPane.rowIndex="2" GridPane.columnIndex="2" />
+
+        <!-- Wiersz 2: Kolor główny -->
+        <Label text="Commercials" style="-fx-font-weight: bold; -fx-font-size: 18px; -fx-padding: 11 0 0 0" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+        <Label text="Enable commercials between episodes:" GridPane.rowIndex="4" GridPane.columnIndex="0" />
+        <CheckBox fx:id="commercialsEnabledCheckBox" GridPane.rowIndex="4" GridPane.columnIndex="1" />
+
+        <Label text="Number of commercials to play:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+        <Spinner fx:id="commercialsCountSpinner" min="1" max="10" initialValue="4" editable="true" prefWidth="Infinity" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+    </GridPane>
+</VBox>
+

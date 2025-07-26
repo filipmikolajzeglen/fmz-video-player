@@ -7,17 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.filipmikolajzeglen.fmzvideoplayer.database.FMZDatabase;
-import com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlayerIcons;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Slider;
-import javafx.scene.control.Spinner;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
@@ -25,7 +17,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.SVGPath;
 import javafx.stage.Stage;
 
 public class StartupConfigController
@@ -50,29 +41,13 @@ public class StartupConfigController
    @FXML
    private AnchorPane libraryContent;
    @FXML
-   private VBox advancedContent;
+   private VBox advancedContent; // teraz to fx:include
    @FXML
    private VBox aboutContent;
    @FXML
    private VBox tvScheduleContent; // <-- zostaje, bo to fx:include
    @FXML
-   private ComboBox<String> iconStyleComboBox;
-   @FXML
-   private SVGPath previewPlayIcon;
-   @FXML
-   private SVGPath previewPauseIcon;
-   @FXML
-   private SVGPath previewNextIcon;
-   @FXML
-   private SVGPath previewVolumeIcon;
-   @FXML
-   private ColorPicker primaryColorPicker;
-   @FXML
-   private Slider colorPreviewSlider;
-   @FXML
-   private CheckBox commercialsEnabledCheckBox;
-   @FXML
-   private Spinner<Integer> commercialsCountSpinner;
+   private Button playButton;
    @FXML
    private VBox quickStartContent; // zmiana typu na VBox
    @FXML
@@ -89,8 +64,8 @@ public class StartupConfigController
    // Dodaj pole do obsługi TVScheduleTabController
    private TVScheduleTabController tvScheduleTabController;
 
-   @FXML
-   private Button playButton;
+   // Dodaj pole do obsługi AdvancedSettingsTabController
+   private AdvancedSettingsTabController advancedSettingsTabController;
 
    @FXML
    public void initialize()
@@ -123,6 +98,10 @@ public class StartupConfigController
          }
       }
 
+      // Pobierz kontroler AdvancedSettingsTabController z advancedContent
+      if (advancedContent != null) {
+         advancedSettingsTabController = (AdvancedSettingsTabController) advancedContent.getProperties().get("controller");
+      }
 
       // Dodaj słuchacza do pola tekstowego ze ścieżką źródłową
       if (quickStartTabController != null) {
@@ -138,9 +117,8 @@ public class StartupConfigController
 
       tabMapping = new HashMap<>();
       tabMapping.put(libraryTab, libraryContent);
-      tabMapping.put(advancedTab, advancedContent);
+      tabMapping.put(advancedTab, advancedContent); // advancedContent jako VBox z include
       tabMapping.put(aboutTab, aboutContent);
-      // Zamień tvScheduleContent na VBox z include
       tabMapping.put(tvScheduleTab, tvScheduleContent);
       tabMapping.put(consoleLogTab, consoleLogContent);
 
@@ -172,20 +150,6 @@ public class StartupConfigController
          }
       });
 
-      iconStyleComboBox.setValue("Filled");
-      iconStyleComboBox.valueProperty().addListener((obs, oldVal, newVal) -> updateIconPreview());
-      updateIconPreview();
-
-      commercialsCountSpinner.disableProperty().bind(Bindings.not(commercialsEnabledCheckBox.selectedProperty()));
-      primaryColorPicker.valueProperty().addListener((obs, oldColor, newColor) -> {
-         if (newColor != null)
-         {
-            updateSliderPreviewColor(newColor);
-         }
-      });
-
-      updateSliderPreviewColor(primaryColorPicker.getValue());
-
       loadPlayerConfiguration();
    }
 
@@ -194,37 +158,6 @@ public class StartupConfigController
    private javafx.scene.Node getNodeById(String id) {
       // Przeszukaj drzewo sceny od playButton
       return playButton.getScene().lookup("#" + id);
-   }
-
-   private void updateSliderPreviewColor(Color color)
-   {
-      String hexColor = toHexString(color);
-      String style = String.format("-fx-background-color: linear-gradient(to right, %s 50%%, #D3D3D3 50%%);", hexColor);
-
-      if (colorPreviewSlider.lookup(".track") != null)
-      {
-         colorPreviewSlider.lookup(".track").setStyle(style);
-      }
-      else
-      {
-         colorPreviewSlider.skinProperty().addListener((obs, oldSkin, newSkin) -> {
-            if (newSkin != null && colorPreviewSlider.lookup(".track") != null)
-            {
-               colorPreviewSlider.lookup(".track").setStyle(style);
-            }
-         });
-      }
-   }
-
-   private void updateIconPreview()
-   {
-      String selectedStyle = iconStyleComboBox.getValue();
-      String pathPrefix = "Empty".equals(selectedStyle) ? "/svg/empty" : "/svg/filled";
-
-      previewPlayIcon.setContent(VideoPlayerIcons.loadSvgContent(pathPrefix + "/play.svg"));
-      previewPauseIcon.setContent(VideoPlayerIcons.loadSvgContent(pathPrefix + "/pause.svg"));
-      previewNextIcon.setContent(VideoPlayerIcons.loadSvgContent(pathPrefix + "/next.svg"));
-      previewVolumeIcon.setContent(VideoPlayerIcons.loadSvgContent(pathPrefix + "/volume2.svg"));
    }
 
    private void loadPlayerConfiguration()
@@ -246,21 +179,15 @@ public class StartupConfigController
             quickStartTabController.getVideoMainSourceField().setText(config.getVideoMainSourcePath());
          }
 
-         commercialsEnabledCheckBox.setSelected(config.isCommercialsEnabled());
-
-         if (config.getIconStyle() != null)
-         {
-            iconStyleComboBox.setValue(config.getIconStyle());
-         }
-         if (config.getPrimaryColor() != null)
-         {
-            primaryColorPicker.setValue(Color.web(config.getPrimaryColor()));
-         }
-
-         tvScheduleTabController.getUseCustomScheduleCheckBox().setSelected(config.isUseCustomSchedule());
-         if (config.getCustomSchedule() != null)
-         {
-            tvScheduleTabController.getScheduleListView().setItems(FXCollections.observableArrayList(config.getCustomSchedule()));
+         // Ustawienia AdvancedSettingsTab
+         if (advancedSettingsTabController != null) {
+            advancedSettingsTabController.getCommercialsEnabledCheckBox().setSelected(config.isCommercialsEnabled());
+            if (config.getIconStyle() != null) {
+               advancedSettingsTabController.getIconStyleComboBox().setValue(config.getIconStyle());
+            }
+            if (config.getPrimaryColor() != null) {
+               advancedSettingsTabController.getPrimaryColorPicker().setValue(javafx.scene.paint.Color.web(config.getPrimaryColor()));
+            }
          }
       }
 
@@ -279,10 +206,10 @@ public class StartupConfigController
             quickStartTabController.getMaxSingleSeriesPerDay(),
             quickStartTabController.getMaxEpisodesPerDay(),
             quickStartTabController.getVideoMainSourcePath(),
-            iconStyleComboBox.getValue(),
-            toHexString(primaryColorPicker.getValue()),
-            commercialsEnabledCheckBox.isSelected(),
-            commercialsCountSpinner.getValue(),
+            advancedSettingsTabController.getIconStyleComboBox().getValue(),
+            advancedSettingsTabController.toHexString(advancedSettingsTabController.getPrimaryColorPicker().getValue()),
+            advancedSettingsTabController.getCommercialsEnabledCheckBox().isSelected(),
+            advancedSettingsTabController.getCommercialsCountSpinner().getValue(),
             tvScheduleTabController.getUseCustomScheduleCheckBox().isSelected(),
             new ArrayList<>(tvScheduleTabController.getScheduleListView().getItems())
       );
@@ -307,11 +234,11 @@ public class StartupConfigController
       savePlayerConfiguration();
 
       // 2. Ustaw wartości w statycznym obiekcie konfiguracyjnym
-      String selectedStyle = iconStyleComboBox.getValue();
+      String selectedStyle = advancedSettingsTabController.getIconStyleComboBox().getValue();
       FMZVideoPlayerConfiguration.Icons.PATH_TO_ICONS = "Empty".equals(selectedStyle) ? "/svg/empty" : "/svg/filled";
 
-      Color selectedColor = primaryColorPicker.getValue();
-      FMZVideoPlayerConfiguration.UI.PRIMARY_COLOR = toHexString(selectedColor);
+      Color selectedColor = advancedSettingsTabController.getPrimaryColorPicker().getValue();
+      FMZVideoPlayerConfiguration.UI.PRIMARY_COLOR = advancedSettingsTabController.toHexString(selectedColor);
 
       // Ustawienia dla Quick Start
       FMZVideoPlayerConfiguration.Playback.MAX_SINGLE_SERIES_PER_DAY = quickStartTabController.getMaxSingleSeriesPerDay();
@@ -319,8 +246,8 @@ public class StartupConfigController
       FMZVideoPlayerConfiguration.Paths.VIDEO_MAIN_SOURCE = quickStartTabController.getVideoMainSourcePath();
 
       // Ustawienia dla reklam
-      FMZVideoPlayerConfiguration.Playback.COMMERCIALS_ENABLED = commercialsEnabledCheckBox.isSelected();
-      FMZVideoPlayerConfiguration.Playback.COMMERCIAL_COUNT_BETWEEN_EPISODES = commercialsCountSpinner.getValue();
+      FMZVideoPlayerConfiguration.Playback.COMMERCIALS_ENABLED = advancedSettingsTabController.getCommercialsEnabledCheckBox().isSelected();
+      FMZVideoPlayerConfiguration.Playback.COMMERCIAL_COUNT_BETWEEN_EPISODES = advancedSettingsTabController.getCommercialsCountSpinner().getValue();
 
       // Ustawienia dla harmonogramu TV
       boolean useCustomSchedule = tvScheduleTabController.getUseCustomScheduleCheckBox().isSelected();
@@ -340,14 +267,6 @@ public class StartupConfigController
       FMZVideoPlayerApplication.launchMainPlayer(stage);
    }
 
-
-   private String toHexString(Color color)
-   {
-      return String.format("#%02X%02X%02X",
-            (int) (color.getRed() * 255),
-            (int) (color.getGreen() * 255),
-            (int) (color.getBlue() * 255));
-   }
 
    public static class EpisodeInfo
    {
