@@ -81,10 +81,7 @@
                </VBox>
 
                <!-- Zawartość zakładki "Console logs" -->
-               <VBox fx:id="consoleLogContent" managed="false" spacing="15" style="-fx-padding: 11 40 40 40; -fx-background-color: white;" visible="false">
-                  <Label text="Console Log" style="-fx-font-weight: bold; -fx-font-size: 18px" />
-                  <TextArea fx:id="consoleLogTextArea" editable="false" wrapText="true" VBox.vgrow="ALWAYS" />
-               </VBox>
+               <fx:include fx:id="consoleLogContent" source="tabs/consolelogs-tab.fxml"/>
 
                <!-- Zawartość zakładki "About" -->
                <fx:include fx:id="aboutContent" source="tabs/about-tab.fxml"/>

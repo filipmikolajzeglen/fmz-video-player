@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="consoleLogContent" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.filipmikolajzeglen.fmzvideoplayer.ConsoleLogsTabController"
+      managed="false" spacing="15" style="-fx-padding: 11 40 40 40; -fx-background-color: white;" visible="false">
+    <Label text="Console Log" style="-fx-font-weight: bold; -fx-font-size: 18px" />
+    <TextArea fx:id="consoleLogTextArea" editable="false" wrapText="true" VBox.vgrow="ALWAYS" />
+</VBox>
+

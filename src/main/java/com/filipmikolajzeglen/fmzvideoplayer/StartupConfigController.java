@@ -7,9 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.filipmikolajzeglen.fmzvideoplayer.database.FMZDatabase;
-import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
 import com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlayerIcons;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -22,7 +20,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
@@ -37,10 +34,9 @@ import javafx.stage.Stage;
 
 public class StartupConfigController
 {
-   private static final Logger LOGGER = new Logger();
-
    private FMZDatabase<PlayerConfiguration> configDatabase;
    private Map<Toggle, Region> tabMapping;
+
    @FXML
    private ToggleGroup tabsGroup;
    @FXML
@@ -56,7 +52,7 @@ public class StartupConfigController
    @FXML
    private ToggleButton tvScheduleTab;
    @FXML
-   private AnchorPane libraryContent; // było: ScrollPane libraryContent
+   private AnchorPane libraryContent;
    @FXML
    private VBox advancedContent;
    @FXML
@@ -92,16 +88,17 @@ public class StartupConfigController
    @FXML
    private HBox scheduleButtonsHBox;
    @FXML
-   private VBox consoleLogContent;
-   @FXML
-   private TextArea consoleLogTextArea;
-   @FXML
    private VBox quickStartContent; // zmiana typu na VBox
+   @FXML
+   private VBox consoleLogContent; // <-- dodaj to pole
 
    private QuickStartTabController quickStartTabController; // referencja do kontrolera
 
    // Dodaj pole do obsługi LibraryTabController
    private LibraryTabController libraryTabController;
+
+   // Dodaj pole do obsługi ConsoleLogsTabController
+   private ConsoleLogsTabController consoleLogsTabController;
 
    @FXML
    private Button playButton;
@@ -109,20 +106,22 @@ public class StartupConfigController
    @FXML
    public void initialize()
    {
-      // Zarejestruj słuchacza, który będzie aktualizował pole TextArea
-      Logger.addListener(plainMessage -> {
-         Platform.runLater(() -> {
-            consoleLogTextArea.appendText(plainMessage + "\n");
-         });
-      });
+      // Pobierz kontroler ConsoleLogsTabController z consoleLogContent
+      if (consoleLogContent != null) {
+         consoleLogsTabController = (ConsoleLogsTabController) consoleLogContent.getProperties().get("controller");
+      }
 
       // Pobierz kontroler QuickStartTabController z quickStartContent
-      quickStartTabController = (QuickStartTabController) quickStartContent.getProperties().get("controller");
+      if (quickStartContent != null) {
+         quickStartTabController = (QuickStartTabController) quickStartContent.getProperties().get("controller");
+      }
 
       // Pobierz kontroler LibraryTabController z libraryContent
-      libraryTabController = (LibraryTabController) libraryContent.getProperties().get("controller");
-      if (libraryTabController != null) {
-         libraryTabController.setStartupConfigController(this);
+      if (libraryContent != null) {
+         libraryTabController = (LibraryTabController) libraryContent.getProperties().get("controller");
+         if (libraryTabController != null) {
+            libraryTabController.setStartupConfigController(this);
+         }
       }
 
       // Dodaj słuchacza do pola tekstowego ze ścieżką źródłową
@@ -142,6 +141,7 @@ public class StartupConfigController
       tabMapping.put(advancedTab, advancedContent);
       tabMapping.put(aboutTab, aboutContent);
       tabMapping.put(tvScheduleTab, tvScheduleContent);
+      // Zamień consoleLogContent na VBox z include
       tabMapping.put(consoleLogTab, consoleLogContent);
 
       tabsGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
@@ -189,6 +189,13 @@ public class StartupConfigController
       scheduleButtonsHBox.disableProperty().bind(useCustomScheduleCheckBox.selectedProperty().not());
 
       loadPlayerConfiguration();
+   }
+
+   // Pomocnicza metoda do pobierania node po fx:id (dla VBox z include)
+   // NIE jest już potrzebna, można zostawić lub usunąć jeśli nieużywana
+   private javafx.scene.Node getNodeById(String id) {
+      // Przeszukaj drzewo sceny od playButton
+      return playButton.getScene().lookup("#" + id);
    }
 
    // Dodaj metodę do aktualizacji ComboBoxa z listą serii w TV Schedule
