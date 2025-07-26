@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+
+<VBox fx:id="quickStartContent" alignment="TOP_CENTER" spacing="30" style="-fx-padding: 11 40 40 40; -fx-background-color: white;"
+      xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.filipmikolajzeglen.fmzvideoplayer.QuickStartTabController">
+   <GridPane hgap="20" maxWidth="Infinity" vgap="10">
+      <columnConstraints>
+         <ColumnConstraints hgrow="SOMETIMES" percentWidth="50.0" />
+         <ColumnConstraints hgrow="SOMETIMES" percentWidth="50.0" />
+      </columnConstraints>
+      <Label fx:id="maxSeriesLabel" text="Max episodes of series per day" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+      <Label fx:id="maxEpisodesLabel" text="Max episodes per day" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+      <Spinner fx:id="maxSeriesSpinner" editable="true" initialValue="2" max="100" maxWidth="Infinity" min="1" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+      <Spinner fx:id="maxEpisodesSpinner" editable="true" initialValue="30" max="100" maxWidth="Infinity" min="1" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <rowConstraints>
+         <RowConstraints />
+         <RowConstraints />
+      </rowConstraints>
+   </GridPane>
+   <HBox maxWidth="Infinity" spacing="10">
+      <StackPane HBox.hgrow="ALWAYS">
+         <TextField fx:id="videoMainSourceField" HBox.hgrow="ALWAYS" />
+         <Label fx:id="videoMainSourcePrompt" style="-fx-text-fill: #888;" text="  Path to video resources" StackPane.alignment="CENTER_LEFT" />
+      </StackPane>
+      <Button onAction="#onChooseFolderClicked" text="..." />
+   </HBox>
+   <TableView fx:id="seriesTable" maxWidth="Infinity" styleClass="no-focus-table" VBox.vgrow="ALWAYS">
+      <columns>
+         <TableColumn fx:id="seriesNameColumn" text="Series Name" />
+         <TableColumn fx:id="episodeCountColumn" text="Episodes" />
+         <TableColumn fx:id="totalWatchingTimeColumn" text="Total watching time" />
+      </columns>
+   </TableView>
+</VBox>

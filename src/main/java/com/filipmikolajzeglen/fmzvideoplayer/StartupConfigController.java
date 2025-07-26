@@ -13,15 +13,12 @@ import java.util.stream.Collectors;
 
 import com.filipmikolajzeglen.fmzvideoplayer.database.FMZDatabase;
 import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
-import com.filipmikolajzeglen.fmzvideoplayer.video.VideoMetadataReader;
 import com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlayerIcons;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -38,7 +35,6 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
@@ -60,7 +56,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
 public class StartupConfigController
@@ -69,28 +64,6 @@ public class StartupConfigController
 
    private FMZDatabase<PlayerConfiguration> configDatabase;
    private Map<Toggle, Region> tabMapping;
-   @FXML
-   private TableView<SeriesInfo> seriesTable;
-   @FXML
-   private TableColumn<SeriesInfo, String> seriesNameColumn;
-   @FXML
-   private TableColumn<SeriesInfo, Integer> episodeCountColumn;
-   @FXML
-   private TableColumn<SeriesInfo, String> totalWatchingTimeColumn;
-   @FXML
-   private TextField videoMainSourceField;
-   @FXML
-   private Label maxSeriesLabel;
-   @FXML
-   private Spinner<Integer> maxSeriesSpinner;
-   @FXML
-   private Label maxEpisodesLabel;
-   @FXML
-   private Spinner<Integer> maxEpisodesSpinner;
-   @FXML
-   private Label videoMainSourcePrompt;
-   @FXML
-   private Button playButton;
    @FXML
    private ToggleGroup tabsGroup;
    @FXML
@@ -105,8 +78,6 @@ public class StartupConfigController
    private ToggleButton consoleLogTab;
    @FXML
    private ToggleButton tvScheduleTab;
-   @FXML
-   private VBox quickStartContent;
    @FXML
    private ScrollPane libraryContent;
    @FXML
@@ -149,58 +120,13 @@ public class StartupConfigController
    private VBox consoleLogContent;
    @FXML
    private TextArea consoleLogTextArea;
+   @FXML
+   private VBox quickStartContent; // zmiana typu na VBox
 
-   /**
-    * Inner class representing information about a series.
-    */
-   public static class SeriesInfo
-   {
-      private final SimpleStringProperty name;
-      private final SimpleIntegerProperty episodeCount;
-      private final SimpleStringProperty totalWatchingTime;
+   private QuickStartTabController quickStartTabController; // referencja do kontrolera
 
-      public SeriesInfo(String name, int episodeCount)
-      {
-         this.name = new SimpleStringProperty(name);
-         this.episodeCount = new SimpleIntegerProperty(episodeCount);
-         this.totalWatchingTime = new SimpleStringProperty("...");
-      }
-
-      public String getName()
-      {
-         return name.get();
-      }
-
-      public SimpleStringProperty nameProperty()
-      {
-         return name;
-      }
-
-      public int getEpisodeCount()
-      {
-         return episodeCount.get();
-      }
-
-      public SimpleIntegerProperty episodeCountProperty()
-      {
-         return episodeCount;
-      }
-
-      public String getTotalWatchingTime()
-      {
-         return totalWatchingTime.get();
-      }
-
-      public SimpleStringProperty totalWatchingTimeProperty()
-      {
-         return totalWatchingTime;
-      }
-
-      public void setTotalWatchingTime(String time)
-      {
-         this.totalWatchingTime.set(time);
-      }
-   }
+   @FXML
+   private Button playButton;
 
    @FXML
    public void initialize()
@@ -212,20 +138,7 @@ public class StartupConfigController
          });
       });
 
-      // Ustawienie szerokości kolumn
-      seriesNameColumn.prefWidthProperty().bind(seriesTable.widthProperty().multiply(0.50));
-      episodeCountColumn.prefWidthProperty().bind(seriesTable.widthProperty().multiply(0.20));
-      totalWatchingTimeColumn.prefWidthProperty().bind(seriesTable.widthProperty().multiply(0.26));
-
-      // Bindowanie danych do kolumn
-      seriesNameColumn.setCellValueFactory(data -> data.getValue().nameProperty());
-      episodeCountColumn.setCellValueFactory(data -> data.getValue().episodeCountProperty().asObject());
-      totalWatchingTimeColumn.setCellValueFactory(data -> data.getValue().totalWatchingTimeProperty());
-
-      videoMainSourceField.textProperty().addListener((obs, oldVal, newVal) -> updateSeriesData(newVal));
-
       tabMapping = new HashMap<>();
-      tabMapping.put(quickStartTab, quickStartContent);
       tabMapping.put(libraryTab, libraryContent);
       tabMapping.put(advancedTab, advancedContent);
       tabMapping.put(aboutTab, aboutContent);
@@ -239,13 +152,15 @@ public class StartupConfigController
             return;
          }
 
-         // Jeśli wybrano zakładkę Biblioteka, odśwież widok
          if (newToggle == libraryTab)
          {
-            // Zresetuj do głównego widoku kafelków
             libraryContent.setContent(libraryTilePane);
-            // Odśwież dane
-            updateSeriesData(videoMainSourceField.getText());
+            updateSeriesData(quickStartTabController.getVideoMainSourceField().getText());
+         }
+
+         if (newToggle == tvScheduleTab)
+         {
+            updateSeriesComboBox();
          }
 
          tabMapping.values().forEach(pane -> {
@@ -259,14 +174,6 @@ public class StartupConfigController
             selectedPane.setManaged(true);
          }
       });
-
-      playButton.disableProperty().bind(Bindings.isEmpty(videoMainSourceField.textProperty()));
-      videoMainSourcePrompt.visibleProperty().bind(Bindings.isEmpty(videoMainSourceField.textProperty()));
-      loadPlayerConfiguration();
-      if (!videoMainSourceField.getText().isEmpty())
-      {
-         updateSeriesData(videoMainSourceField.getText());
-      }
 
       iconStyleComboBox.setValue("Filled");
       iconStyleComboBox.valueProperty().addListener((obs, oldVal, newVal) -> updateIconPreview());
@@ -285,47 +192,31 @@ public class StartupConfigController
       scheduleGridPane.disableProperty().bind(useCustomScheduleCheckBox.selectedProperty().not());
       scheduleListView.disableProperty().bind(useCustomScheduleCheckBox.selectedProperty().not());
       scheduleButtonsHBox.disableProperty().bind(useCustomScheduleCheckBox.selectedProperty().not());
+
+      // Pobierz kontroler QuickStartTabController z quickStartContent
+      quickStartTabController = (QuickStartTabController) quickStartContent.getProperties().get("controller");
+
+
+      loadPlayerConfiguration();
    }
 
-   private void updateSliderPreviewColor(Color color)
-   {
-      String hexColor = toHexString(color);
-      String style = String.format("-fx-background-color: linear-gradient(to right, %s 50%%, #D3D3D3 50%%);", hexColor);
-
-      if (colorPreviewSlider.lookup(".track") != null)
-      {
-         colorPreviewSlider.lookup(".track").setStyle(style);
-      }
-      else
-      {
-         colorPreviewSlider.skinProperty().addListener((obs, oldSkin, newSkin) -> {
-            if (newSkin != null && colorPreviewSlider.lookup(".track") != null)
-            {
-               colorPreviewSlider.lookup(".track").setStyle(style);
-            }
-         });
-      }
-   }
-
-   private void updateIconPreview()
-   {
-      String selectedStyle = iconStyleComboBox.getValue();
-      String pathPrefix = "Empty".equals(selectedStyle) ? "/svg/empty" : "/svg/filled";
-
-      previewPlayIcon.setContent(VideoPlayerIcons.loadSvgContent(pathPrefix + "/play.svg"));
-      previewPauseIcon.setContent(VideoPlayerIcons.loadSvgContent(pathPrefix + "/pause.svg"));
-      previewNextIcon.setContent(VideoPlayerIcons.loadSvgContent(pathPrefix + "/next.svg"));
-      previewVolumeIcon.setContent(VideoPlayerIcons.loadSvgContent(pathPrefix + "/volume2.svg"));
-   }
+   // Dodaj metodę do aktualizacji widoku biblioteki
+   // private void updateLibraryView() {
+   //    if (quickStartTabController == null) return;
+   //    libraryTilePane.getChildren().clear();
+   //    List<QuickStartTabController.SeriesInfo> seriesList = quickStartTabController.getSeriesFolders(quickStartTabController.getVideoMainSourcePath());
+   //    for (QuickStartTabController.SeriesInfo series : seriesList) {
+   //       Label label = new Label(series.getName() + " (" + series.getEpisodeCount() + ")");
+   //       label.setStyle("-fx-font-size: 16px; -fx-padding: 10;");
+   //       libraryTilePane.getChildren().add(label);
+   //    }
+   // }
 
    private void updateSeriesData(String path)
    {
       List<SeriesInfo> series = getSeriesFolders(path);
       ObservableList<SeriesInfo> tableItems = FXCollections.observableArrayList(series);
-      seriesTable.setItems(tableItems);
-
-      // Start duration calculation in the background
-      startDurationCalculation(path, tableItems);
+      quickStartTabController.getSeriesTable().setItems(tableItems);
 
       List<String> seriesNames = series.stream()
             .map(SeriesInfo::getName)
@@ -399,6 +290,82 @@ public class StartupConfigController
 
       tileContainer.getChildren().addAll(coverView, titleWrapper);
       return tileContainer;
+   }
+
+   private void showSeriesDetailView(String basePath, SeriesInfo seriesInfo)
+   {
+      BorderPane detailView = new BorderPane();
+      detailView.setPadding(new Insets(10));
+
+      TableView<EpisodeInfo> episodeTable = new TableView<>();
+      TableColumn<EpisodeInfo, String> nameColumn = new TableColumn<>("Tytuł odcinka");
+      nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+      episodeTable.getColumns().add(nameColumn);
+      nameColumn.prefWidthProperty().bind(episodeTable.widthProperty().multiply(0.98));
+
+      List<EpisodeInfo> episodes = getEpisodesForSeries(basePath, seriesInfo.getName());
+      episodeTable.setItems(FXCollections.observableArrayList(episodes));
+      detailView.setCenter(episodeTable);
+
+      VBox rightPane = new VBox(10);
+      rightPane.setAlignment(Pos.TOP_CENTER);
+      rightPane.setPadding(new Insets(0, 0, 0, 10));
+
+      Node coverView;
+      File coverFile = findCoverFile(basePath, seriesInfo.getName());
+      if (coverFile != null)
+      {
+         try
+         {
+            Image coverImage = new Image(coverFile.toURI().toString(), 150, 225, false, true);
+            coverView = new ImageView(coverImage);
+         }
+         catch (Exception e)
+         {
+            coverView = createCoverPlaceholder(seriesInfo.getName());
+         }
+      }
+      else
+      {
+         coverView = createCoverPlaceholder(seriesInfo.getName());
+      }
+
+      Button playAllButton = new Button("Odtwórz wszystko");
+      playAllButton.setOnAction(event -> {
+         FMZVideoPlayerConfiguration.Playback.PLAYLIST_TO_START = seriesInfo.getName();
+         onPlayClicked();
+      });
+
+      Button backButton = new Button("Wróć do biblioteki");
+      backButton.setOnAction(event -> libraryContent.setContent(libraryTilePane));
+
+      rightPane.getChildren().addAll(coverView, playAllButton, backButton);
+      detailView.setRight(rightPane);
+
+      libraryContent.setContent(detailView);
+   }
+
+   private List<EpisodeInfo> getEpisodesForSeries(String basePath, String seriesName)
+   {
+      File seriesDir = new File(basePath, seriesName);
+      if (!seriesDir.isDirectory())
+      {
+         return Collections.emptyList();
+      }
+      File[] videoFiles = seriesDir.listFiles(file -> {
+         String name = file.getName().toLowerCase();
+         return file.isFile() && (name.endsWith(".mp4") || name.endsWith(".avi") || name.endsWith(".mkv"));
+      });
+
+      if (videoFiles == null)
+      {
+         return Collections.emptyList();
+      }
+
+      return Arrays.stream(videoFiles)
+            .map(file -> new EpisodeInfo(file.getName()))
+            .sorted(Comparator.comparing(EpisodeInfo::getName))
+            .collect(Collectors.toList());
    }
 
    private Node createCoverPlaceholder(String seriesName)
@@ -528,6 +495,47 @@ public class StartupConfigController
       return files == null ? 0 : files.length;
    }
 
+   // Dodaj metodę do aktualizacji ComboBoxa z listą serii w TV Schedule
+   private void updateSeriesComboBox() {
+      if (quickStartTabController == null) return;
+      List<SeriesInfo> seriesList = quickStartTabController.getSeriesFolders(quickStartTabController.getVideoMainSourcePath());
+      seriesComboBox.getItems().clear();
+      for (SeriesInfo series : seriesList) {
+         seriesComboBox.getItems().add(series.getName());
+      }
+   }
+
+   private void updateSliderPreviewColor(Color color)
+   {
+      String hexColor = toHexString(color);
+      String style = String.format("-fx-background-color: linear-gradient(to right, %s 50%%, #D3D3D3 50%%);", hexColor);
+
+      if (colorPreviewSlider.lookup(".track") != null)
+      {
+         colorPreviewSlider.lookup(".track").setStyle(style);
+      }
+      else
+      {
+         colorPreviewSlider.skinProperty().addListener((obs, oldSkin, newSkin) -> {
+            if (newSkin != null && colorPreviewSlider.lookup(".track") != null)
+            {
+               colorPreviewSlider.lookup(".track").setStyle(style);
+            }
+         });
+      }
+   }
+
+   private void updateIconPreview()
+   {
+      String selectedStyle = iconStyleComboBox.getValue();
+      String pathPrefix = "Empty".equals(selectedStyle) ? "/svg/empty" : "/svg/filled";
+
+      previewPlayIcon.setContent(VideoPlayerIcons.loadSvgContent(pathPrefix + "/play.svg"));
+      previewPauseIcon.setContent(VideoPlayerIcons.loadSvgContent(pathPrefix + "/pause.svg"));
+      previewNextIcon.setContent(VideoPlayerIcons.loadSvgContent(pathPrefix + "/next.svg"));
+      previewVolumeIcon.setContent(VideoPlayerIcons.loadSvgContent(pathPrefix + "/volume2.svg"));
+   }
+
    private void loadPlayerConfiguration()
    {
       File configFile = getConfigFile();
@@ -539,9 +547,14 @@ public class StartupConfigController
       if (!configDatabase.findAll().isEmpty())
       {
          PlayerConfiguration config = configDatabase.findAll().get(0);
-         maxSeriesSpinner.getValueFactory().setValue(config.getMaxSingleSeriesPerDay());
-         maxEpisodesSpinner.getValueFactory().setValue(config.getMaxEpisodesPerDay());
-         videoMainSourceField.setText(config.getVideoMainSourcePath());
+
+         // Ustawienia QuickStartTab
+         if (quickStartTabController != null) {
+            quickStartTabController.getMaxSeriesSpinner().getValueFactory().setValue(config.getMaxSingleSeriesPerDay());
+            quickStartTabController.getMaxEpisodesSpinner().getValueFactory().setValue(config.getMaxEpisodesPerDay());
+            quickStartTabController.getVideoMainSourceField().setText(config.getVideoMainSourcePath());
+         }
+
          commercialsEnabledCheckBox.setSelected(config.isAdsEnabled());
 
          if (config.getIconStyle() != null)
@@ -564,9 +577,9 @@ public class StartupConfigController
    private void savePlayerConfiguration()
    {
       PlayerConfiguration config = new PlayerConfiguration(
-            maxSeriesSpinner.getValue(),
-            maxEpisodesSpinner.getValue(),
-            videoMainSourceField.getText(),
+            quickStartTabController.getMaxSingleSeriesPerDay(),
+            quickStartTabController.getMaxEpisodesPerDay(),
+            quickStartTabController.getVideoMainSourcePath(),
             iconStyleComboBox.getValue(),
             toHexString(primaryColorPicker.getValue()),
             commercialsEnabledCheckBox.isSelected(),
@@ -589,18 +602,6 @@ public class StartupConfigController
    }
 
    @FXML
-   private void onChooseFolderClicked()
-   {
-      DirectoryChooser directoryChooser = new DirectoryChooser();
-      directoryChooser.setTitle("Select Video Source Folder");
-      File selectedDirectory = directoryChooser.showDialog(videoMainSourceField.getScene().getWindow());
-      if (selectedDirectory != null)
-      {
-         videoMainSourceField.setText(selectedDirectory.getAbsolutePath());
-      }
-   }
-
-   @FXML
    private void onPlayClicked()
    {
       // 1. Zapisz konfigurację do pliku
@@ -613,14 +614,10 @@ public class StartupConfigController
       Color selectedColor = primaryColorPicker.getValue();
       FMZVideoPlayerConfiguration.UI.PRIMARY_COLOR = toHexString(selectedColor);
 
-      String mainSource = videoMainSourceField.getText();
-      File file = new File(mainSource);
-      FMZVideoPlayerConfiguration.Paths.VIDEO_MAIN_SOURCE = mainSource;
-      FMZVideoPlayerConfiguration.Paths.FMZ_TABLE_NAME = file.getName();
-
       // Ustawienia dla Quick Start
-      FMZVideoPlayerConfiguration.Playback.MAX_SINGLE_SERIES_PER_DAY = maxSeriesSpinner.getValue();
-      FMZVideoPlayerConfiguration.Playback.MAX_EPISODES_PER_DAY = maxEpisodesSpinner.getValue();
+      FMZVideoPlayerConfiguration.Playback.MAX_SINGLE_SERIES_PER_DAY = quickStartTabController.getMaxSingleSeriesPerDay();
+      FMZVideoPlayerConfiguration.Playback.MAX_EPISODES_PER_DAY = quickStartTabController.getMaxEpisodesPerDay();
+      FMZVideoPlayerConfiguration.Paths.VIDEO_MAIN_SOURCE = quickStartTabController.getVideoMainSourcePath();
 
       // Ustawienia dla reklam
       FMZVideoPlayerConfiguration.Playback.COMMERCIALS_ENABLED = commercialsEnabledCheckBox.isSelected();
@@ -716,141 +713,6 @@ public class StartupConfigController
       public SimpleStringProperty nameProperty()
       {
          return name;
-      }
-   }
-
-   private List<EpisodeInfo> getEpisodesForSeries(String basePath, String seriesName)
-   {
-      File seriesDir = new File(basePath, seriesName);
-      if (!seriesDir.isDirectory())
-      {
-         return Collections.emptyList();
-      }
-      File[] videoFiles = seriesDir.listFiles(file -> {
-         String name = file.getName().toLowerCase();
-         return file.isFile() && (name.endsWith(".mp4") || name.endsWith(".avi") || name.endsWith(".mkv"));
-      });
-
-      if (videoFiles == null)
-      {
-         return Collections.emptyList();
-      }
-
-      return Arrays.stream(videoFiles)
-            .map(file -> new EpisodeInfo(file.getName()))
-            .sorted(Comparator.comparing(EpisodeInfo::getName))
-            .collect(Collectors.toList());
-   }
-
-   private void showSeriesDetailView(String basePath, SeriesInfo seriesInfo)
-   {
-      BorderPane detailView = new BorderPane();
-      detailView.setPadding(new Insets(10));
-
-      TableView<EpisodeInfo> episodeTable = new TableView<>();
-      TableColumn<EpisodeInfo, String> nameColumn = new TableColumn<>("Tytuł odcinka");
-      nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-      episodeTable.getColumns().add(nameColumn);
-      nameColumn.prefWidthProperty().bind(episodeTable.widthProperty().multiply(0.98));
-
-      List<EpisodeInfo> episodes = getEpisodesForSeries(basePath, seriesInfo.getName());
-      episodeTable.setItems(FXCollections.observableArrayList(episodes));
-      detailView.setCenter(episodeTable);
-
-      VBox rightPane = new VBox(10);
-      rightPane.setAlignment(Pos.TOP_CENTER);
-      rightPane.setPadding(new Insets(0, 0, 0, 10));
-
-      Node coverView;
-      File coverFile = findCoverFile(basePath, seriesInfo.getName());
-      if (coverFile != null)
-      {
-         try
-         {
-            Image coverImage = new Image(coverFile.toURI().toString(), 150, 225, false, true);
-            coverView = new ImageView(coverImage);
-         }
-         catch (Exception e)
-         {
-            coverView = createCoverPlaceholder(seriesInfo.getName());
-         }
-      }
-      else
-      {
-         coverView = createCoverPlaceholder(seriesInfo.getName());
-      }
-
-      Button playAllButton = new Button("Odtwórz wszystko");
-      playAllButton.setOnAction(event -> {
-         FMZVideoPlayerConfiguration.Playback.PLAYLIST_TO_START = seriesInfo.getName();
-         onPlayClicked();
-      });
-
-      Button backButton = new Button("Wróć do biblioteki");
-      backButton.setOnAction(event -> libraryContent.setContent(libraryTilePane));
-
-      rightPane.getChildren().addAll(coverView, playAllButton, backButton);
-      detailView.setRight(rightPane);
-
-      libraryContent.setContent(detailView);
-   }
-
-   private void startDurationCalculation(String basePath, ObservableList<SeriesInfo> seriesList)
-   {
-      Task<Void> task = new Task<>()
-      {
-         @Override
-         protected Void call()
-         {
-            for (SeriesInfo seriesInfo : seriesList)
-            {
-               if (isCancelled())
-               {
-                  break;
-               }
-
-               File seriesDir = new File(basePath, seriesInfo.getName());
-               File[] videoFiles = listVideoFiles(seriesDir);
-               long totalSeconds = Arrays.stream(videoFiles)
-                     .mapToLong(VideoMetadataReader::getDurationInSeconds)
-                     .sum();
-
-               String formattedDuration = formatDuration(totalSeconds);
-               Platform.runLater(() -> seriesInfo.setTotalWatchingTime(formattedDuration));
-            }
-            return null;
-         }
-      };
-      new Thread(task).start();
-   }
-
-   private File[] listVideoFiles(File dir)
-   {
-      if (dir == null || !dir.isDirectory())
-      {
-         return new File[0];
-      }
-      return dir.listFiles(file -> {
-         String name = file.getName().toLowerCase();
-         return file.isFile() && (name.endsWith(".mp4") || name.endsWith(".avi") || name.endsWith(".mkv"));
-      });
-   }
-
-   private String formatDuration(long totalSeconds)
-   {
-      if (totalSeconds <= 0)
-      {
-         return "0m";
-      }
-      long hours = totalSeconds / 3600;
-      long minutes = (totalSeconds % 3600) / 60;
-      if (hours > 0)
-      {
-         return String.format("%dh %02dm", hours, minutes);
-      }
-      else
-      {
-         return String.format("%dm", minutes);
       }
    }
 }
