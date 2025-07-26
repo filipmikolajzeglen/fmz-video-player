@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="tvScheduleContent" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.filipmikolajzeglen.fmzvideoplayer.TVScheduleTabController"
+      managed="false" spacing="15" style="-fx-padding: 11 40 40 40; -fx-background-color: white;" visible="false">
+    <CheckBox fx:id="useCustomScheduleCheckBox" text="Use custom schedule" style="-fx-font-size: 16px;" />
+    <GridPane fx:id="scheduleGridPane" hgap="10" vgap="10" maxWidth="Infinity">
+        <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="70.0" />
+            <ColumnConstraints hgrow="NEVER" />
+        </columnConstraints>
+        <ComboBox fx:id="seriesComboBox" promptText="Select series to add" maxWidth="Infinity" GridPane.columnIndex="0" />
+        <Button onAction="#onAddSeriesToSchedule" text="Add" GridPane.columnIndex="1" />
+    </GridPane>
+    <ListView fx:id="scheduleListView" VBox.vgrow="ALWAYS" />
+    <HBox fx:id="scheduleButtonsHBox" spacing="10" alignment="CENTER_RIGHT">
+        <Button onAction="#onMoveSeriesUp" text="Move Up" />
+        <Button onAction="#onMoveSeriesDown" text="Move Down" />
+        <Button onAction="#onRemoveSeriesFromSchedule" text="Remove" />
+    </HBox>
+</VBox>
+

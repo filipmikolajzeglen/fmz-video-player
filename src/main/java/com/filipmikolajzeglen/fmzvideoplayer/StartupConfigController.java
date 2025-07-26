@@ -11,21 +11,17 @@ import com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlayerIcons;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -58,7 +54,7 @@ public class StartupConfigController
    @FXML
    private VBox aboutContent;
    @FXML
-   private VBox tvScheduleContent;
+   private VBox tvScheduleContent; // <-- zostaje, bo to fx:include
    @FXML
    private ComboBox<String> iconStyleComboBox;
    @FXML
@@ -78,16 +74,6 @@ public class StartupConfigController
    @FXML
    private Spinner<Integer> commercialsCountSpinner;
    @FXML
-   private CheckBox useCustomScheduleCheckBox;
-   @FXML
-   private ComboBox<String> seriesComboBox;
-   @FXML
-   private ListView<String> scheduleListView;
-   @FXML
-   private GridPane scheduleGridPane;
-   @FXML
-   private HBox scheduleButtonsHBox;
-   @FXML
    private VBox quickStartContent; // zmiana typu na VBox
    @FXML
    private VBox consoleLogContent; // <-- dodaj to pole
@@ -99,6 +85,9 @@ public class StartupConfigController
 
    // Dodaj pole do obsługi ConsoleLogsTabController
    private ConsoleLogsTabController consoleLogsTabController;
+
+   // Dodaj pole do obsługi TVScheduleTabController
+   private TVScheduleTabController tvScheduleTabController;
 
    @FXML
    private Button playButton;
@@ -116,6 +105,16 @@ public class StartupConfigController
          quickStartTabController = (QuickStartTabController) quickStartContent.getProperties().get("controller");
       }
 
+      // Pobierz kontroler TVScheduleTabController z tvScheduleContent
+      if (tvScheduleContent != null) {
+         tvScheduleTabController = (TVScheduleTabController) tvScheduleContent.getProperties().get("controller");
+      }
+
+      // Połącz kontrolery: propaguj referencję QuickStartTabController do TVScheduleTabController
+      if (tvScheduleTabController != null && quickStartTabController != null) {
+         tvScheduleTabController.setQuickStartTabController(quickStartTabController);
+      }
+
       // Pobierz kontroler LibraryTabController z libraryContent
       if (libraryContent != null) {
          libraryTabController = (LibraryTabController) libraryContent.getProperties().get("controller");
@@ -123,6 +122,7 @@ public class StartupConfigController
             libraryTabController.setStartupConfigController(this);
          }
       }
+
 
       // Dodaj słuchacza do pola tekstowego ze ścieżką źródłową
       if (quickStartTabController != null) {
@@ -140,8 +140,8 @@ public class StartupConfigController
       tabMapping.put(libraryTab, libraryContent);
       tabMapping.put(advancedTab, advancedContent);
       tabMapping.put(aboutTab, aboutContent);
+      // Zamień tvScheduleContent na VBox z include
       tabMapping.put(tvScheduleTab, tvScheduleContent);
-      // Zamień consoleLogContent na VBox z include
       tabMapping.put(consoleLogTab, consoleLogContent);
 
       tabsGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
@@ -155,7 +155,9 @@ public class StartupConfigController
 
          if (newToggle == tvScheduleTab)
          {
-            updateSeriesComboBox();
+            if (tvScheduleTabController != null) {
+               tvScheduleTabController.updateSeriesComboBox();
+            }
          }
 
          tabMapping.values().forEach(pane -> {
@@ -184,10 +186,6 @@ public class StartupConfigController
 
       updateSliderPreviewColor(primaryColorPicker.getValue());
 
-      scheduleGridPane.disableProperty().bind(useCustomScheduleCheckBox.selectedProperty().not());
-      scheduleListView.disableProperty().bind(useCustomScheduleCheckBox.selectedProperty().not());
-      scheduleButtonsHBox.disableProperty().bind(useCustomScheduleCheckBox.selectedProperty().not());
-
       loadPlayerConfiguration();
    }
 
@@ -196,16 +194,6 @@ public class StartupConfigController
    private javafx.scene.Node getNodeById(String id) {
       // Przeszukaj drzewo sceny od playButton
       return playButton.getScene().lookup("#" + id);
-   }
-
-   // Dodaj metodę do aktualizacji ComboBoxa z listą serii w TV Schedule
-   private void updateSeriesComboBox() {
-      if (quickStartTabController == null) return;
-      List<SeriesInfo> seriesList = quickStartTabController.getSeriesFolders(quickStartTabController.getVideoMainSourcePath());
-      seriesComboBox.getItems().clear();
-      for (SeriesInfo series : seriesList) {
-         seriesComboBox.getItems().add(series.getName());
-      }
    }
 
    private void updateSliderPreviewColor(Color color)
@@ -269,10 +257,10 @@ public class StartupConfigController
             primaryColorPicker.setValue(Color.web(config.getPrimaryColor()));
          }
 
-         useCustomScheduleCheckBox.setSelected(config.isUseCustomSchedule());
+         tvScheduleTabController.getUseCustomScheduleCheckBox().setSelected(config.isUseCustomSchedule());
          if (config.getCustomSchedule() != null)
          {
-            scheduleListView.setItems(FXCollections.observableArrayList(config.getCustomSchedule()));
+            tvScheduleTabController.getScheduleListView().setItems(FXCollections.observableArrayList(config.getCustomSchedule()));
          }
       }
 
@@ -295,8 +283,8 @@ public class StartupConfigController
             toHexString(primaryColorPicker.getValue()),
             commercialsEnabledCheckBox.isSelected(),
             commercialsCountSpinner.getValue(),
-            useCustomScheduleCheckBox.isSelected(),
-            new ArrayList<>(scheduleListView.getItems())
+            tvScheduleTabController.getUseCustomScheduleCheckBox().isSelected(),
+            new ArrayList<>(tvScheduleTabController.getScheduleListView().getItems())
       );
       configDatabase.saveAll(List.of(config));
    }
@@ -335,11 +323,11 @@ public class StartupConfigController
       FMZVideoPlayerConfiguration.Playback.COMMERCIAL_COUNT_BETWEEN_EPISODES = commercialsCountSpinner.getValue();
 
       // Ustawienia dla harmonogramu TV
-      boolean useCustomSchedule = useCustomScheduleCheckBox.isSelected();
+      boolean useCustomSchedule = tvScheduleTabController.getUseCustomScheduleCheckBox().isSelected();
       FMZVideoPlayerConfiguration.Playback.USE_CUSTOM_SCHEDULE = useCustomSchedule;
       if (useCustomSchedule)
       {
-         FMZVideoPlayerConfiguration.Playback.CUSTOM_SCHEDULE = new ArrayList<>(scheduleListView.getItems());
+         FMZVideoPlayerConfiguration.Playback.CUSTOM_SCHEDULE = new ArrayList<>(tvScheduleTabController.getScheduleListView().getItems());
       }
       else
       {
@@ -352,51 +340,6 @@ public class StartupConfigController
       FMZVideoPlayerApplication.launchMainPlayer(stage);
    }
 
-   @FXML
-   private void onAddSeriesToSchedule()
-   {
-      String selectedSeries = seriesComboBox.getValue();
-      if (selectedSeries != null && !selectedSeries.isEmpty())
-      {
-         scheduleListView.getItems().add(selectedSeries);
-      }
-   }
-
-   @FXML
-   private void onMoveSeriesUp()
-   {
-      int selectedIndex = scheduleListView.getSelectionModel().getSelectedIndex();
-      if (selectedIndex > 0)
-      {
-         ObservableList<String> items = scheduleListView.getItems();
-         String item = items.remove(selectedIndex);
-         items.add(selectedIndex - 1, item);
-         scheduleListView.getSelectionModel().select(selectedIndex - 1);
-      }
-   }
-
-   @FXML
-   private void onMoveSeriesDown()
-   {
-      int selectedIndex = scheduleListView.getSelectionModel().getSelectedIndex();
-      ObservableList<String> items = scheduleListView.getItems();
-      if (selectedIndex != -1 && selectedIndex < items.size() - 1)
-      {
-         String item = items.remove(selectedIndex);
-         items.add(selectedIndex + 1, item);
-         scheduleListView.getSelectionModel().select(selectedIndex + 1);
-      }
-   }
-
-   @FXML
-   private void onRemoveSeriesFromSchedule()
-   {
-      int selectedIndex = scheduleListView.getSelectionModel().getSelectedIndex();
-      if (selectedIndex != -1)
-      {
-         scheduleListView.getItems().remove(selectedIndex);
-      }
-   }
 
    private String toHexString(Color color)
    {
