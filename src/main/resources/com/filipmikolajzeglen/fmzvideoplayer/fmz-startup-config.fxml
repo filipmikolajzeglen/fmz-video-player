@@ -45,7 +45,7 @@
 
          <ToggleButton fx:id="aboutTab" styleClass="tab-button" text="About" toggleGroup="$tabsGroup">
             <graphic>
-               <SVGPath content="m20 1h-16a3 3 0 0 0 -3 3v16a3 3 0 0 0 3 3h16a3 3 0 0 0 3-3v-16a3 3 0 0 0 -3-3zm1 19a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1-1v-16a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1zm-8-9v7a1 1 0 0 1 -2 0v-7a1 1 0 0 1 2 0zm0-5v1a1 1 0 1 1 -2 0v-1a1 1 0 0 1 2 0z" fill="#1c1c1c" scaleX="0.7" scaleY="0.7" />
+               <SVGPath content="m20 1h-16a3 3 0 0 0 -3 3v16a3 3 0 0 0 3 3h16a3 3 0 0 0 3-3v-16a3 3 0 0 0 -3-3zm1 19a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1-1v-16a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1zm-8-9v7a1 1 0 0 1 -2 0v-7a1 1 0 0 1 2,0zm0-5v1a1 1 0 1 1 -2,0v-1a1 1 0 0 1 2,0z" fill="#1c1c1c" scaleX="0.7" scaleY="0.7" />
             </graphic>
          </ToggleButton>
       </VBox>
@@ -59,9 +59,7 @@
                <fx:include fx:id="quickStartContent" source="tabs/quickstart-tab.fxml"/>
 
                <!-- Zawartość zakładki "Library" -->
-               <ScrollPane fx:id="libraryContent" fitToWidth="true" managed="false" style="-fx-background-color: white; -fx-padding: 10;" visible="false">
-                  <TilePane fx:id="libraryTilePane" hgap="20" vgap="20" style="-fx-background-color: white;"/>
-               </ScrollPane>
+               <fx:include fx:id="libraryContent" source="tabs/library-tab.fxml"/>
 
                <!-- Zawartość zakładki "TV Schedule" -->
                <VBox fx:id="tvScheduleContent" managed="false" spacing="15" style="-fx-padding: 11 40 40 40; -fx-background-color: white;" visible="false">

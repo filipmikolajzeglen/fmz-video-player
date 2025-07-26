@@ -16,8 +16,8 @@ public class PlayerConfiguration
    private String videoMainSourcePath;
    private String iconStyle;
    private String primaryColor;
-   private boolean adsEnabled;
-   private int adsCount;
+   private boolean commercialsEnabled;
+   private int commercialsCount;
    private boolean useCustomSchedule;
    private List<String> customSchedule;
 }
