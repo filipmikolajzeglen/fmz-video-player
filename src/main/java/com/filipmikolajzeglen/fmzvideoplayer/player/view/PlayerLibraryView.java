@@ -1,29 +1,27 @@
 package com.filipmikolajzeglen.fmzvideoplayer.player.view;
 
+import static com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants.UI.LIBRARY_SERIES_DETAIL_FXML;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants;
 import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerLibrarySeries;
+import com.filipmikolajzeglen.fmzvideoplayer.video.Video;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
@@ -116,94 +114,45 @@ public class PlayerLibraryView
       return tileContainer;
    }
 
-   private void showSeriesDetailView(String basePath, PlayerLibrarySeries playerLibrarySeries)
-   {
-      BorderPane detailView = new BorderPane();
-      detailView.setPadding(new Insets(10));
+   private void showSeriesDetailView(String basePath, PlayerLibrarySeries playerLibrarySeries) {
+      try {
+         FXMLLoader loader = new FXMLLoader(getClass().getResource(LIBRARY_SERIES_DETAIL_FXML));
+         Node detailView = loader.load();
 
-      TableView<EpisodeInfo> episodeTable = new TableView<>();
-      TableColumn<EpisodeInfo, String> seasonColumn = new TableColumn<>("Season");
-      seasonColumn.setCellValueFactory(cellData -> cellData.getValue().seasonProperty());
+         SeriesDetailController controller = loader.getController();
+         controller.initData(basePath, playerLibrarySeries, playerMainView, this);
 
-      TableColumn<EpisodeInfo, String> episodeColumn = new TableColumn<>("Episode");
-      episodeColumn.setCellValueFactory(cellData -> cellData.getValue().episodeProperty());
-
-      TableColumn<EpisodeInfo, String> nameColumn = new TableColumn<>("Episode Name");
-      nameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
-
-      TableColumn<EpisodeInfo, String> durationColumn = new TableColumn<>("Duration");
-      durationColumn.setCellValueFactory(cellData -> cellData.getValue().durationProperty());
-
-      TableColumn<EpisodeInfo, String> watchedColumn = new TableColumn<>("Watched");
-      watchedColumn.setCellValueFactory(cellData -> cellData.getValue().watchedProperty());
-
-      episodeTable.getColumns().addAll(seasonColumn, episodeColumn, nameColumn, durationColumn, watchedColumn);
-
-      seasonColumn.prefWidthProperty().bind(episodeTable.widthProperty().multiply(0.1));
-      episodeColumn.prefWidthProperty().bind(episodeTable.widthProperty().multiply(0.1));
-      nameColumn.prefWidthProperty().bind(episodeTable.widthProperty().multiply(0.5));
-      durationColumn.prefWidthProperty().bind(episodeTable.widthProperty().multiply(0.15));
-      watchedColumn.prefWidthProperty().bind(episodeTable.widthProperty().multiply(0.15));
-
-      List<EpisodeInfo> episodes = getEpisodesForSeries(playerLibrarySeries.getName());
-      episodeTable.setItems(FXCollections.observableArrayList(episodes));
-      detailView.setCenter(episodeTable);
-
-      VBox rightPane = new VBox(10);
-      rightPane.setAlignment(Pos.TOP_CENTER);
-      rightPane.setPadding(new Insets(0, 0, 0, 10));
-
-      Node coverView;
-      File coverFile = findCoverFile(basePath, playerLibrarySeries.getName());
-      if (coverFile != null)
-      {
-         try
-         {
-            Image coverImage = new Image(coverFile.toURI().toString(), 150, 225, false, true);
-            coverView = new ImageView(coverImage);
-         }
-         catch (Exception e)
-         {
-            coverView = createCoverPlaceholder(playerLibrarySeries.getName());
-         }
+         libraryScrollPane.setFitToHeight(true);
+         libraryScrollPane.setContent(detailView);
+      } catch (IOException e) {
+         e.printStackTrace();
       }
-      else
-      {
-         coverView = createCoverPlaceholder(playerLibrarySeries.getName());
-      }
-
-      Button playAllButton = new Button("Play all");
-      playAllButton.setOnAction(event -> {
-         PlayerConstants.Playback.PLAYLIST_TO_START = playerLibrarySeries.getName();
-         if (playerMainView != null)
-         {
-            playerMainView.onPlayClicked();
-         }
-      });
-
-      Button backButton = new Button("Back to library");
-      backButton.setOnAction(event -> libraryScrollPane.setContent(libraryTilePane));
-
-      rightPane.getChildren().addAll(coverView, playAllButton, backButton);
-      detailView.setRight(rightPane);
-
-      libraryScrollPane.setContent(detailView);
    }
 
-   private Node createCoverPlaceholder(String seriesName)
+   public void showLibraryGrid() {
+      libraryScrollPane.setFitToHeight(false);
+      libraryScrollPane.setContent(libraryTilePane);
+   }
+
+   public Node createCoverPlaceholder(String seriesName)
+   {
+      return createCoverPlaceholder(seriesName, 150, 225);
+   }
+
+   public Node createCoverPlaceholder(String seriesName, double width, double height)
    {
       StackPane placeholder = new StackPane();
-      placeholder.setPrefSize(150, 225);
-      placeholder.setMinSize(150, 225);
-      placeholder.setMaxSize(150, 225);
+      placeholder.setPrefSize(width, height);
+      placeholder.setMinSize(width, height);
+      placeholder.setMaxSize(width, height);
 
-      Rectangle background = new Rectangle(150, 225);
+      Rectangle background = new Rectangle(width, height);
       background.setArcWidth(10);
       background.setArcHeight(10);
       background.setFill(generateRandomColor());
 
       Text initials = new Text(getInitials(seriesName));
-      initials.setFont(Font.font("Arial", FontWeight.BOLD, 40));
+      initials.setFont(Font.font("Arial", FontWeight.BOLD, Math.min(width, height) / 4));
       initials.setFill(Color.WHITE);
 
       placeholder.getChildren().addAll(background, initials);
@@ -212,7 +161,7 @@ public class PlayerLibraryView
       return placeholder;
    }
 
-   private File findCoverFile(String basePath, String seriesName)
+   public File findCoverFile(String basePath, String seriesName)
    {
       File seriesDir = new File(basePath, seriesName);
       File coverDir = new File(seriesDir, "Cover");
@@ -280,18 +229,6 @@ public class PlayerLibraryView
       return Color.hsb(hue, saturation, brightness);
    }
 
-   private List<EpisodeInfo> getEpisodesForSeries(String seriesName) {
-      return playerMainView.getVideoService().findAllBySeriesName(seriesName).stream()
-            .map(video -> new EpisodeInfo(
-                  String.valueOf(video.getSeasonNumber()),
-                  String.valueOf(video.getEpisodeNumber()),
-                  video.getEpisodeName(),
-                  video.getDurationInSeconds(),
-                  video.isWatched()
-            ))
-            .collect(Collectors.toList());
-   }
-
    public static class EpisodeInfo
    {
       private final SimpleStringProperty season;
@@ -300,31 +237,61 @@ public class PlayerLibraryView
       private final SimpleStringProperty duration;
       private final SimpleStringProperty watched;
 
-      public EpisodeInfo(String season, String episode, String name, long durationInSeconds, boolean isWatched)
+      public EpisodeInfo(Video video)
       {
-         this.season = new SimpleStringProperty(season);
-         this.episode = new SimpleStringProperty(episode);
-         this.name = new SimpleStringProperty(name);
-         this.duration = new SimpleStringProperty(formatDuration(durationInSeconds));
-         this.watched = new SimpleStringProperty(isWatched ? "Yes" : "No");
+         this.season = new SimpleStringProperty(video.getSeasonNumber());
+         this.episode = new SimpleStringProperty(video.getEpisodeNumber());
+         this.name = new SimpleStringProperty(video.getEpisodeName());
+         this.duration = new SimpleStringProperty(formatDuration(video.getDurationInSeconds()));
+         this.watched = new SimpleStringProperty(video.isWatched() ? "YES" : "NO");
       }
 
-      private String formatDuration(long totalSeconds)
-      {
+      private String formatDuration(long totalSeconds) {
          long minutes = totalSeconds / 60;
-         return String.format("%d min", minutes);
+         long seconds = totalSeconds % 60;
+         return String.format("%d:%02d", minutes, seconds);
       }
 
-      public String getSeason() { return season.get(); }
-      public SimpleStringProperty seasonProperty() { return season; }
-      public String getEpisode() { return episode.get(); }
-      public SimpleStringProperty episodeProperty() { return episode; }
-      public String getName() { return name.get(); }
-      public SimpleStringProperty nameProperty() { return name; }
-      public String getDuration() { return duration.get(); }
-      public SimpleStringProperty durationProperty() { return duration; }
-      public String getWatched() { return watched.get(); }
-      public SimpleStringProperty watchedProperty() { return watched; }
-   }
+      public String getSeason() {
+         return season.get();
+      }
 
+      public SimpleStringProperty seasonProperty() {
+         return season;
+      }
+
+      public String getEpisode() {
+         return episode.get();
+      }
+
+      public SimpleStringProperty episodeProperty() {
+         return episode;
+      }
+
+      public String getName()
+      {
+         return name.get();
+      }
+
+      public SimpleStringProperty nameProperty()
+      {
+         return name;
+      }
+
+      public String getDuration() {
+         return duration.get();
+      }
+
+      public SimpleStringProperty durationProperty() {
+         return duration;
+      }
+
+      public String getWatched() {
+         return watched.get();
+      }
+
+      public SimpleStringProperty watchedProperty() {
+         return watched;
+      }
+   }
 }

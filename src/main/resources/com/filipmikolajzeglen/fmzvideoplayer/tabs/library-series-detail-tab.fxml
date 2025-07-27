@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.filipmikolajzeglen.fmzvideoplayer.player.view.SeriesDetailController"
+      style="-fx-background-color: white;">
+
+   <center>
+      <TableView fx:id="episodeTable" BorderPane.alignment="CENTER">
+         <columns>
+            <TableColumn fx:id="seasonColumn" prefWidth="75.0" text="Season"/>
+            <TableColumn fx:id="episodeColumn" prefWidth="75.0" text="Episode"/>
+            <TableColumn fx:id="nameColumn" prefWidth="250.0" text="Episode name"/>
+            <TableColumn fx:id="durationColumn" prefWidth="100.0" text="Duration"/>
+            <TableColumn fx:id="watchedColumn" prefWidth="100.0" text="Watched"/>
+         </columns>
+      </TableView>
+   </center>
+
+   <right>
+      <VBox alignment="TOP_CENTER" spacing="11" BorderPane.alignment="CENTER">
+         <padding>
+            <Insets bottom="11" left="11"/>
+         </padding>
+         <StackPane fx:id="coverContainer" prefHeight="300.0" prefWidth="200.0"/>
+         <Button fx:id="playAllButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handlePlayAll" text="Play all"/>
+         <Button fx:id="backButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleBackToLibrary" text="Back to library"/>
+      </VBox>
+   </right>
+</BorderPane>

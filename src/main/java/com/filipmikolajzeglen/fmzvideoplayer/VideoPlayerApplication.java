@@ -1,9 +1,9 @@
 package com.filipmikolajzeglen.fmzvideoplayer;
 
 import static com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants.UI.APPLICATION_ERROR;
-import static com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants.UI.APPLICATION_FXML;
+import static com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants.UI.VIDEO_PLAYER_FXML;
 import static com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants.UI.APPLICATION_ICON;
-import static com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants.UI.APPLICATION_STARTUP_FXML;
+import static com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants.UI.VIDEO_PLAYER_CONFIGURATION_FXML;
 import static com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants.UI.APPLICATION_TITLE;
 import static java.util.Objects.requireNonNull;
 
@@ -30,7 +30,7 @@ public class VideoPlayerApplication extends Application
       try
       {
          Parent root =
-               FXMLLoader.load(requireNonNull(VideoPlayerApplication.class.getResource(APPLICATION_STARTUP_FXML)));
+               FXMLLoader.load(requireNonNull(VideoPlayerApplication.class.getResource(VIDEO_PLAYER_CONFIGURATION_FXML)));
          Scene scene = new Scene(root);
          primaryStage.setTitle("FMZ Video Player Configuration");
          primaryStage.getIcons().add(new Image(APPLICATION_ICON));
@@ -52,7 +52,7 @@ public class VideoPlayerApplication extends Application
          {
             Stage playerStage = new Stage();
             FXMLLoader loader =
-                  new FXMLLoader(requireNonNull(VideoPlayerApplication.class.getResource(APPLICATION_FXML)));
+                  new FXMLLoader(requireNonNull(VideoPlayerApplication.class.getResource(VIDEO_PLAYER_FXML)));
             Parent root = loader.load();
             VideoPlayerView videoPlayerViewController = loader.getController();
 

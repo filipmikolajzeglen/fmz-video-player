@@ -11,8 +11,11 @@ public class PlayerConstants
       public static final String GRADIENT_COLOR = "rgba(255, 255, 255, 0.28)";
       public static final String APPLICATION_TITLE = "FMZ Video Player";
       public static final String APPLICATION_ICON = "fmzPlayerIcon.png";
-      public static final String APPLICATION_FXML = "/com/filipmikolajzeglen/fmzvideoplayer/fmz-video-player.fxml";
-      public static final String APPLICATION_STARTUP_FXML = "/com/filipmikolajzeglen/fmzvideoplayer/fmz-startup-config.fxml";
+
+      private static final String PATH_TO_FXML_RESOURCES = "/com/filipmikolajzeglen/fmzvideoplayer";
+      public static final String VIDEO_PLAYER_FXML = PATH_TO_FXML_RESOURCES + "/fmz-video-player.fxml";
+      public static final String VIDEO_PLAYER_CONFIGURATION_FXML = PATH_TO_FXML_RESOURCES + "/fmz-startup-config.fxml";
+      public static final String LIBRARY_SERIES_DETAIL_FXML = PATH_TO_FXML_RESOURCES + "/tabs/library-series-detail-tab.fxml";
       public static final String APPLICATION_ERROR = "Cannot start the application: ";
    }
 
