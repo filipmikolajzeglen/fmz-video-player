@@ -15,4 +15,14 @@ module com.filip.tvscheduler.fmztvscheduler {
 
     opens com.filipmikolajzeglen.fmzvideoplayer.video to javafx.fxml, com.fasterxml.jackson.databind;
     opens com.filipmikolajzeglen.fmzvideoplayer to javafx.fxml, com.fasterxml.jackson.databind;
+   exports com.filipmikolajzeglen.fmzvideoplayer.player;
+   opens com.filipmikolajzeglen.fmzvideoplayer.player to com.fasterxml.jackson.databind, javafx.fxml;
+   exports com.filipmikolajzeglen.fmzvideoplayer.player.view;
+   opens com.filipmikolajzeglen.fmzvideoplayer.player.view to com.fasterxml.jackson.databind, javafx.fxml;
+   exports com.filipmikolajzeglen.fmzvideoplayer.video.view;
+   opens com.filipmikolajzeglen.fmzvideoplayer.video.view to com.fasterxml.jackson.databind, javafx.fxml;
+   exports com.filipmikolajzeglen.fmzvideoplayer.video.audio;
+   opens com.filipmikolajzeglen.fmzvideoplayer.video.audio to com.fasterxml.jackson.databind, javafx.fxml;
+   exports com.filipmikolajzeglen.fmzvideoplayer.video.effect;
+   opens com.filipmikolajzeglen.fmzvideoplayer.video.effect to com.fasterxml.jackson.databind, javafx.fxml;
 }

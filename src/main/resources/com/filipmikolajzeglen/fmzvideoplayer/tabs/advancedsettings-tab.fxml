@@ -4,7 +4,7 @@
 <VBox fx:id="advancedContent" alignment="TOP_CENTER" managed="false" spacing="30"
       style="-fx-padding: 11 40 40 40; -fx-background-color: white;" visible="false"
       xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.filipmikolajzeglen.fmzvideoplayer.AdvancedSettingsTabController">
+      fx:controller="com.filipmikolajzeglen.fmzvideoplayer.player.view.PlayerAdvancedSettingsView">
     <GridPane hgap="20" maxWidth="Infinity" vgap="10">
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" percentWidth="45.0" />

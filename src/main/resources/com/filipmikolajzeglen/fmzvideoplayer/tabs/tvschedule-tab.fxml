@@ -7,11 +7,10 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox fx:id="tvScheduleContent" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.filipmikolajzeglen.fmzvideoplayer.TVScheduleTabController"
+      fx:controller="com.filipmikolajzeglen.fmzvideoplayer.player.view.PlayerTVScheduleView"
       managed="false" spacing="15" style="-fx-padding: 11 40 40 40; -fx-background-color: white;" visible="false">
     <CheckBox fx:id="useCustomScheduleCheckBox" text="Use custom schedule" style="-fx-font-size: 16px;" />
     <GridPane fx:id="scheduleGridPane" hgap="10" vgap="10" maxWidth="Infinity">

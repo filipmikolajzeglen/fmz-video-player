@@ -9,7 +9,7 @@
 
 <VBox fx:id="aboutContent" spacing="20" style="-fx-padding: 11 40 40 40; -fx-background-color: white; -fx-font-size: 15px" visible="false"
       managed="false" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.filipmikolajzeglen.fmzvideoplayer.AboutTabController">
+      fx:controller="com.filipmikolajzeglen.fmzvideoplayer.player.view.PlayerAboutView">
    <Label text="About creator" style="-fx-font-weight: bold; -fx-font-size: 25px" />
    <HBox alignment="CENTER" spacing="40">
 
