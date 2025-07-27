@@ -18,6 +18,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -73,6 +74,21 @@ public class PlayerLibraryView
             showSeriesDetailView(basePath, playerLibrarySeries);
          }
       });
+
+      // Efekt podświetlenia po najechaniu myszą
+      DropShadow hoverEffect = new DropShadow(15, Color.rgb(0, 0, 0, 0.4));
+      hoverEffect.setSpread(0.1);
+
+      tileContainer.setOnMouseEntered(e -> {
+         tileContainer.setEffect(hoverEffect);
+         tileContainer.setStyle("-fx-cursor: hand;");
+      });
+
+      tileContainer.setOnMouseExited(e -> {
+         tileContainer.setEffect(null);
+         tileContainer.setStyle("-fx-cursor: default;");
+      });
+
 
       Node coverView;
       File coverFile = findCoverFile(basePath, playerLibrarySeries.getName());
