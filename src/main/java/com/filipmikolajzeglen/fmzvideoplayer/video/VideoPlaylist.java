@@ -5,7 +5,9 @@ import java.util.List;
 
 import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
 import lombok.Getter;
+import lombok.ToString;
 
+@ToString
 @Getter
 public class VideoPlaylist
 {

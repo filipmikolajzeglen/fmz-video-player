@@ -6,7 +6,7 @@
 
 <AnchorPane fx:id="libraryContent" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.filipmikolajzeglen.fmzvideoplayer.player.view.PlayerLibraryView" visible="false">
-   <ScrollPane fx:id="libraryScrollPane" fitToWidth="true" style="-fx-background-color: white; -fx-padding: 10;"
+   <ScrollPane fx:id="libraryScrollPane" fitToWidth="true" style="-fx-padding: 11 40 40 40; -fx-background-color: white;"
          AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
       <TilePane fx:id="libraryTilePane" hgap="20" vgap="20" style="-fx-background-color: white;" />
    </ScrollPane>

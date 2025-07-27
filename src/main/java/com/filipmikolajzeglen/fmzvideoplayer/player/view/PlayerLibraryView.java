@@ -2,8 +2,6 @@ package com.filipmikolajzeglen.fmzvideoplayer.player.view;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -124,12 +122,30 @@ public class PlayerLibraryView
       detailView.setPadding(new Insets(10));
 
       TableView<EpisodeInfo> episodeTable = new TableView<>();
-      TableColumn<EpisodeInfo, String> nameColumn = new TableColumn<>("Tytuł odcinka");
-      nameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
-      episodeTable.getColumns().add(nameColumn);
-      nameColumn.prefWidthProperty().bind(episodeTable.widthProperty().multiply(0.98));
+      TableColumn<EpisodeInfo, String> seasonColumn = new TableColumn<>("Season");
+      seasonColumn.setCellValueFactory(cellData -> cellData.getValue().seasonProperty());
 
-      List<EpisodeInfo> episodes = getEpisodesForSeries(basePath, playerLibrarySeries.getName());
+      TableColumn<EpisodeInfo, String> episodeColumn = new TableColumn<>("Episode");
+      episodeColumn.setCellValueFactory(cellData -> cellData.getValue().episodeProperty());
+
+      TableColumn<EpisodeInfo, String> nameColumn = new TableColumn<>("Episode Name");
+      nameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
+
+      TableColumn<EpisodeInfo, String> durationColumn = new TableColumn<>("Duration");
+      durationColumn.setCellValueFactory(cellData -> cellData.getValue().durationProperty());
+
+      TableColumn<EpisodeInfo, String> watchedColumn = new TableColumn<>("Watched");
+      watchedColumn.setCellValueFactory(cellData -> cellData.getValue().watchedProperty());
+
+      episodeTable.getColumns().addAll(seasonColumn, episodeColumn, nameColumn, durationColumn, watchedColumn);
+
+      seasonColumn.prefWidthProperty().bind(episodeTable.widthProperty().multiply(0.1));
+      episodeColumn.prefWidthProperty().bind(episodeTable.widthProperty().multiply(0.1));
+      nameColumn.prefWidthProperty().bind(episodeTable.widthProperty().multiply(0.5));
+      durationColumn.prefWidthProperty().bind(episodeTable.widthProperty().multiply(0.15));
+      watchedColumn.prefWidthProperty().bind(episodeTable.widthProperty().multiply(0.15));
+
+      List<EpisodeInfo> episodes = getEpisodesForSeries(playerLibrarySeries.getName());
       episodeTable.setItems(FXCollections.observableArrayList(episodes));
       detailView.setCenter(episodeTable);
 
@@ -156,7 +172,7 @@ public class PlayerLibraryView
          coverView = createCoverPlaceholder(playerLibrarySeries.getName());
       }
 
-      Button playAllButton = new Button("Odtwórz wszystko");
+      Button playAllButton = new Button("Play all");
       playAllButton.setOnAction(event -> {
          PlayerConstants.Playback.PLAYLIST_TO_START = playerLibrarySeries.getName();
          if (playerMainView != null)
@@ -165,7 +181,7 @@ public class PlayerLibraryView
          }
       });
 
-      Button backButton = new Button("Wróć do biblioteki");
+      Button backButton = new Button("Back to library");
       backButton.setOnAction(event -> libraryScrollPane.setContent(libraryTilePane));
 
       rightPane.getChildren().addAll(coverView, playAllButton, backButton);
@@ -264,47 +280,51 @@ public class PlayerLibraryView
       return Color.hsb(hue, saturation, brightness);
    }
 
-   public static class EpisodeInfo
-   {
-      private final SimpleStringProperty name;
-
-      public EpisodeInfo(String name)
-      {
-         String displayName = name.lastIndexOf('.') > 0 ? name.substring(0, name.lastIndexOf('.')) : name;
-         this.name = new SimpleStringProperty(displayName);
-      }
-
-      public String getName()
-      {
-         return name.get();
-      }
-
-      public SimpleStringProperty nameProperty()
-      {
-         return name;
-      }
-   }
-
-   private List<EpisodeInfo> getEpisodesForSeries(String basePath, String seriesName)
-   {
-      File seriesDir = new File(basePath, seriesName);
-      if (!seriesDir.isDirectory())
-      {
-         return Collections.emptyList();
-      }
-      File[] videoFiles = seriesDir.listFiles(file -> {
-         String name = file.getName().toLowerCase();
-         return file.isFile() && (name.endsWith(".mp4") || name.endsWith(".avi") || name.endsWith(".mkv"));
-      });
-
-      if (videoFiles == null)
-      {
-         return Collections.emptyList();
-      }
-
-      return Arrays.stream(videoFiles)
-            .map(file -> new EpisodeInfo(file.getName()))
-            .sorted(Comparator.comparing(EpisodeInfo::getName))
+   private List<EpisodeInfo> getEpisodesForSeries(String seriesName) {
+      return playerMainView.getVideoService().findAllBySeriesName(seriesName).stream()
+            .map(video -> new EpisodeInfo(
+                  String.valueOf(video.getSeasonNumber()),
+                  String.valueOf(video.getEpisodeNumber()),
+                  video.getEpisodeName(),
+                  video.getDurationInSeconds(),
+                  video.isWatched()
+            ))
             .collect(Collectors.toList());
    }
+
+   public static class EpisodeInfo
+   {
+      private final SimpleStringProperty season;
+      private final SimpleStringProperty episode;
+      private final SimpleStringProperty name;
+      private final SimpleStringProperty duration;
+      private final SimpleStringProperty watched;
+
+      public EpisodeInfo(String season, String episode, String name, long durationInSeconds, boolean isWatched)
+      {
+         this.season = new SimpleStringProperty(season);
+         this.episode = new SimpleStringProperty(episode);
+         this.name = new SimpleStringProperty(name);
+         this.duration = new SimpleStringProperty(formatDuration(durationInSeconds));
+         this.watched = new SimpleStringProperty(isWatched ? "Yes" : "No");
+      }
+
+      private String formatDuration(long totalSeconds)
+      {
+         long minutes = totalSeconds / 60;
+         return String.format("%d min", minutes);
+      }
+
+      public String getSeason() { return season.get(); }
+      public SimpleStringProperty seasonProperty() { return season; }
+      public String getEpisode() { return episode.get(); }
+      public SimpleStringProperty episodeProperty() { return episode; }
+      public String getName() { return name.get(); }
+      public SimpleStringProperty nameProperty() { return name; }
+      public String getDuration() { return duration.get(); }
+      public SimpleStringProperty durationProperty() { return duration; }
+      public String getWatched() { return watched.get(); }
+      public SimpleStringProperty watchedProperty() { return watched; }
+   }
+
 }

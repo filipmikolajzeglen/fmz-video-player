@@ -9,7 +9,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants;
+import lombok.ToString;
 
+@ToString
 public class VideoCommercialsPlaylist
 {
    private List<String> commercialPaths = new ArrayList<>();

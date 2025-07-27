@@ -20,7 +20,9 @@ import com.filipmikolajzeglen.fmzvideoplayer.database.Database;
 import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
+@ToString
 @Getter
 @RequiredArgsConstructor
 public class VideoService
@@ -28,7 +30,7 @@ public class VideoService
    private static final Logger LOGGER = new Logger();
    private final Database<Video> database;
 
-   void initializeFMZDB()
+   public void initializeFMZDB()
    {
       database.initialize();
       if (database.findAll().isEmpty())
@@ -187,4 +189,10 @@ public class VideoService
       }
    }
 
+   public List<Video> findAllBySeriesName(String seriesName)
+   {
+      return database.findAll().stream()
+            .filter(video -> video.getSeriesName().equalsIgnoreCase(seriesName))
+            .collect(Collectors.toList());
+   }
 }

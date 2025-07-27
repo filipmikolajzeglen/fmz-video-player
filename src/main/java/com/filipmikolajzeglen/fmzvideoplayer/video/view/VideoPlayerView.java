@@ -86,7 +86,7 @@ public class VideoPlayerView implements Initializable
    @Override
    public void initialize(URL url, ResourceBundle resourceBundle)
    {
-      VideoPlayerFactory videoPlayerFactory = new VideoPlayerFactory(this);
+      VideoPlayerFactory videoPlayerFactory = VideoPlayerFactory.of(this);
       videoPlayerFactory.setupAndStart();
    }
 

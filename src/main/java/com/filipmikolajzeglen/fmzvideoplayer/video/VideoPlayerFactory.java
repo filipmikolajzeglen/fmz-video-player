@@ -2,9 +2,9 @@ package com.filipmikolajzeglen.fmzvideoplayer.video;
 
 import java.util.List;
 
-import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants;
 import com.filipmikolajzeglen.fmzvideoplayer.database.Database;
 import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
+import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants;
 import com.filipmikolajzeglen.fmzvideoplayer.video.audio.AudioNormalizer;
 import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoFadeOutEffect;
 import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoMediaSizeEffect;
@@ -15,15 +15,18 @@ import com.filipmikolajzeglen.fmzvideoplayer.video.view.VideoPlaybackSpeedView;
 import com.filipmikolajzeglen.fmzvideoplayer.video.view.VideoPlayerView;
 import com.filipmikolajzeglen.fmzvideoplayer.video.view.VideoTimeSliderView;
 import com.filipmikolajzeglen.fmzvideoplayer.video.view.VideoVolumeView;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class VideoPlayerFactory
 {
    private static final Logger LOGGER = new Logger();
    private final VideoPlayerView videoPlayerView;
 
-   public VideoPlayerFactory(VideoPlayerView videoPlayerView)
+   public static VideoPlayerFactory of(VideoPlayerView videoPlayerView)
    {
-      this.videoPlayerView = videoPlayerView;
+      return new VideoPlayerFactory(videoPlayerView);
    }
 
    public void setupAndStart()

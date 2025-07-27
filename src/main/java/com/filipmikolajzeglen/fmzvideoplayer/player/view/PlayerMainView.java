@@ -10,6 +10,8 @@ import com.filipmikolajzeglen.fmzvideoplayer.VideoPlayerApplication;
 import com.filipmikolajzeglen.fmzvideoplayer.database.Database;
 import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConfiguration;
 import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants;
+import com.filipmikolajzeglen.fmzvideoplayer.video.Video;
+import com.filipmikolajzeglen.fmzvideoplayer.video.VideoService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -21,6 +23,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import lombok.Getter;
 
 public class PlayerMainView
 {
@@ -36,12 +39,14 @@ public class PlayerMainView
    @FXML private ToggleButton consoleLogTab;
    @FXML private ToggleButton tvScheduleTab;
    @FXML private AnchorPane libraryContent;
-   @FXML private VBox advancedContent; // teraz to fx:include
+   @FXML private VBox advancedContent;
    @FXML private VBox aboutContent;
-   @FXML private VBox tvScheduleContent; // <-- zostaje, bo to fx:include
+   @FXML private VBox tvScheduleContent;
    @FXML private Button playButton;
-   @FXML private VBox quickStartContent; // zmiana typu na VBox
-   @FXML private VBox consoleLogContent; // <-- dodaj to pole
+   @FXML private VBox quickStartContent;
+   @FXML private VBox consoleLogContent;
+
+   @Getter private VideoService videoService;
    //@formatter:on
 
    private PlayerQuickStartView playerQuickStartView;
@@ -53,6 +58,8 @@ public class PlayerMainView
    @FXML
    public void initialize()
    {
+      videoService = createVideoPlayerService();
+
       if (consoleLogContent != null)
       {
          playerConsoleLogsView = (PlayerConsoleLogsView) consoleLogContent.getProperties().get("controller");
@@ -135,6 +142,17 @@ public class PlayerMainView
       });
 
       loadPlayerConfiguration();
+   }
+
+   private VideoService createVideoPlayerService()
+   {
+      Database<Video> database = new Database<>(Video.class);
+      database.setDatabaseName(PlayerConstants.Paths.FMZ_DATABASE_NAME);
+      database.setTableName(PlayerConstants.Paths.FMZ_TABLE_NAME);
+      database.setDirectoryPath(PlayerConstants.Paths.APP_DATA_DIRECTORY);
+      VideoService videoService = new VideoService(database);
+      videoService.initializeFMZDB();
+      return videoService;
    }
 
    private void loadPlayerConfiguration()
