@@ -19,6 +19,7 @@ import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -38,10 +39,12 @@ public class PlayerMainView
    @FXML private ToggleButton aboutTab;
    @FXML private ToggleButton consoleLogTab;
    @FXML private ToggleButton tvScheduleTab;
+   @FXML private ToggleButton reNameToolTab;
    @FXML private AnchorPane libraryContent;
    @FXML private VBox advancedContent;
    @FXML private VBox aboutContent;
    @FXML private VBox tvScheduleContent;
+   @FXML private BorderPane reNameToolContent;
    @FXML private Button playButton;
    @FXML private VBox quickStartContent;
    @FXML private VBox consoleLogContent;
@@ -113,6 +116,7 @@ public class PlayerMainView
       tabMapping.put(aboutTab, aboutContent);
       tabMapping.put(tvScheduleTab, tvScheduleContent);
       tabMapping.put(consoleLogTab, consoleLogContent);
+      tabMapping.put(reNameToolTab, reNameToolContent);
 
       tabsGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
          if (newToggle == null)
