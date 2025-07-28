@@ -20,4 +20,5 @@ public class PlayerConfiguration
    private int commercialsCount;
    private boolean useCustomSchedule;
    private List<String> customSchedule;
+   private String databasePath;
 }

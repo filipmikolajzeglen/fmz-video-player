@@ -1,16 +1,22 @@
 package com.filipmikolajzeglen.fmzvideoplayer.player.view;
 
+import java.io.File;
+
 import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoIconsEffect;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
 import lombok.Getter;
 
 @Getter
@@ -27,6 +33,8 @@ public class PlayerAdvancedSettingsView
    @FXML private Slider colorPreviewSlider;
    @FXML private CheckBox commercialsEnabledCheckBox;
    @FXML private Spinner<Integer> commercialsCountSpinner;
+   @FXML private TextField databasePathField;
+   @FXML private Button browseDatabasePathButton;
    //@formatter:on
 
    @FXML
@@ -46,6 +54,19 @@ public class PlayerAdvancedSettingsView
          }
       });
       updateSliderPreviewColor(primaryColorPicker.getValue());
+   }
+
+   @FXML
+   private void onBrowseDatabasePath()
+   {
+      DirectoryChooser directoryChooser = new DirectoryChooser();
+      directoryChooser.setTitle("Wybierz folder dla bazy danych");
+      Stage stage = (Stage) browseDatabasePathButton.getScene().getWindow();
+      File selectedDirectory = directoryChooser.showDialog(stage);
+      if (selectedDirectory != null)
+      {
+         databasePathField.setText(selectedDirectory.getAbsolutePath());
+      }
    }
 
    private void updateSliderPreviewColor(Color color)
@@ -85,5 +106,15 @@ public class PlayerAdvancedSettingsView
             (int) (color.getRed() * 255),
             (int) (color.getGreen() * 255),
             (int) (color.getBlue() * 255));
+   }
+
+   public String getDatabasePath()
+   {
+      return databasePathField.getText();
+   }
+
+   public void setDatabasePath(String path)
+   {
+      databasePathField.setText(path);
    }
 }

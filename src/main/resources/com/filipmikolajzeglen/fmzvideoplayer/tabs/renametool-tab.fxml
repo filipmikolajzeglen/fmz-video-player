@@ -3,7 +3,7 @@
 <?import javafx.geometry.Insets?><?import javafx.scene.control.Button?><?import javafx.scene.control.Label?><?import javafx.scene.control.TableColumn?><?import javafx.scene.control.TableView?><?import javafx.scene.control.TextField?><?import javafx.scene.layout.BorderPane?><?import javafx.scene.layout.HBox?><?import javafx.scene.layout.VBox?>
 
 <BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.filipmikolajzeglen.fmzvideoplayer.player.view.RenameToolController"
+      fx:controller="com.filipmikolajzeglen.fmzvideoplayer.player.view.PlayerRenameToolView"
       style="-fx-padding: 11 40 40 40; -fx-background-color: white;" visible="false">
    <top>
       <VBox spacing="10" BorderPane.alignment="CENTER">

@@ -22,7 +22,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.DirectoryChooser;
 import lombok.Getter;
 
-public class RenameToolController
+public class PlayerRenameToolView
 {
    //@formatter:off
    @FXML private Label selectedFolderLabel;

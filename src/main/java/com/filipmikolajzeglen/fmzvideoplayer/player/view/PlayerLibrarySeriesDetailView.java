@@ -18,7 +18,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 
-public class SeriesDetailController
+public class PlayerLibrarySeriesDetailView
 {
 
    @FXML

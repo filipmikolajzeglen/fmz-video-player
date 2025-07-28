@@ -213,7 +213,8 @@ public class PlayerMainView
             playerAdvancedSettingsView.getCommercialsEnabledCheckBox().isSelected(),
             playerAdvancedSettingsView.getCommercialsCountSpinner().getValue(),
             playerTvScheduleView.getUseCustomScheduleCheckBox().isSelected(),
-            new ArrayList<>(playerTvScheduleView.getScheduleListView().getItems())
+            new ArrayList<>(playerTvScheduleView.getScheduleListView().getItems()),
+            ""
       );
       configDatabase.saveAll(List.of(config));
    }

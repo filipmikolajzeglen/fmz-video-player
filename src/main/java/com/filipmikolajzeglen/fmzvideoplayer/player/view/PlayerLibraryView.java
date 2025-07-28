@@ -137,7 +137,7 @@ public class PlayerLibraryView
          FXMLLoader loader = new FXMLLoader(getClass().getResource(LIBRARY_SERIES_DETAIL_FXML));
          Node detailView = loader.load();
 
-         SeriesDetailController controller = loader.getController();
+         PlayerLibrarySeriesDetailView controller = loader.getController();
          controller.initData(basePath, playerLibrarySeries, playerMainView, this);
 
          libraryScrollPane.setFitToHeight(true);
