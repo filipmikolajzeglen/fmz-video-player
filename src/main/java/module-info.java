@@ -1,13 +1,14 @@
 module com.filip.tvscheduler.fmztvscheduler {
-    requires javafx.controls;
-    requires javafx.fxml;
-    requires javafx.media;
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
 
     requires static lombok;
    requires java.xml;
    requires jcodec;
+   requires javafx.fxml;
+   requires javafx.graphics;
+   requires javafx.controls;
+   requires javafx.media;
 
    exports com.filipmikolajzeglen.fmzvideoplayer;
     exports com.filipmikolajzeglen.fmzvideoplayer.database;

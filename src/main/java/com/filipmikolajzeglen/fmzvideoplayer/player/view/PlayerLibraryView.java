@@ -18,7 +18,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -75,21 +75,6 @@ public class PlayerLibraryView
          }
       });
 
-      // Efekt podświetlenia po najechaniu myszą
-      DropShadow hoverEffect = new DropShadow(15, Color.rgb(0, 0, 0, 0.4));
-      hoverEffect.setSpread(0.1);
-
-      tileContainer.setOnMouseEntered(e -> {
-         tileContainer.setEffect(hoverEffect);
-         tileContainer.setStyle("-fx-cursor: hand;");
-      });
-
-      tileContainer.setOnMouseExited(e -> {
-         tileContainer.setEffect(null);
-         tileContainer.setStyle("-fx-cursor: default;");
-      });
-
-
       Node coverView;
       File coverFile = findCoverFile(basePath, playerLibrarySeries.getName());
 
@@ -119,6 +104,22 @@ public class PlayerLibraryView
          coverView = createCoverPlaceholder(playerLibrarySeries.getName());
       }
 
+      // Nowy efekt rozjaśnienia okładki
+      ColorAdjust brightenEffect = new ColorAdjust();
+      brightenEffect.setBrightness(0.2); // Możesz dostosować tę wartość
+
+      Node finalCoverView = coverView;
+      tileContainer.setOnMouseEntered(e -> {
+         finalCoverView.setEffect(brightenEffect);
+         tileContainer.setStyle("-fx-cursor: hand;");
+      });
+
+      Node finalCoverView1 = coverView;
+      tileContainer.setOnMouseExited(e -> {
+         finalCoverView1.setEffect(null);
+         tileContainer.setStyle("-fx-cursor: default;");
+      });
+
       Label titleLabel = new Label(playerLibrarySeries.getName());
       titleLabel.setWrapText(true);
       titleLabel.setTextAlignment(TextAlignment.CENTER);
@@ -129,6 +130,7 @@ public class PlayerLibraryView
       tileContainer.getChildren().addAll(coverView, titleWrapper);
       return tileContainer;
    }
+
 
    private void showSeriesDetailView(String basePath, PlayerLibrarySeries playerLibrarySeries) {
       try {

@@ -2,11 +2,11 @@ package com.filipmikolajzeglen.fmzvideoplayer.video.audio;
 
 import java.util.List;
 
-import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants;
 import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
+import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants;
 import com.filipmikolajzeglen.fmzvideoplayer.video.Video;
-import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoIconsEffect;
 import com.filipmikolajzeglen.fmzvideoplayer.video.VideoService;
+import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoIconsEffect;
 import com.filipmikolajzeglen.fmzvideoplayer.video.view.VideoPlayerView;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;

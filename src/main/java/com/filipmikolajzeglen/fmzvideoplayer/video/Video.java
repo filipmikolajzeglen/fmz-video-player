@@ -4,7 +4,8 @@ import static lombok.AccessLevel.PRIVATE;
 
 import java.io.File;
 import java.io.Serializable;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -55,10 +56,22 @@ public class Video implements Serializable
 
    private static String createId(File directory, String filename)
    {
+      // ID uses the new combined episode number
       return String.format("%s%s-%s",
             extractSeasonNumber(filename),
             extractEpisodeNumber(filename),
             extractSeriesName(directory));
+   }
+
+   private static String extractPartIndicator(String filename)
+   {
+      Pattern pattern = Pattern.compile("-\\((\\w)\\)-");
+      Matcher matcher = pattern.matcher(filename);
+      if (matcher.find())
+      {
+         return matcher.group(1);
+      }
+      return "";
    }
 
    private static String extractSeriesName(File directory)
@@ -68,7 +81,14 @@ public class Video implements Serializable
 
    private static String extractEpisodeName(String videoName)
    {
-      return videoName.substring(7, videoName.length() - 4).replace("-", " ");
+      Pattern pattern = Pattern.compile("^S\\d{2}E\\d{2}(?:-\\(\\w\\))?-(.*?)\\..*$");
+      Matcher matcher = pattern.matcher(videoName);
+      if (matcher.find())
+      {
+         return matcher.group(1).replace("-", " ");
+      }
+      int lastDot = videoName.lastIndexOf('.');
+      return lastDot > 0 ? videoName.substring(0, lastDot) : videoName;
    }
 
    private static String extractSeasonNumber(String videoName)
@@ -78,17 +98,22 @@ public class Video implements Serializable
 
    private static String extractEpisodeNumber(String videoName)
    {
-      return videoName.substring(3, 6);
+      String baseEpisode = videoName.substring(3, 6);
+      return baseEpisode + extractPartIndicator(videoName);
    }
 
    private static String extractExtension(String videoName)
    {
-      return videoName.substring(videoName.length() - 3);
+      int lastDotIndex = videoName.lastIndexOf('.');
+      if (lastDotIndex > 0 && lastDotIndex < videoName.length() - 1)
+      {
+         return videoName.substring(lastDotIndex + 1);
+      }
+      return "";
    }
 
    private static String buildPath(File directory, String videoName)
    {
-      return directory.getAbsolutePath() + "\\" + videoName;
+      return directory.getAbsolutePath() + File.separator + videoName;
    }
-
 }
