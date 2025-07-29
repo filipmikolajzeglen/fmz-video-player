@@ -61,8 +61,6 @@ public class PlayerMainView
    @FXML
    public void initialize()
    {
-      videoService = createVideoPlayerService();
-
       if (consoleLogContent != null)
       {
          playerConsoleLogsView = (PlayerConsoleLogsView) consoleLogContent.getProperties().get("controller");
@@ -83,6 +81,50 @@ public class PlayerMainView
          playerTvScheduleView.setPlayerQuickStartView(playerQuickStartView);
       }
 
+      if (advancedContent != null)
+      {
+         playerAdvancedSettingsView = (PlayerAdvancedSettingsView) advancedContent.getProperties().get("controller");
+      }
+
+      loadPlayerConfiguration();
+
+      if (playerQuickStartView != null)
+      {
+         // Listener will trigger service and configuration initialization after setting the path.
+         playerQuickStartView.getVideoMainSourceField().textProperty().addListener((obs, oldPath, newPath) -> {
+            if (newPath != null && !newPath.isEmpty())
+            {
+               // 1. Create VideoService if it does not exist yet.
+               if (videoService == null)
+               {
+                  this.videoService = createVideoPlayerService();
+               }
+
+               // 2. If configDatabase is null, create it and save the configuration.
+               if (configDatabase == null)
+               {
+                  File configFile = getConfigFile();
+                  configDatabase = new Database<>(PlayerConfiguration.class);
+                  configDatabase.setDatabaseName(configFile.getName().replace(".json", ""));
+                  configDatabase.setDirectoryPath(configFile.getParent());
+                  configDatabase.setTableName(PlayerConstants.Paths.CONFIG_TABLE_NAME);
+
+                  // IMPORTANT: Call initialize() to set the file name inside the Database object.
+                  configDatabase.initialize();
+
+                  // Now save the configuration. The file will be created if it does not exist.
+                  savePlayerConfiguration();
+               }
+
+               // 3. Refresh the library view.
+               if (playerLibraryView != null)
+               {
+                  playerLibraryView.refreshLibrary(newPath, playerQuickStartView.getSeriesFolders(newPath));
+               }
+            }
+         });
+      }
+
       if (libraryContent != null)
       {
          playerLibraryView = (PlayerLibraryView) libraryContent.getProperties().get("controller");
@@ -90,24 +132,6 @@ public class PlayerMainView
          {
             playerLibraryView.setStartupConfigController(this);
          }
-      }
-
-      if (advancedContent != null)
-      {
-         playerAdvancedSettingsView = (PlayerAdvancedSettingsView) advancedContent.getProperties().get("controller");
-      }
-
-      if (playerQuickStartView != null)
-      {
-         playerQuickStartView.getVideoMainSourceField().textProperty().addListener((obs, oldPath, newPath) -> {
-            if (playerLibraryView != null && newPath != null && !newPath.isEmpty())
-            {
-               playerLibraryView.refreshLibrary(
-                     newPath,
-                     playerQuickStartView.getSeriesFolders(newPath)
-               );
-            }
-         });
       }
 
       tabMapping = new HashMap<>();
@@ -144,8 +168,6 @@ public class PlayerMainView
             selectedPane.setManaged(true);
          }
       });
-
-      loadPlayerConfiguration();
    }
 
    private VideoService createVideoPlayerService()
@@ -162,14 +184,20 @@ public class PlayerMainView
    private void loadPlayerConfiguration()
    {
       File configFile = getConfigFile();
+      if (!configFile.exists())
+      {
+         return;
+      }
+
       configDatabase = new Database<>(PlayerConfiguration.class);
       configDatabase.setDatabaseName(configFile.getName().replace(".json", ""));
       configDatabase.setDirectoryPath(configFile.getParent());
       configDatabase.setTableName(PlayerConstants.Paths.CONFIG_TABLE_NAME);
       configDatabase.initialize();
+
       if (!configDatabase.findAll().isEmpty())
       {
-         PlayerConfiguration config = configDatabase.findAll().get(0);
+         PlayerConfiguration config = configDatabase.findAll().getFirst();
 
          if (playerQuickStartView != null)
          {
@@ -192,14 +220,17 @@ public class PlayerMainView
             }
          }
       }
+   }
 
-      if (playerLibraryView != null && playerQuickStartView != null)
+   private File getConfigFile()
+   {
+      String appDataPath = System.getenv("APPDATA");
+      File configDir = new File(appDataPath, "FMZVideoPlayer");
+      if (!configDir.exists())
       {
-         playerLibraryView.refreshLibrary(
-               playerQuickStartView.getVideoMainSourcePath(),
-               playerQuickStartView.getSeriesFolders(playerQuickStartView.getVideoMainSourcePath())
-         );
+         configDir.mkdirs();
       }
+      return new File(configDir, PlayerConstants.Paths.FMZ_DATABASE_NAME + ".json");
    }
 
    private void savePlayerConfiguration()
@@ -217,17 +248,6 @@ public class PlayerMainView
             ""
       );
       configDatabase.saveAll(List.of(config));
-   }
-
-   private File getConfigFile()
-   {
-      String appDataPath = System.getenv("APPDATA");
-      File configDir = new File(appDataPath, "FMZVideoPlayer");
-      if (!configDir.exists())
-      {
-         configDir.mkdirs();
-      }
-      return new File(configDir, PlayerConstants.Paths.FMZ_DATABASE_NAME + ".json");
    }
 
    public void onPlayClicked()

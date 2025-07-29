@@ -46,8 +46,7 @@ public class Database<DOCUMENT>
       else
       {
          data = new ArrayList<>();
-         LOGGER.info("Database: Created new database file " + filename);
-         saveAll(data);
+         LOGGER.info("Database: " + filename + " not found. Initialized empty database.");
       }
    }
 
