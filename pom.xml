@@ -75,6 +75,11 @@
             <artifactId>jcodec-javase</artifactId>
             <version>0.2.5</version>
         </dependency>
+        <dependency>
+            <groupId>io.humble</groupId>
+            <artifactId>humble-video-all</artifactId>
+            <version>0.3.0</version>
+        </dependency>
     </dependencies>
 
     <build>
