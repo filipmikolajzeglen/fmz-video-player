@@ -3,8 +3,6 @@ package com.filipmikolajzeglen.fmzvideoplayer.player.view;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -92,7 +90,8 @@ public class PlayerRenameToolView
       }
    }
 
-   private void generateNewNames() {
+   private void generateNewNames()
+   {
       String[] textsToIgnore = Arrays.stream(ignoreTextField.getText().split(";"))
             .map(String::trim)
             .filter(s -> !s.isEmpty())
@@ -100,74 +99,122 @@ public class PlayerRenameToolView
 
       String seasonText = seasonTextField.getText();
 
-      if (!seasonText.isEmpty()) {
-         try {
+      if (!seasonText.isEmpty())
+      {
+         try
+         {
             Integer.parseInt(seasonText);
-         } catch (NumberFormatException e) {
-            for (RenameFileItem item : fileItems) item.setNewName("");
+         }
+         catch (NumberFormatException e)
+         {
+            for (RenameFileItem item : fileItems)
+            {
+               item.setNewName("");
+            }
             return;
          }
       }
 
       fileItems.sort(Comparator.comparing(RenameFileItem::getOriginalName));
 
-      Map<String, Integer> episodeNumberMap = new LinkedHashMap<>();
-      int episodeCounter = 1;
+      // Wzorce do rozpoznawania sezonu i odcinka
+      Pattern[] patterns = new Pattern[] {
+            Pattern.compile("\\[(\\d+)x(\\d+)\\]\\s*(.*)", Pattern.CASE_INSENSITIVE), // [1x01] Tytuł
+            Pattern.compile("S(\\d{2})\\s*E(\\d{2})\\s*-\\s*(.*)", Pattern.CASE_INSENSITIVE), // S01 E01 - Tytuł
+            Pattern.compile("(\\d+)x(\\d+)\\s*-\\s*(.*)", Pattern.CASE_INSENSITIVE), // 1x01 - Tytuł
+            Pattern.compile("S(\\d{2})E(\\d{2})[.\\s-]*(.*)", Pattern.CASE_INSENSITIVE), // S01E11. lub S01E11 - Tytuł
+            Pattern.compile("S(\\d{2})\\s*Odcinek\\s*(\\d{1,2})\\s*-\\s*(.*)", Pattern.CASE_INSENSITIVE),
+            // S01 Odcinek 12 - Tytuł
+            Pattern.compile("E(\\d{3})[.\\s-]*(.*)", Pattern.CASE_INSENSITIVE), // E001. Tytuł
+            Pattern.compile("Saban's Masked Rider - Episode (\\d+)", Pattern.CASE_INSENSITIVE),
+            // Saban's Masked Rider - Episode 28
+            Pattern.compile("S(\\d{2})E(\\d{2})", Pattern.CASE_INSENSITIVE), // S01E11
+      };
 
-      Pattern newFormatPattern = Pattern.compile("(\\d+)[.](\\d+)([a-zA-Z])?.*");
-      for (RenameFileItem item : fileItems) {
-         Matcher matcher = newFormatPattern.matcher(item.getOriginalName());
-         if (matcher.find()) {
-            String episodeKey = matcher.group(1) + "." + matcher.group(2);
-            if (!episodeNumberMap.containsKey(episodeKey)) {
-               episodeNumberMap.put(episodeKey, episodeCounter++);
-            }
-         }
-      }
-
-      Pattern sXXeYYPattern = Pattern.compile("[sS](\\d{1,2})[eE](\\d{1,2})");
-
-      for (RenameFileItem item : fileItems) {
+      for (RenameFileItem item : fileItems)
+      {
          String originalName = item.getOriginalName();
-         String baseName = originalName.substring(0, originalName.lastIndexOf('.'));
-         String extension = originalName.substring(originalName.lastIndexOf('.'));
+         String baseName =
+               originalName.contains(".") ? originalName.substring(0, originalName.lastIndexOf('.')) : originalName;
+         String extension = originalName.contains(".") ? originalName.substring(originalName.lastIndexOf('.')) : "";
 
          int season = -1, episode = -1;
-         String part = null, title = "";
+         String title = "";
 
-         Matcher newFormatMatcher = newFormatPattern.matcher(baseName);
-         Matcher sXXeYYMatcher = sXXeYYPattern.matcher(baseName);
-
-         if (newFormatMatcher.find()) {
-            season = Integer.parseInt(newFormatMatcher.group(1));
-            String episodeKey = newFormatMatcher.group(1) + "." + newFormatMatcher.group(2);
-            episode = episodeNumberMap.getOrDefault(episodeKey, -1);
-            part = newFormatMatcher.group(3);
-            int titleStartIndex = baseName.indexOf('-');
-            title = (titleStartIndex != -1) ? baseName.substring(titleStartIndex + 1).trim() : "";
-         } else if (sXXeYYMatcher.find()) {
-            season = Integer.parseInt(sXXeYYMatcher.group(1));
-            episode = Integer.parseInt(sXXeYYMatcher.group(2));
-            title = baseName.replaceFirst(sXXeYYPattern.pattern(), "").trim();
+         boolean matched = false;
+         for (Pattern pattern : patterns)
+         {
+            Matcher matcher = pattern.matcher(baseName);
+            if (matcher.find())
+            {
+               matched = true;
+               if (pattern.pattern().contains("Saban's Masked Rider"))
+               {
+                  season = 1;
+                  episode = Integer.parseInt(matcher.group(1));
+               }
+               else if (pattern.pattern().contains("E(\\d{3})"))
+               {
+                  int ep = Integer.parseInt(matcher.group(1));
+                  season = ep / 100;
+                  episode = ep % 100;
+                  title = matcher.group(2);
+               }
+               else if (pattern.pattern().contains("S(\\d{2})\\s*Odcinek"))
+               {
+                  season = Integer.parseInt(matcher.group(1));
+                  episode = Integer.parseInt(matcher.group(2));
+                  title = matcher.group(3);
+               }
+               else if (matcher.groupCount() >= 3)
+               {
+                  season = Integer.parseInt(matcher.group(1));
+                  episode = Integer.parseInt(matcher.group(2));
+                  title = matcher.group(3);
+               }
+               else if (matcher.groupCount() == 2)
+               {
+                  season = Integer.parseInt(matcher.group(1));
+                  episode = Integer.parseInt(matcher.group(2));
+               }
+               break;
+            }
          }
 
-         if (!seasonText.isEmpty()) {
+         // Jeśli podano sezon ręcznie, nadpisz
+         if (!seasonText.isEmpty())
+         {
             season = Integer.parseInt(seasonText);
          }
 
-         if (season == -1 || episode == -1) {
+         if (season == -1 || episode == -1)
+         {
             item.setNewName("Cannot process");
             continue;
          }
 
-         for (String textToIgnore : textsToIgnore) {
+         // Usuwanie niechcianych fragmentów z tytułu
+         for (String textToIgnore : textsToIgnore)
+         {
             title = title.replaceAll("(?i)" + Pattern.quote(textToIgnore), "").trim();
          }
+         // Usuwanie typowych tagów jakościowych
+         title = title.replaceAll("\\(.*?\\)", "")
+               .replaceAll("(1080p|720p|BluRay|MULTi|AI4K|x265|DVDSync|AAC|H264|BTV-Bizanc|ROOT21)", "").trim();
+         // Usuwanie kropek na spacje, potem zamiana spacji na myślniki
+         title = title.replaceAll("[._]", " ").replaceAll("\\s+", " ").trim().replaceAll(" ", "-");
 
-         String partStr = (part != null && !part.isEmpty()) ? "-(" + part.toUpperCase() + ")" : "";
-         String episodeTitle = title.replaceAll("\\s+", "-");
+         // Usuwanie końcowych myślników
+         title = title.replaceAll("^-+|-+$", "");
 
-         item.setNewName(String.format("S%02dE%02d%s-%s%s", season, episode, partStr, episodeTitle, extension));
+         String newName = String.format("S%02dE%02d", season, episode);
+         if (!title.isEmpty())
+         {
+            newName += "-" + title;
+         }
+         newName += extension;
+
+         item.setNewName(newName);
       }
    }
 
