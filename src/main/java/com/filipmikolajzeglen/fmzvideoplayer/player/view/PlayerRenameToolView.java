@@ -1,12 +1,12 @@
-// Utwórz nowy plik:
-// src/main/java/com/filipmikolajzeglen/fmzvideoplayer/player/view/RenameToolController.java
 package com.filipmikolajzeglen.fmzvideoplayer.player.view;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -27,6 +27,7 @@ public class PlayerRenameToolView
    //@formatter:off
    @FXML private Label selectedFolderLabel;
    @FXML private TextField ignoreTextField;
+   @FXML private TextField seasonTextField;
    @FXML private TableView<RenameFileItem> filesTableView;
    @FXML private TableColumn<RenameFileItem, String> originalNameColumn;
    @FXML private TableColumn<RenameFileItem, String> newNameColumn;
@@ -52,6 +53,7 @@ public class PlayerRenameToolView
       });
 
       ignoreTextField.textProperty().addListener((obs, oldText, newText) -> generateNewNames());
+      seasonTextField.textProperty().addListener((obs, oldText, newText) -> generateNewNames());
    }
 
    @FXML
@@ -90,73 +92,83 @@ public class PlayerRenameToolView
       }
    }
 
-   private void generateNewNames()
-   {
-      String textToIgnore = ignoreTextField.getText();
-      for (RenameFileItem item : fileItems)
-      {
-         String newName = generateSingleNewName(item.getOriginalName(), textToIgnore);
-         item.setNewName(newName);
+   private void generateNewNames() {
+      String[] textsToIgnore = Arrays.stream(ignoreTextField.getText().split(";"))
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .toArray(String[]::new);
+
+      String seasonText = seasonTextField.getText();
+
+      if (!seasonText.isEmpty()) {
+         try {
+            Integer.parseInt(seasonText);
+         } catch (NumberFormatException e) {
+            for (RenameFileItem item : fileItems) item.setNewName("");
+            return;
+         }
       }
-   }
 
-   private String generateSingleNewName(String originalName, String textToIgnore)
-   {
-      String baseName = originalName.substring(0, originalName.lastIndexOf('.'));
-      String extension = originalName.substring(originalName.lastIndexOf('.'));
-      String tempName = baseName.replaceAll("[._]", " ");
+      fileItems.sort(Comparator.comparing(RenameFileItem::getOriginalName));
 
-      if (textToIgnore != null && !textToIgnore.isEmpty())
-      {
-         tempName = tempName.replaceAll("(?i)" + Pattern.quote(textToIgnore), "");
+      Map<String, Integer> episodeNumberMap = new LinkedHashMap<>();
+      int episodeCounter = 1;
+
+      Pattern newFormatPattern = Pattern.compile("(\\d+)[.](\\d+)([a-zA-Z])?.*");
+      for (RenameFileItem item : fileItems) {
+         Matcher matcher = newFormatPattern.matcher(item.getOriginalName());
+         if (matcher.find()) {
+            String episodeKey = matcher.group(1) + "." + matcher.group(2);
+            if (!episodeNumberMap.containsKey(episodeKey)) {
+               episodeNumberMap.put(episodeKey, episodeCounter++);
+            }
+         }
       }
 
       Pattern sXXeYYPattern = Pattern.compile("[sS](\\d{1,2})[eE](\\d{1,2})");
-      Matcher matcher = sXXeYYPattern.matcher(tempName);
-      int season = 1, episode = -1;
 
-      if (matcher.find())
-      {
-         season = Integer.parseInt(matcher.group(1));
-         episode = Integer.parseInt(matcher.group(2));
-         tempName = tempName.replaceAll(sXXeYYPattern.pattern(), "");
-      }
-      else
-      {
-         Pattern numberPattern = Pattern.compile("(\\d+)");
-         Matcher numberMatcher = numberPattern.matcher(tempName);
-         if (numberMatcher.find())
-         {
-            episode = Integer.parseInt(numberMatcher.group(1));
-            tempName = tempName.replaceFirst(numberMatcher.group(1), "");
+      for (RenameFileItem item : fileItems) {
+         String originalName = item.getOriginalName();
+         String baseName = originalName.substring(0, originalName.lastIndexOf('.'));
+         String extension = originalName.substring(originalName.lastIndexOf('.'));
+
+         int season = -1, episode = -1;
+         String part = null, title = "";
+
+         Matcher newFormatMatcher = newFormatPattern.matcher(baseName);
+         Matcher sXXeYYMatcher = sXXeYYPattern.matcher(baseName);
+
+         if (newFormatMatcher.find()) {
+            season = Integer.parseInt(newFormatMatcher.group(1));
+            String episodeKey = newFormatMatcher.group(1) + "." + newFormatMatcher.group(2);
+            episode = episodeNumberMap.getOrDefault(episodeKey, -1);
+            part = newFormatMatcher.group(3);
+            int titleStartIndex = baseName.indexOf('-');
+            title = (titleStartIndex != -1) ? baseName.substring(titleStartIndex + 1).trim() : "";
+         } else if (sXXeYYMatcher.find()) {
+            season = Integer.parseInt(sXXeYYMatcher.group(1));
+            episode = Integer.parseInt(sXXeYYMatcher.group(2));
+            title = baseName.replaceFirst(sXXeYYPattern.pattern(), "").trim();
          }
-      }
 
-      if (episode == -1)
-      {
-         return "Cannot process";
-      }
-
-      // 3. Usuwanie "śmieci" (uproszczone)
-      String[] junkKeywords = { "1080p", "720p", "WEB-DL", "HDTV", "x264", "H.265", "AMZN" };
-      for (String junk : junkKeywords)
-      {
-         int junkIndex = tempName.toLowerCase().indexOf(junk.toLowerCase());
-         if (junkIndex != -1)
-         {
-            tempName = tempName.substring(0, junkIndex);
+         if (!seasonText.isEmpty()) {
+            season = Integer.parseInt(seasonText);
          }
+
+         if (season == -1 || episode == -1) {
+            item.setNewName("Cannot process");
+            continue;
+         }
+
+         for (String textToIgnore : textsToIgnore) {
+            title = title.replaceAll("(?i)" + Pattern.quote(textToIgnore), "").trim();
+         }
+
+         String partStr = (part != null && !part.isEmpty()) ? "-(" + part.toUpperCase() + ")" : "";
+         String episodeTitle = title.replaceAll("\\s+", "-");
+
+         item.setNewName(String.format("S%02dE%02d%s-%s%s", season, episode, partStr, episodeTitle, extension));
       }
-
-      // Usuwanie losowych kodów na końcu
-      tempName = tempName.replaceAll("-[a-zA-Z0-9]{8,}$", "");
-
-      // 4. Składanie nazwy
-      String episodeTitle = Arrays.stream(tempName.trim().split("\\s+"))
-            .map(s -> s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase())
-            .collect(Collectors.joining("-"));
-
-      return String.format("S%02dE%02d-%s%s", season, episode, episodeTitle, extension);
    }
 
    @FXML
