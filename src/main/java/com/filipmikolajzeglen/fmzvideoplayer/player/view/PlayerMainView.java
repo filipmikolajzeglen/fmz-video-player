@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.filipmikolajzeglen.fmzvideoplayer.VideoPlayerApplication;
 import com.filipmikolajzeglen.fmzvideoplayer.database.Database;
+import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
 import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConfiguration;
 import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants;
 import com.filipmikolajzeglen.fmzvideoplayer.video.Video;
@@ -28,6 +29,7 @@ import lombok.Getter;
 
 public class PlayerMainView
 {
+   private static final Logger LOGGER = new Logger();
    private Database<PlayerConfiguration> configDatabase;
    private Map<Toggle, Region> tabMapping;
 
@@ -86,8 +88,6 @@ public class PlayerMainView
          playerAdvancedSettingsView = (PlayerAdvancedSettingsView) advancedContent.getProperties().get("controller");
       }
 
-      loadPlayerConfiguration();
-
       if (playerQuickStartView != null)
       {
          // Listener will trigger service and configuration initialization after setting the path.
@@ -105,7 +105,7 @@ public class PlayerMainView
                {
                   File configFile = getConfigFile();
                   configDatabase = new Database<>(PlayerConfiguration.class);
-                  configDatabase.setDatabaseName(configFile.getName().replace(".json", ""));
+                  configDatabase.setDatabaseName(PlayerConstants.Paths.FMZ_DATABASE_NAME);
                   configDatabase.setDirectoryPath(configFile.getParent());
                   configDatabase.setTableName(PlayerConstants.Paths.CONFIG_TABLE_NAME);
 
@@ -168,6 +168,9 @@ public class PlayerMainView
             selectedPane.setManaged(true);
          }
       });
+
+      // Move this call to the end of the method.
+      loadPlayerConfiguration();
    }
 
    private VideoService createVideoPlayerService()
@@ -186,11 +189,12 @@ public class PlayerMainView
       File configFile = getConfigFile();
       if (!configFile.exists())
       {
+         LOGGER.info("No configuration file found. Using default values.");
          return;
       }
 
       configDatabase = new Database<>(PlayerConfiguration.class);
-      configDatabase.setDatabaseName(configFile.getName().replace(".json", ""));
+      configDatabase.setDatabaseName(PlayerConstants.Paths.FMZ_DATABASE_NAME);
       configDatabase.setDirectoryPath(configFile.getParent());
       configDatabase.setTableName(PlayerConstants.Paths.CONFIG_TABLE_NAME);
       configDatabase.initialize();
@@ -201,6 +205,7 @@ public class PlayerMainView
 
          if (playerQuickStartView != null)
          {
+            LOGGER.info("Loading configuration from file: " + configFile.getAbsolutePath());
             playerQuickStartView.getMaxSeriesSpinner().getValueFactory().setValue(config.getMaxSingleSeriesPerDay());
             playerQuickStartView.getMaxEpisodesSpinner().getValueFactory().setValue(config.getMaxEpisodesPerDay());
             playerQuickStartView.getVideoMainSourceField().setText(config.getVideoMainSourcePath());
@@ -230,7 +235,9 @@ public class PlayerMainView
       {
          configDir.mkdirs();
       }
-      return new File(configDir, PlayerConstants.Paths.FMZ_DATABASE_NAME + ".json");
+      var ddd = new File(configDir, "FMZDB_Configuration.json");
+      LOGGER.info("Config file path: " + ddd.getAbsolutePath());
+      return ddd;
    }
 
    private void savePlayerConfiguration()
