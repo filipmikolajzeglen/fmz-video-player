@@ -223,6 +223,11 @@ public class PlayerMainView
                playerAdvancedSettingsView.getPrimaryColorPicker()
                      .setValue(javafx.scene.paint.Color.web(config.getPrimaryColor()));
             }
+            if (config.getCommercialsPath() != null)
+            {
+               playerAdvancedSettingsView.getCommercialsPathField().setText(config.getCommercialsPath());
+               PlayerConstants.Paths.COMMERCIALS_PATH = config.getCommercialsPath();
+            }
          }
       }
    }
@@ -251,7 +256,7 @@ public class PlayerMainView
             playerAdvancedSettingsView.getCommercialsCountSpinner().getValue(),
             playerTvScheduleView.getUseCustomScheduleCheckBox().isSelected(),
             new ArrayList<>(playerTvScheduleView.getScheduleListView().getItems()),
-            ""
+            playerAdvancedSettingsView.getCommercialsPathField().getText()
       );
       configDatabase.saveAll(List.of(config));
    }

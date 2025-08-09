@@ -18,8 +18,17 @@ public class VideoCommercialsPlaylist
 
    void loadCommercials()
    {
-      String commercialFolderPath = PlayerConstants.Paths.VIDEO_MAIN_SOURCE + File.separator
-            + PlayerConstants.Paths.COMMERCIALS_FOLDER_NAME;
+      String commercialFolderPath;
+      if (PlayerConstants.Paths.COMMERCIALS_PATH != null && !PlayerConstants.Paths.COMMERCIALS_PATH.isEmpty())
+      {
+         commercialFolderPath = PlayerConstants.Paths.COMMERCIALS_PATH;
+      }
+      else
+      {
+         commercialFolderPath = PlayerConstants.Paths.VIDEO_MAIN_SOURCE + File.separator
+               + PlayerConstants.Paths.COMMERCIALS_FOLDER_NAME;
+      }
+
       File commercialDir = new File(commercialFolderPath);
       if (commercialDir.exists() && commercialDir.isDirectory())
       {

@@ -16,7 +16,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.Stage;
 import lombok.Getter;
 
 @Getter
@@ -33,8 +32,8 @@ public class PlayerAdvancedSettingsView
    @FXML private Slider colorPreviewSlider;
    @FXML private CheckBox commercialsEnabledCheckBox;
    @FXML private Spinner<Integer> commercialsCountSpinner;
-   @FXML private TextField databasePathField;
-   @FXML private Button browseDatabasePathButton;
+   @FXML private TextField commercialsPathField;
+   @FXML private Button browseCommercialsPathButton;
    //@formatter:on
 
    @FXML
@@ -47,6 +46,9 @@ public class PlayerAdvancedSettingsView
       updateIconPreview();
 
       commercialsCountSpinner.disableProperty().bind(Bindings.not(commercialsEnabledCheckBox.selectedProperty()));
+      commercialsPathField.disableProperty().bind(Bindings.not(commercialsEnabledCheckBox.selectedProperty()));
+      browseCommercialsPathButton.disableProperty().bind(Bindings.not(commercialsEnabledCheckBox.selectedProperty()));
+
       primaryColorPicker.valueProperty().addListener((obs, oldColor, newColor) -> {
          if (newColor != null)
          {
@@ -57,15 +59,15 @@ public class PlayerAdvancedSettingsView
    }
 
    @FXML
-   private void onBrowseDatabasePath()
+   private void onBrowseCommercialsPath()
    {
       DirectoryChooser directoryChooser = new DirectoryChooser();
-      directoryChooser.setTitle("Wybierz folder dla bazy danych");
-      Stage stage = (Stage) browseDatabasePathButton.getScene().getWindow();
-      File selectedDirectory = directoryChooser.showDialog(stage);
-      if (selectedDirectory != null)
+      directoryChooser.setTitle("Select a folder with commercial files");
+      File directory = directoryChooser.showDialog(commercialsPathField.getScene().getWindow());
+
+      if (directory != null)
       {
-         databasePathField.setText(selectedDirectory.getAbsolutePath());
+         commercialsPathField.setText(directory.getAbsolutePath());
       }
    }
 

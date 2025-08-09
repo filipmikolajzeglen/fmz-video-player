@@ -49,9 +49,10 @@
         <Label text="Number of commercials to play:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
         <Spinner fx:id="commercialsCountSpinner" min="1" max="99" initialValue="4" editable="true" prefWidth="Infinity" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
 
-        <Label text="Leave empty to use the default location in main video source." GridPane.rowIndex="6" GridPane.columnIndex="0" />
-        <TextField fx:id="databasePathField" HBox.hgrow="ALWAYS" promptText="eg. D:\My folder\My commercials" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
-        <Button fx:id="browseDatabasePathButton" text="..." onAction="#onBrowseDatabasePath" GridPane.rowIndex="6" GridPane.columnIndex="2"/>
+        <Label text="Commercials folder path (Default: 'Commercials' folder in main video source):" GridPane.rowIndex="6" GridPane.columnIndex="0" />
+        <TextField fx:id="commercialsPathField" HBox.hgrow="ALWAYS" promptText="eg. D:\My folder\My commercials" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+        <Button fx:id="browseCommercialsPathButton" text="..." onAction="#onBrowseCommercialsPath" GridPane.rowIndex="6" GridPane.columnIndex="2"/>
+
     </GridPane>
 
 </VBox>

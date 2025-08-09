@@ -52,6 +52,7 @@ public class PlayerConstants
       public static String VIDEO_MAIN_SOURCE = "E:\\FoxKids";
       public static final String CONFIG_TABLE_NAME = "Configuration";
       public static final String COMMERCIALS_FOLDER_NAME = "Commercials";
+      public static String COMMERCIALS_PATH = "";
    }
 
    public static final class Icons
