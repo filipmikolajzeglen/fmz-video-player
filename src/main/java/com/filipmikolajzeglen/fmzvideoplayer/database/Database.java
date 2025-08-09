@@ -4,30 +4,51 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
-@Setter
-@RequiredArgsConstructor
 public class Database<DOCUMENT>
 {
 
    private static final Logger LOGGER = new Logger();
+   private static final Map<String, Database<?>> INSTANCES = new ConcurrentHashMap<>();
 
-   private String databaseName;
-   private String tableName;
-   private String directoryPath;
-   private String filename;
+   private final String filename;
    private final Class<DOCUMENT> documentClass;
    private final ObjectMapper objectMapper = new ObjectMapper();
    private List<DOCUMENT> data = new ArrayList<>();
 
-   public void initialize()
+   private Database(String databaseName, String tableName, String directoryPath, Class<DOCUMENT> documentClass)
    {
+      this.documentClass = documentClass;
       this.filename = directoryPath + File.separator + databaseName + "_" + tableName + ".json";
+      load();
+      LOGGER.info("Database: Initialized file " + filename + " with " + data.size() + " items.");
+   }
+
+   @SuppressWarnings("unchecked")
+   public static synchronized <T> Database<T> getInstance(String databaseName, String tableName, String directoryPath,
+         Class<T> documentClass)
+   {
+      String key = databaseName + ":" + tableName + ":" + directoryPath;
+      return (Database<T>) INSTANCES.computeIfAbsent(key,
+            k -> new Database<>(databaseName, tableName, directoryPath, documentClass));
+   }
+
+   public void ensureFileExists()
+   {
+      File file = new File(filename);
+      if (!file.exists())
+      {
+         saveToFile();
+      }
+   }
+
+   private void load()
+   {
       File file = new File(filename);
       if (file.exists())
       {
@@ -50,24 +71,8 @@ public class Database<DOCUMENT>
       }
    }
 
-   public void save(DOCUMENT item)
+   private void saveToFile()
    {
-      int index = data.indexOf(item);
-      if (index >= 0)
-      {
-         data.set(index, item);
-      }
-      else
-      {
-         data.add(item);
-      }
-      saveAll(data);
-   }
-
-   @SuppressWarnings("ResultOfMethodCallIgnored")
-   public void saveAll(List<DOCUMENT> items)
-   {
-      data = new ArrayList<>(items);
       try
       {
          File file = new File(filename);
@@ -81,21 +86,65 @@ public class Database<DOCUMENT>
       }
    }
 
+   // CRUD
+   public void create(DOCUMENT item)
+   {
+      data.add(item);
+      saveToFile();
+      LOGGER.info("Database: Item created successfully.");
+   }
 
-   public List<DOCUMENT> findAll()
+   public void createAll(List<DOCUMENT> items)
+   {
+      data.addAll(items);
+      saveToFile();
+      LOGGER.info("Database: Items created: " + items.size());
+   }
+
+   public DOCUMENT readFirst()
+   {
+      return data.getFirst();
+   }
+
+   public List<DOCUMENT> readAll()
    {
       return new ArrayList<>(data);
    }
 
-   public void delete(DOCUMENT item)
+   public void update(DOCUMENT item)
    {
-      data.remove(item);
-      saveAll(data);
+      if (data == null || data.isEmpty())
+      {
+         data = new ArrayList<>();
+         data.add(item);
+         saveToFile();
+         LOGGER.info("Database: Item updated (created new config).");
+      }
+      else
+      {
+         int index = data.indexOf(item);
+         if (index >= 0)
+         {
+            data.set(index, item);
+            saveToFile();
+            LOGGER.info("Database: Item updated (overwritten config).");
+         }
+      }
    }
 
-   public void clear()
+   public void delete(DOCUMENT item)
+   {
+      if (data.remove(item))
+      {
+         saveToFile();
+         LOGGER.info("Database: Item deleted successfully.");
+      }
+   }
+
+   public void deleteAll()
    {
       data.clear();
-      saveAll(data);
+      saveToFile();
+      LOGGER.info("Database: All items cleared.");
    }
 }

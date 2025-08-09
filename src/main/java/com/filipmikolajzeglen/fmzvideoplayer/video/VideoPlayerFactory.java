@@ -45,10 +45,13 @@ public class VideoPlayerFactory
 
    private VideoService createVideoPlayerService()
    {
-      Database<Video> database = new Database<>(Video.class);
-      database.setDatabaseName(PlayerConstants.Paths.FMZ_DATABASE_NAME);
-      database.setTableName(PlayerConstants.Paths.FMZ_TABLE_NAME);
-      database.setDirectoryPath(PlayerConstants.Paths.APP_DATA_DIRECTORY);
+      Database<Video> database = Database.getInstance(
+            PlayerConstants.Paths.FMZ_DATABASE_NAME,
+            PlayerConstants.Paths.FMZ_TABLE_NAME,
+            PlayerConstants.Paths.APP_DATA_DIRECTORY,
+            Video.class
+      );
+
       return new VideoService(database);
    }
 
@@ -70,7 +73,7 @@ public class VideoPlayerFactory
 
    private void initializeBusinessLogic()
    {
-      videoPlayerView.getVideoService().initializeFMZDB();
+      videoPlayerView.getVideoService().initialize();
       List<Video> videos;
 
       if (PlayerConstants.Playback.PLAYLIST_TO_START != null)

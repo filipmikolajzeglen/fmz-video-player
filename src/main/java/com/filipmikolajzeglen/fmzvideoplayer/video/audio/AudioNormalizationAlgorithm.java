@@ -119,7 +119,7 @@ class AudioNormalizationAlgorithm
 
       mediaPlayer.setVolume(normalizedVolume);
       video.setAudioNormalizedVolume(normalizedVolume);
-      videoService.getDatabase().save(video);
+      videoService.getDatabase().update(video);
       mediaPlayer.setAudioSpectrumListener(null);
       currentListener = null;
 

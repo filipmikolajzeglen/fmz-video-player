@@ -3,7 +3,6 @@ package com.filipmikolajzeglen.fmzvideoplayer.player.view;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.filipmikolajzeglen.fmzvideoplayer.VideoPlayerApplication;
@@ -103,16 +102,13 @@ public class PlayerMainView
                // 2. If configDatabase is null, create it and save the configuration.
                if (configDatabase == null)
                {
-                  File configFile = getConfigFile();
-                  configDatabase = new Database<>(PlayerConfiguration.class);
-                  configDatabase.setDatabaseName(PlayerConstants.Paths.FMZ_DATABASE_NAME);
-                  configDatabase.setDirectoryPath(configFile.getParent());
-                  configDatabase.setTableName(PlayerConstants.Paths.CONFIG_TABLE_NAME);
-
-                  // IMPORTANT: Call initialize() to set the file name inside the Database object.
-                  configDatabase.initialize();
-
-                  // Now save the configuration. The file will be created if it does not exist.
+                  configDatabase = Database.getInstance(
+                        PlayerConstants.Paths.FMZ_DATABASE_NAME,
+                        PlayerConstants.Paths.CONFIG_TABLE_NAME,
+                        PlayerConstants.Paths.APP_DATA_DIRECTORY,
+                        PlayerConfiguration.class
+                  );
+                  configDatabase.ensureFileExists();
                   savePlayerConfiguration();
                }
 
@@ -169,18 +165,40 @@ public class PlayerMainView
          }
       });
 
+      // Nasłuchiwanie zmian w polach i automatyczny zapis konfiguracji
+      if (playerQuickStartView != null && playerAdvancedSettingsView != null && playerTvScheduleView != null)
+      {
+         // QuickStart
+         playerQuickStartView.getMaxSeriesSpinner().valueProperty().addListener((obs, oldVal, newVal) -> savePlayerConfiguration());
+         playerQuickStartView.getMaxEpisodesSpinner().valueProperty().addListener((obs, oldVal, newVal) -> savePlayerConfiguration());
+         playerQuickStartView.getVideoMainSourceField().textProperty().addListener((obs, oldVal, newVal) -> savePlayerConfiguration());
+
+         // Advanced
+         playerAdvancedSettingsView.getIconStyleComboBox().valueProperty().addListener((obs, oldVal, newVal) -> savePlayerConfiguration());
+         playerAdvancedSettingsView.getPrimaryColorPicker().valueProperty().addListener((obs, oldVal, newVal) -> savePlayerConfiguration());
+         playerAdvancedSettingsView.getCommercialsEnabledCheckBox().selectedProperty().addListener((obs, oldVal, newVal) -> savePlayerConfiguration());
+         playerAdvancedSettingsView.getCommercialsCountSpinner().valueProperty().addListener((obs, oldVal, newVal) -> savePlayerConfiguration());
+         playerAdvancedSettingsView.getCommercialsPathField().textProperty().addListener((obs, oldVal, newVal) -> savePlayerConfiguration());
+
+         // TV Schedule
+         playerTvScheduleView.getUseCustomScheduleCheckBox().selectedProperty().addListener((obs, oldVal, newVal) -> savePlayerConfiguration());
+         playerTvScheduleView.getScheduleListView().itemsProperty().addListener((obs, oldVal, newVal) -> savePlayerConfiguration());
+      }
+
       // Move this call to the end of the method.
       loadPlayerConfiguration();
    }
 
    private VideoService createVideoPlayerService()
    {
-      Database<Video> database = new Database<>(Video.class);
-      database.setDatabaseName(PlayerConstants.Paths.FMZ_DATABASE_NAME);
-      database.setTableName(PlayerConstants.Paths.FMZ_TABLE_NAME);
-      database.setDirectoryPath(PlayerConstants.Paths.APP_DATA_DIRECTORY);
+      Database<Video> database = Database.getInstance(
+            PlayerConstants.Paths.FMZ_DATABASE_NAME,
+            PlayerConstants.Paths.FMZ_TABLE_NAME,
+            PlayerConstants.Paths.APP_DATA_DIRECTORY,
+            Video.class
+      );
       VideoService videoService = new VideoService(database);
-      videoService.initializeFMZDB();
+      videoService.initialize();
       return videoService;
    }
 
@@ -193,15 +211,16 @@ public class PlayerMainView
          return;
       }
 
-      configDatabase = new Database<>(PlayerConfiguration.class);
-      configDatabase.setDatabaseName(PlayerConstants.Paths.FMZ_DATABASE_NAME);
-      configDatabase.setDirectoryPath(configFile.getParent());
-      configDatabase.setTableName(PlayerConstants.Paths.CONFIG_TABLE_NAME);
-      configDatabase.initialize();
+      configDatabase = Database.getInstance(
+            PlayerConstants.Paths.FMZ_DATABASE_NAME,
+            PlayerConstants.Paths.CONFIG_TABLE_NAME,
+            PlayerConstants.Paths.APP_DATA_DIRECTORY,
+            PlayerConfiguration.class
+      );
 
-      if (!configDatabase.findAll().isEmpty())
+      if (!configDatabase.readAll().isEmpty())
       {
-         PlayerConfiguration config = configDatabase.findAll().getFirst();
+         PlayerConfiguration config = configDatabase.readAll().getFirst();
 
          if (playerQuickStartView != null)
          {
@@ -258,7 +277,7 @@ public class PlayerMainView
             new ArrayList<>(playerTvScheduleView.getScheduleListView().getItems()),
             playerAdvancedSettingsView.getCommercialsPathField().getText()
       );
-      configDatabase.saveAll(List.of(config));
+      configDatabase.update(config);
    }
 
    public void onPlayClicked()

@@ -30,13 +30,12 @@ public class VideoService
    private static final Logger LOGGER = new Logger();
    private final Database<Video> database;
 
-   public void initializeFMZDB()
+   public void initialize()
    {
-      database.initialize();
-      if (database.findAll().isEmpty())
+      if (database.readAll().isEmpty())
       {
          LOGGER.warning("Database is empty, loading all videos from main source");
-         database.saveAll(getAllVideoFromMainSource());
+         database.createAll(getAllVideoFromMainSource());
       }
    }
 
@@ -112,7 +111,7 @@ public class VideoService
 
    List<Video> getAllUnwatchedVideo()
    {
-      return database.findAll().stream()
+      return database.readAll().stream()
             .filter(video -> !video.isWatched())
             .collect(Collectors.toList());
    }
@@ -191,7 +190,7 @@ public class VideoService
 
    public List<Video> findAllBySeriesName(String seriesName)
    {
-      return database.findAll().stream()
+      return database.readAll().stream()
             .filter(video -> video.getSeriesName().equalsIgnoreCase(seriesName))
             .collect(Collectors.toList());
    }

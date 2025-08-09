@@ -115,7 +115,7 @@ public class VideoPlaybackCoordinator
       if (currentVideo != null)
       {
          currentVideo.setWatched(true);
-         videoPlayerView.getVideoService().getDatabase().save(currentVideo);
+         videoPlayerView.getVideoService().getDatabase().update(currentVideo);
          LOGGER.info("Video marked as watched and saved to database: " + currentVideo.getId());
       }
    }
