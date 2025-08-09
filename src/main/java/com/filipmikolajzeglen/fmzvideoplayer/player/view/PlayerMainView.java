@@ -229,15 +229,14 @@ public class PlayerMainView
 
    private File getConfigFile()
    {
-      String appDataPath = System.getenv("APPDATA");
-      File configDir = new File(appDataPath, "FMZVideoPlayer");
+      File configDir = new File(PlayerConstants.Paths.APP_DATA_DIRECTORY);
       if (!configDir.exists())
       {
          configDir.mkdirs();
       }
-      var ddd = new File(configDir, "FMZDB_Configuration.json");
-      LOGGER.info("Config file path: " + ddd.getAbsolutePath());
-      return ddd;
+      var configFileName = String.format("%s_%s.json",
+            PlayerConstants.Paths.FMZ_DATABASE_NAME, PlayerConstants.Paths.CONFIG_TABLE_NAME);
+      return new File(configDir, configFileName);
    }
 
    private void savePlayerConfiguration()

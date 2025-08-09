@@ -107,14 +107,4 @@ public class PlayerAdvancedSettingsView
             (int) (color.getGreen() * 255),
             (int) (color.getBlue() * 255));
    }
-
-   public String getDatabasePath()
-   {
-      return databasePathField.getText();
-   }
-
-   public void setDatabasePath(String path)
-   {
-      databasePathField.setText(path);
-   }
 }

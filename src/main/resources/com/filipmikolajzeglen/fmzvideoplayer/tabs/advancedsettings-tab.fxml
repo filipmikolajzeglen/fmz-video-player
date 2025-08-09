@@ -47,13 +47,11 @@
         <CheckBox fx:id="commercialsEnabledCheckBox" GridPane.rowIndex="4" GridPane.columnIndex="1" />
 
         <Label text="Number of commercials to play:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-        <Spinner fx:id="commercialsCountSpinner" min="1" max="10" initialValue="4" editable="true" prefWidth="Infinity" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+        <Spinner fx:id="commercialsCountSpinner" min="1" max="99" initialValue="4" editable="true" prefWidth="Infinity" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
 
-        <!-- Wiersz 4: Konfiguracja lokalnej bazy -->
-        <Label text="Video Database" style="-fx-font-weight: bold; -fx-font-size: 18px; -fx-padding: 11 0 0 0" GridPane.rowIndex="6" GridPane.columnIndex="0" />
-        <Label text="Leave empty to use the default location in AppData." style="-fx-font-size: 14px; -fx-text-fill: #666;" GridPane.rowIndex="7" GridPane.columnIndex="0" />
-        <TextField fx:id="databasePathField" HBox.hgrow="ALWAYS" promptText="eg. D:\My Videos\My folder" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
-        <Button fx:id="browseDatabasePathButton" text="..." onAction="#onBrowseDatabasePath" GridPane.rowIndex="8" GridPane.columnIndex="1"/>
+        <Label text="Leave empty to use the default location in main video source." GridPane.rowIndex="6" GridPane.columnIndex="0" />
+        <TextField fx:id="databasePathField" HBox.hgrow="ALWAYS" promptText="eg. D:\My folder\My commercials" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+        <Button fx:id="browseDatabasePathButton" text="..." onAction="#onBrowseDatabasePath" GridPane.rowIndex="6" GridPane.columnIndex="2"/>
     </GridPane>
 
 </VBox>
