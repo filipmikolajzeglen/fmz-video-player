@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,59 +16,66 @@ public class Database<DOCUMENT>
 
    private static final Logger LOGGER = new Logger();
    private static final Map<String, Database<?>> INSTANCES = new ConcurrentHashMap<>();
+   public static final String APP_DATA_DIRECTORY = System.getenv("APPDATA") + File.separator + "FMZVideoPlayer";
+   public static final String FMZ_DATABASE_NAME = "FMZDB";
 
    private final String filename;
    private final Class<DOCUMENT> documentClass;
    private final ObjectMapper objectMapper = new ObjectMapper();
    private List<DOCUMENT> data = new ArrayList<>();
+   private final Object lock = new Object();
 
-   private Database(String databaseName, String tableName, String directoryPath, Class<DOCUMENT> documentClass)
+   private Database(Class<DOCUMENT> documentClass)
    {
       this.documentClass = documentClass;
-      this.filename = directoryPath + File.separator + databaseName + "_" + tableName + ".json";
+      this.filename = APP_DATA_DIRECTORY + File.separator + FMZ_DATABASE_NAME + "_" + documentClass.getSimpleName() + ".json";
       load();
       LOGGER.info("Database: Initialized file " + filename + " with " + data.size() + " items.");
    }
 
    @SuppressWarnings("unchecked")
-   public static synchronized <T> Database<T> getInstance(String databaseName, String tableName, String directoryPath,
-         Class<T> documentClass)
+   public static synchronized <T> Database<T> getInstance(Class<T> documentClass)
    {
-      String key = databaseName + ":" + tableName + ":" + directoryPath;
-      return (Database<T>) INSTANCES.computeIfAbsent(key,
-            k -> new Database<>(databaseName, tableName, directoryPath, documentClass));
+      String key = FMZ_DATABASE_NAME + ":" + documentClass.getSimpleName() + ":" + APP_DATA_DIRECTORY;
+      return (Database<T>) INSTANCES.computeIfAbsent(key, k -> new Database<>(documentClass));
    }
 
    public void ensureFileExists()
    {
-      File file = new File(filename);
-      if (!file.exists())
+      synchronized (lock)
       {
-         saveToFile();
+         File file = new File(filename);
+         if (!file.exists())
+         {
+            saveToFile();
+         }
       }
    }
 
    private void load()
    {
-      File file = new File(filename);
-      if (file.exists())
+      synchronized (lock)
       {
-         try
+         File file = new File(filename);
+         if (file.exists())
          {
-            data = objectMapper.readValue(file,
-                  objectMapper.getTypeFactory().constructCollectionType(List.class, documentClass));
-            LOGGER.info("Database: Data loaded from file " + filename);
+            try
+            {
+               data = objectMapper.readValue(file,
+                     objectMapper.getTypeFactory().constructCollectionType(List.class, documentClass));
+               LOGGER.info("Database: Data loaded from file " + filename);
+            }
+            catch (IOException e)
+            {
+               LOGGER.error("Database: Error while loading data: " + e.getMessage());
+               data = new ArrayList<>();
+            }
          }
-         catch (IOException e)
+         else
          {
-            LOGGER.error("Database: Error while loading data: " + e.getMessage());
             data = new ArrayList<>();
+            LOGGER.info("Database: " + filename + " not found. Initialized empty database.");
          }
-      }
-      else
-      {
-         data = new ArrayList<>();
-         LOGGER.info("Database: " + filename + " not found. Initialized empty database.");
       }
    }
 
@@ -89,62 +97,87 @@ public class Database<DOCUMENT>
    // CRUD
    public void create(DOCUMENT item)
    {
-      data.add(item);
-      saveToFile();
-      LOGGER.info("Database: Item created successfully.");
+      synchronized (lock)
+      {
+         data.add(item);
+         saveToFile();
+         LOGGER.info("Database: Item created successfully.");
+      }
    }
 
    public void createAll(List<DOCUMENT> items)
    {
-      data.addAll(items);
-      saveToFile();
-      LOGGER.info("Database: Items created: " + items.size());
+      synchronized (lock)
+      {
+         data.addAll(items);
+         saveToFile();
+         LOGGER.info("Database: Items created: " + items.size());
+      }
    }
 
-   public DOCUMENT readFirst()
+   public Optional<DOCUMENT> readFirst()
    {
-      return data.getFirst();
+      synchronized (lock)
+      {
+         if (data.isEmpty())
+         {
+            return Optional.empty();
+         }
+         return Optional.of(data.getFirst());
+      }
    }
 
    public List<DOCUMENT> readAll()
    {
-      return new ArrayList<>(data);
+      synchronized (lock)
+      {
+         return new ArrayList<>(data);
+      }
    }
 
    public void update(DOCUMENT item)
    {
-      if (data == null || data.isEmpty())
+      synchronized (lock)
       {
-         data = new ArrayList<>();
-         data.add(item);
-         saveToFile();
-         LOGGER.info("Database: Item updated (created new config).");
-      }
-      else
-      {
-         int index = data.indexOf(item);
-         if (index >= 0)
+         if (data == null || data.isEmpty())
          {
-            data.set(index, item);
+            data = new ArrayList<>();
+            data.add(item);
             saveToFile();
-            LOGGER.info("Database: Item updated (overwritten config).");
+            LOGGER.info("Database: Item updated (created new config).");
+         }
+         else
+         {
+            int index = data.indexOf(item);
+            if (index >= 0)
+            {
+               data.set(index, item);
+               saveToFile();
+               LOGGER.info("Database: Item updated (overwritten config).");
+            }
          }
       }
    }
 
    public void delete(DOCUMENT item)
    {
-      if (data.remove(item))
+      synchronized (lock)
       {
-         saveToFile();
-         LOGGER.info("Database: Item deleted successfully.");
+         if (data.remove(item))
+         {
+            saveToFile();
+            LOGGER.info("Database: Item deleted successfully.");
+         }
       }
    }
 
    public void deleteAll()
    {
-      data.clear();
-      saveToFile();
-      LOGGER.info("Database: All items cleared.");
+      synchronized (lock)
+      {
+         data.clear();
+         saveToFile();
+         LOGGER.info("Database: All items cleared.");
+      }
    }
 }

@@ -45,12 +45,7 @@ public class VideoPlayerFactory
 
    private VideoService createVideoPlayerService()
    {
-      Database<Video> database = Database.getInstance(
-            PlayerConstants.Paths.FMZ_DATABASE_NAME,
-            PlayerConstants.Paths.FMZ_TABLE_NAME,
-            PlayerConstants.Paths.APP_DATA_DIRECTORY,
-            Video.class
-      );
+      Database<Video> database = Database.getInstance(Video.class);
 
       return new VideoService(database);
    }

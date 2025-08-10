@@ -102,12 +102,7 @@ public class PlayerMainView
                // 2. If configDatabase is null, create it and save the configuration.
                if (configDatabase == null)
                {
-                  configDatabase = Database.getInstance(
-                        PlayerConstants.Paths.FMZ_DATABASE_NAME,
-                        PlayerConstants.Paths.CONFIG_TABLE_NAME,
-                        PlayerConstants.Paths.APP_DATA_DIRECTORY,
-                        PlayerConfiguration.class
-                  );
+                  configDatabase = Database.getInstance(PlayerConfiguration.class);
                   configDatabase.ensureFileExists();
                   savePlayerConfiguration();
                }
@@ -191,12 +186,7 @@ public class PlayerMainView
 
    private VideoService createVideoPlayerService()
    {
-      Database<Video> database = Database.getInstance(
-            PlayerConstants.Paths.FMZ_DATABASE_NAME,
-            PlayerConstants.Paths.FMZ_TABLE_NAME,
-            PlayerConstants.Paths.APP_DATA_DIRECTORY,
-            Video.class
-      );
+      Database<Video> database = Database.getInstance(Video.class);
       VideoService videoService = new VideoService(database);
       videoService.initialize();
       return videoService;
@@ -211,12 +201,7 @@ public class PlayerMainView
          return;
       }
 
-      configDatabase = Database.getInstance(
-            PlayerConstants.Paths.FMZ_DATABASE_NAME,
-            PlayerConstants.Paths.CONFIG_TABLE_NAME,
-            PlayerConstants.Paths.APP_DATA_DIRECTORY,
-            PlayerConfiguration.class
-      );
+      configDatabase = Database.getInstance(PlayerConfiguration.class);
 
       if (!configDatabase.readAll().isEmpty())
       {

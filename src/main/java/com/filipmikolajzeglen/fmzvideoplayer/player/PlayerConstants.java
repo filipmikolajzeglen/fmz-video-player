@@ -48,9 +48,8 @@ public class PlayerConstants
    {
       public static final String APP_DATA_DIRECTORY = System.getenv("APPDATA") + File.separator + "FMZVideoPlayer";
       public static String FMZ_DATABASE_NAME = "FMZDB";
-      public static String FMZ_TABLE_NAME = "Videos";
       public static String VIDEO_MAIN_SOURCE = "E:\\FoxKids";
-      public static final String CONFIG_TABLE_NAME = "Configuration";
+      public static final String CONFIG_TABLE_NAME = "PlayerConfiguration";
       public static final String COMMERCIALS_FOLDER_NAME = "Commercials";
       public static String COMMERCIALS_PATH = "";
    }
