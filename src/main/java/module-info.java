@@ -11,6 +11,7 @@ module com.filip.tvscheduler.fmztvscheduler {
    requires javafx.graphics;
    requires javafx.controls;
    requires javafx.media;
+   requires java.desktop;
 
    exports com.filipmikolajzeglen.fmzvideoplayer;
    exports com.filipmikolajzeglen.fmzvideoplayer.database;
