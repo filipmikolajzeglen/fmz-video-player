@@ -5,55 +5,68 @@
       style="-fx-padding: 11 40 40 40; -fx-background-color: white;" visible="false"
       xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.filipmikolajzeglen.fmzvideoplayer.player.view.PlayerAdvancedSettingsView">
-    <GridPane hgap="20" maxWidth="Infinity" vgap="10">
-        <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" percentWidth="45.0" />
-            <ColumnConstraints hgrow="SOMETIMES" percentWidth="30.0" />
-            <ColumnConstraints hgrow="SOMETIMES" percentWidth="25.0" />
-        </columnConstraints>
+   <GridPane hgap="20" maxWidth="Infinity" vgap="10">
+      <columnConstraints>
+         <ColumnConstraints hgrow="SOMETIMES" percentWidth="45.0" />
+         <ColumnConstraints hgrow="SOMETIMES" percentWidth="30.0" />
+         <ColumnConstraints hgrow="SOMETIMES" percentWidth="25.0" />
+      </columnConstraints>
 
-        <!-- Wiersz 1: Styl ikon -->
-        <Label text="UI Settings" style="-fx-font-weight: bold; -fx-font-size: 18px" GridPane.rowIndex="0" GridPane.columnIndex="0" />
-        <Label text="Icon style:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+      <!-- Wiersz 1: Styl ikon -->
+      <Label text="UI Settings" style="-fx-font-weight: bold; -fx-font-size: 18px" GridPane.rowIndex="0"
+            GridPane.columnIndex="0" />
+      <Label text="Icon style:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
 
-        <ComboBox fx:id="iconStyleComboBox" maxWidth="Infinity" GridPane.rowIndex="1" GridPane.columnIndex="1">
-            <items>
-                <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="Filled" />
-                    <String fx:value="Empty" />
-                </FXCollections>
-            </items>
-        </ComboBox>
+      <ComboBox fx:id="iconStyleComboBox" maxWidth="Infinity" GridPane.rowIndex="1" GridPane.columnIndex="1">
+         <items>
+            <FXCollections fx:factory="observableArrayList">
+               <String fx:value="Filled" />
+               <String fx:value="Empty" />
+            </FXCollections>
+         </items>
+      </ComboBox>
 
-        <HBox alignment="CENTER_LEFT" spacing="15" GridPane.rowIndex="1" GridPane.columnIndex="2">
-            <SVGPath fx:id="previewPlayIcon" fill="#4d4d4d" scaleX="0.8" scaleY="0.8" />
-            <SVGPath fx:id="previewPauseIcon" fill="#4d4d4d" scaleX="0.8" scaleY="0.8" />
-            <SVGPath fx:id="previewNextIcon" fill="#4d4d4d" scaleX="0.8" scaleY="0.8" />
-            <SVGPath fx:id="previewVolumeIcon" fill="#4d4d4d" scaleX="0.8" scaleY="0.8" />
-        </HBox>
+      <HBox alignment="CENTER_LEFT" spacing="15" GridPane.rowIndex="1" GridPane.columnIndex="2">
+         <SVGPath fx:id="previewPlayIcon" fill="#4d4d4d" scaleX="0.8" scaleY="0.8" />
+         <SVGPath fx:id="previewPauseIcon" fill="#4d4d4d" scaleX="0.8" scaleY="0.8" />
+         <SVGPath fx:id="previewNextIcon" fill="#4d4d4d" scaleX="0.8" scaleY="0.8" />
+         <SVGPath fx:id="previewVolumeIcon" fill="#4d4d4d" scaleX="0.8" scaleY="0.8" />
+      </HBox>
 
-        <!-- Wiersz 2: Kolor główny -->
-        <Label text="Primary color:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
-        <ColorPicker fx:id="primaryColorPicker" maxWidth="Infinity" GridPane.rowIndex="2" GridPane.columnIndex="1">
-            <value>
-                <Color red="0.486" green="0.619" blue="0.968" />
-            </value>
-        </ColorPicker>
-        <Slider fx:id="colorPreviewSlider" disable="true" value="50" GridPane.rowIndex="2" GridPane.columnIndex="2" />
+      <!-- Wiersz 2: Kolor główny -->
+      <Label text="Primary color:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+      <ColorPicker fx:id="primaryColorPicker" maxWidth="Infinity" GridPane.rowIndex="2" GridPane.columnIndex="1">
+         <value>
+            <Color red="0.486" green="0.619" blue="0.968" />
+         </value>
+      </ColorPicker>
+      <Slider fx:id="colorPreviewSlider" disable="true" value="50" GridPane.rowIndex="2" GridPane.columnIndex="2" />
 
-        <!-- Wiersz 3: Reklamy -->
-        <Label text="Commercials" style="-fx-font-weight: bold; -fx-font-size: 18px; -fx-padding: 11 0 0 0" GridPane.rowIndex="3" GridPane.columnIndex="0" />
-        <Label text="Enable commercials between episodes:" GridPane.rowIndex="4" GridPane.columnIndex="0" />
-        <CheckBox fx:id="commercialsEnabledCheckBox" GridPane.rowIndex="4" GridPane.columnIndex="1" />
+      <!-- Wiersz 3: Reklamy -->
+      <Label text="Commercials" style="-fx-font-weight: bold; -fx-font-size: 18px; -fx-padding: 11 0 0 0"
+            GridPane.rowIndex="3" GridPane.columnIndex="0" />
+      <Label text="Enable commercials between episodes:" GridPane.rowIndex="4" GridPane.columnIndex="0" />
+      <CheckBox fx:id="commercialsEnabledCheckBox" GridPane.rowIndex="4" GridPane.columnIndex="1" />
 
-        <Label text="Number of commercials to play:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-        <Spinner fx:id="commercialsCountSpinner" min="1" max="99" initialValue="4" editable="true" prefWidth="Infinity" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+      <Label text="Number of commercials to play:" GridPane.rowIndex="5" GridPane.columnIndex="0" />
+      <Spinner fx:id="commercialsCountSpinner" min="1" max="99" initialValue="4" editable="true" prefWidth="Infinity"
+            GridPane.rowIndex="5" GridPane.columnIndex="1" />
 
-        <Label text="Commercials folder path (Default: 'Commercials' folder in main video source):" GridPane.rowIndex="6" GridPane.columnIndex="0" />
-        <TextField fx:id="commercialsPathField" HBox.hgrow="ALWAYS" promptText="eg. D:\My folder\My commercials" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
-        <Button fx:id="browseCommercialsPathButton" text="..." onAction="#onBrowseCommercialsPath" GridPane.rowIndex="6" GridPane.columnIndex="2"/>
+      <Label text="Commercials folder path (Default: 'Commercials' folder in main video source):" GridPane.rowIndex="6"
+            GridPane.columnIndex="0" />
+      <TextField fx:id="commercialsPathField" HBox.hgrow="ALWAYS" promptText="eg. D:\My folder\My commercials"
+            GridPane.rowIndex="6" GridPane.columnIndex="1" />
+      <Button fx:id="browseCommercialsPathButton" text="..." onAction="#onBrowseCommercialsPath" GridPane.rowIndex="6"
+            GridPane.columnIndex="2" />
 
-    </GridPane>
+      <Label text="Database" style="-fx-font-weight: bold; -fx-font-size: 18px; -fx-padding: 11 0 0 0"
+            GridPane.rowIndex="7" GridPane.columnIndex="0" />
+      <HBox spacing="15" alignment="CENTER_LEFT" GridPane.rowIndex="8" GridPane.columnIndex="0">
+         <Button fx:id="deleteVideoDbButton" text="Remove local database" onAction="#onDeleteVideoDb" />
+         <Button fx:id="restoreDefaultsButton" text="Restore default settings" onAction="#onRestoreDefaults" />
+
+      </HBox>
+   </GridPane>
 
 </VBox>
 

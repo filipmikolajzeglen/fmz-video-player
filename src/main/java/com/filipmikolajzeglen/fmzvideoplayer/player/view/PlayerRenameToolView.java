@@ -48,6 +48,7 @@ public class PlayerRenameToolView
       newNameColumn.setOnEditCommit(event -> {
          RenameFileItem item = event.getRowValue();
          item.setNewName(event.getNewValue());
+         item.setManualOverride(true);
       });
 
       ignoreTextField.textProperty().addListener((obs, oldText, newText) -> generateNewNames());
@@ -109,7 +110,9 @@ public class PlayerRenameToolView
          {
             for (RenameFileItem item : fileItems)
             {
-               item.setNewName("");
+               if (!item.isManualOverride()) {
+                  item.setNewName("");
+               }
             }
             return;
          }
@@ -117,22 +120,24 @@ public class PlayerRenameToolView
 
       fileItems.sort(Comparator.comparing(RenameFileItem::getOriginalName));
 
-      // Wzorce do rozpoznawania sezonu i odcinka
       Pattern[] patterns = new Pattern[] {
-            Pattern.compile("\\[(\\d+)x(\\d+)\\]\\s*(.*)", Pattern.CASE_INSENSITIVE), // [1x01] Tytuł
-            Pattern.compile("S(\\d{2})\\s*E(\\d{2})\\s*-\\s*(.*)", Pattern.CASE_INSENSITIVE), // S01 E01 - Tytuł
-            Pattern.compile("(\\d+)x(\\d+)\\s*-\\s*(.*)", Pattern.CASE_INSENSITIVE), // 1x01 - Tytuł
-            Pattern.compile("S(\\d{2})E(\\d{2})[.\\s-]*(.*)", Pattern.CASE_INSENSITIVE), // S01E11. lub S01E11 - Tytuł
+            Pattern.compile("\\[(\\d+)x(\\d+)\\]\\s*(.*)", Pattern.CASE_INSENSITIVE),
+            Pattern.compile("S(\\d{2})\\s*E(\\d{2})\\s*-\\s*(.*)", Pattern.CASE_INSENSITIVE),
+            Pattern.compile("(\\d+)x(\\d+)\\s*-\\s*(.*)", Pattern.CASE_INSENSITIVE),
+            Pattern.compile("S(\\d{2})E(\\d{2})[.\\s-]*(.*)", Pattern.CASE_INSENSITIVE),
             Pattern.compile("S(\\d{2})\\s*Odcinek\\s*(\\d{1,2})\\s*-\\s*(.*)", Pattern.CASE_INSENSITIVE),
-            // S01 Odcinek 12 - Tytuł
-            Pattern.compile("E(\\d{3})[.\\s-]*(.*)", Pattern.CASE_INSENSITIVE), // E001. Tytuł
-            Pattern.compile("Saban's Masked Rider - Episode (\\d+)", Pattern.CASE_INSENSITIVE),
-            // Saban's Masked Rider - Episode 28
-            Pattern.compile("S(\\d{2})E(\\d{2})", Pattern.CASE_INSENSITIVE), // S01E11
+            Pattern.compile("E(\\d{3})[.\\s-]*(.*)", Pattern.CASE_INSENSITIVE),
+            Pattern.compile("Episode (\\d+)", Pattern.CASE_INSENSITIVE),
+            Pattern.compile("S(\\d{2})E(\\d{2})", Pattern.CASE_INSENSITIVE),
+            Pattern.compile("S(\\d+)\\s*_\\s*Ep\\s*(\\d+)\\s*(.+?)(\\s*\\(.*\\))?$", Pattern.CASE_INSENSITIVE),
       };
 
       for (RenameFileItem item : fileItems)
       {
+         if (item.isManualOverride()) {
+            continue; // nie nadpisuj ręcznie zmienionych nazw
+         }
+
          String originalName = item.getOriginalName();
          String baseName =
                originalName.contains(".") ? originalName.substring(0, originalName.lastIndexOf('.')) : originalName;
@@ -141,13 +146,11 @@ public class PlayerRenameToolView
          int season = -1, episode = -1;
          String title = "";
 
-         boolean matched = false;
          for (Pattern pattern : patterns)
          {
             Matcher matcher = pattern.matcher(baseName);
             if (matcher.find())
             {
-               matched = true;
                if (pattern.pattern().contains("Saban's Masked Rider"))
                {
                   season = 1;
@@ -181,7 +184,6 @@ public class PlayerRenameToolView
             }
          }
 
-         // Jeśli podano sezon ręcznie, nadpisz
          if (!seasonText.isEmpty())
          {
             season = Integer.parseInt(seasonText);
@@ -193,18 +195,13 @@ public class PlayerRenameToolView
             continue;
          }
 
-         // Usuwanie niechcianych fragmentów z tytułu
          for (String textToIgnore : textsToIgnore)
          {
             title = title.replaceAll("(?i)" + Pattern.quote(textToIgnore), "").trim();
          }
-         // Usuwanie typowych tagów jakościowych
          title = title.replaceAll("\\(.*?\\)", "")
                .replaceAll("(1080p|720p|BluRay|MULTi|AI4K|x265|DVDSync|AAC|H264|BTV-Bizanc|ROOT21)", "").trim();
-         // Usuwanie kropek na spacje, potem zamiana spacji na myślniki
          title = title.replaceAll("[._]", " ").replaceAll("\\s+", " ").trim().replaceAll(" ", "-");
-
-         // Usuwanie końcowych myślników
          title = title.replaceAll("^-+|-+$", "");
 
          String newName = String.format("S%02dE%02d", season, episode);
@@ -234,7 +231,7 @@ public class PlayerRenameToolView
             System.err.println("Error renaming file: " + oldFile.getName());
          }
       }
-      loadFiles(); // Odśwież widok po zmianie
+      loadFiles();
    }
 
    static class RenameFileItem
@@ -243,12 +240,13 @@ public class PlayerRenameToolView
       private final File originalFile;
       private final StringProperty originalName;
       private final StringProperty newName;
+      private boolean manualOverride = false;
 
       public RenameFileItem(File originalFile)
       {
          this.originalFile = originalFile;
          this.originalName = new SimpleStringProperty(originalFile.getName());
-         this.newName = new SimpleStringProperty(""); // Początkowo puste
+         this.newName = new SimpleStringProperty("");
       }
 
       public String getOriginalName()
@@ -274,6 +272,14 @@ public class PlayerRenameToolView
       public StringProperty newNameProperty()
       {
          return newName;
+      }
+
+      public boolean isManualOverride() {
+         return manualOverride;
+      }
+
+      public void setManualOverride(boolean manualOverride) {
+         this.manualOverride = manualOverride;
       }
    }
 }

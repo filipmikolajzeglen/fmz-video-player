@@ -2,8 +2,13 @@ package com.filipmikolajzeglen.fmzvideoplayer.player.view;
 
 import java.io.File;
 
+import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
+import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConfiguration;
+import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants;
+import com.filipmikolajzeglen.fmzvideoplayer.video.Video;
 import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoIconsEffect;
 import javafx.beans.binding.Bindings;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -21,6 +26,8 @@ import lombok.Getter;
 @Getter
 public class PlayerAdvancedSettingsView
 {
+   private static final Logger LOGGER = new Logger();
+
    //@formatter:off
    @FXML private VBox advancedContent;
    @FXML private ComboBox<String> iconStyleComboBox;
@@ -34,6 +41,8 @@ public class PlayerAdvancedSettingsView
    @FXML private Spinner<Integer> commercialsCountSpinner;
    @FXML private TextField commercialsPathField;
    @FXML private Button browseCommercialsPathButton;
+   @FXML private Button deleteVideoDbButton;
+   @FXML private Button restoreDefaultsButton;
    //@formatter:on
 
    @FXML
@@ -108,5 +117,36 @@ public class PlayerAdvancedSettingsView
             (int) (color.getRed() * 255),
             (int) (color.getGreen() * 255),
             (int) (color.getBlue() * 255));
+   }
+
+   @FXML
+   private void onDeleteVideoDb(ActionEvent event) {
+      File videoFileJson = getConfigFile(Video.class.getSimpleName());
+      if (videoFileJson.exists()) {
+         var removed = videoFileJson.delete();
+         LOGGER.info("Video database file deleted: " + removed);
+      }
+   }
+
+   @FXML
+   private void onRestoreDefaults(ActionEvent event) {
+      File configFileJson = getConfigFile(PlayerConfiguration.class.getSimpleName());
+      if (configFileJson.exists()) {
+         var removed = configFileJson.delete();
+         LOGGER.info("Player configuration file deleted: " + removed);
+      }
+   }
+
+   @SuppressWarnings("ResultOfMethodCallIgnored")
+   private File getConfigFile(String configTableName)
+   {
+      File configDir = new File(PlayerConstants.Paths.APP_DATA_DIRECTORY);
+      if (!configDir.exists())
+      {
+         configDir.mkdirs();
+      }
+      var configFileName = String.format("%s_%s.json",
+            PlayerConstants.Paths.FMZ_DATABASE_NAME, configTableName);
+      return new File(configDir, configFileName);
    }
 }

@@ -112,7 +112,6 @@ public class PlayerLibrarySeriesDetailView
       coverContainer.getChildren().setAll(coverView);
    }
 
-
    private List<PlayerLibraryView.EpisodeInfo> getEpisodesForSeries(String seriesName)
    {
       return playerMainView.getVideoService().findAllBySeriesName(seriesName).stream()
