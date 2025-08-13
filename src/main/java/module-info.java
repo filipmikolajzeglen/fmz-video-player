@@ -12,6 +12,8 @@ module com.filip.tvscheduler.fmztvscheduler {
    requires javafx.controls;
    requires javafx.media;
    requires java.desktop;
+   requires uk.co.caprica.vlcj;
+   requires uk.co.caprica.vlcj.javafx;
 
    exports com.filipmikolajzeglen.fmzvideoplayer;
    exports com.filipmikolajzeglen.fmzvideoplayer.database;
@@ -29,4 +31,5 @@ module com.filip.tvscheduler.fmztvscheduler {
    opens com.filipmikolajzeglen.fmzvideoplayer.video.audio to com.fasterxml.jackson.databind, javafx.fxml;
    exports com.filipmikolajzeglen.fmzvideoplayer.video.effect;
    opens com.filipmikolajzeglen.fmzvideoplayer.video.effect to com.fasterxml.jackson.databind, javafx.fxml;
+   opens com.filipmikolajzeglen.fmzvideoplayer.demo to javafx.graphics;
 }
