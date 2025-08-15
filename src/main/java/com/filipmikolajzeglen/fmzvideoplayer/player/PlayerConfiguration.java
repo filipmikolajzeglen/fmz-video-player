@@ -1,6 +1,7 @@
 package com.filipmikolajzeglen.fmzvideoplayer.player;
 
 import java.util.List;
+import java.util.Objects;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,4 +22,15 @@ public class PlayerConfiguration
    private boolean useCustomSchedule;
    private List<String> customSchedule;
    private String commercialsPath;
+
+   @Override
+   public boolean equals(Object o) {
+      if (this == o) return true;
+      return o != null && getClass() == o.getClass();
+   }
+
+   @Override
+   public int hashCode() {
+      return Objects.hash(getClass());
+   }
 }
