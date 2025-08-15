@@ -11,7 +11,6 @@ import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoMediaSizeEffect;
 import com.filipmikolajzeglen.fmzvideoplayer.video.view.VideoEpisodeInfoView;
 import com.filipmikolajzeglen.fmzvideoplayer.video.view.VideoFullScreenView;
 import com.filipmikolajzeglen.fmzvideoplayer.video.view.VideoPlaybackButtonsView;
-import com.filipmikolajzeglen.fmzvideoplayer.video.view.VideoPlaybackSpeedView;
 import com.filipmikolajzeglen.fmzvideoplayer.video.view.VideoPlayerView;
 import com.filipmikolajzeglen.fmzvideoplayer.video.view.VideoTimeSliderView;
 import com.filipmikolajzeglen.fmzvideoplayer.video.view.VideoVolumeView;
@@ -58,7 +57,6 @@ public class VideoPlayerFactory
       videoPlayerView.setVideoTimeSliderView(VideoTimeSliderView.of(videoPlayerView));
       videoPlayerView.setVideoVolumeView(VideoVolumeView.of(videoPlayerView));
       videoPlayerView.setVideoFullScreenView(VideoFullScreenView.of(videoPlayerView));
-      videoPlayerView.setVideoPlaybackSpeedView(VideoPlaybackSpeedView.of(videoPlayerView));
       videoPlayerView.setVideoMediaSizeEffect(VideoMediaSizeEffect.of(videoPlayerView));
       videoPlayerView.setVideoFadeOutEffect(VideoFadeOutEffect.of(videoPlayerView));
       videoPlayerView.setVideoPlaybackButtonsView(VideoPlaybackButtonsView.of(videoPlayerView));
@@ -116,7 +114,7 @@ public class VideoPlayerFactory
       if (firstVideo != null && firstVideoPath != null)
       {
          videoPlayerView.getVideoEpisodeInfoView().updateInfo(firstVideo);
-         videoPlayerView.initializeMediaPlayer(firstVideoPath);
+         videoPlayerView.initializeVideoPlayer(firstVideoPath);
          videoPlayerView.initializeAllControlsSvgOnTheBeginning();
          videoPlayerView.setUpButtonHandlers();
       }

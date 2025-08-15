@@ -67,7 +67,7 @@ public class VideoPlaybackCoordinator
 
    private void handleCommercialTransition()
    {
-      videoPlayerView.getCommercialPlaylist().remove(0);
+      videoPlayerView.getCommercialPlaylist().removeFirst();
 
       if (!videoPlayerView.getCommercialPlaylist().isEmpty())
       {
@@ -82,11 +82,11 @@ public class VideoPlaybackCoordinator
    private void playNextCommercial()
    {
       LOGGER.info("======================    NEXT COMMERCIAL    ======================");
-      String nextAdPath = videoPlayerView.getCommercialPlaylist().get(0);
+      String nextAdPath = videoPlayerView.getCommercialPlaylist().getFirst();
       LOGGER.info("Playing next commercial: " + nextAdPath);
       videoPlayerView.getVideoEpisodeInfoView().updateInfo(null);
       videoPlayerView.resetTimeSlider();
-      videoPlayerView.initializeMediaPlayer(nextAdPath);
+      videoPlayerView.initializeVideoPlayer(nextAdPath);
    }
 
    private void finishCommercialBlockAndPlayNextEpisode()
@@ -127,10 +127,10 @@ public class VideoPlaybackCoordinator
       videoPlayerView.setCommercialPlaylist(commercialsToPlay);
       videoPlayerView.setPlayingCommercial(true);
 
-      String firstAdPath = commercialsToPlay.get(0);
+      String firstAdPath = commercialsToPlay.getFirst();
       videoPlayerView.getVideoEpisodeInfoView().updateInfo(null);
       videoPlayerView.resetTimeSlider();
-      videoPlayerView.initializeMediaPlayer(firstAdPath);
+      videoPlayerView.initializeVideoPlayer(firstAdPath);
    }
 
    private void playNextEpisode()

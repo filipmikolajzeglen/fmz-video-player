@@ -52,7 +52,6 @@ public class VideoPlayerView implements Initializable
    @FXML private Label labelCurrentEpisode;
    @FXML private Label labelFullScreen;
    @FXML private SVGPath labelFullScreenSVG;
-   @FXML private Label labelSpeed;
    @FXML private Label labelVolume;
    @FXML private SVGPath labelVolumeSVG;
    @FXML private Slider sliderVolume;
@@ -60,11 +59,10 @@ public class VideoPlayerView implements Initializable
    @FXML private StackPane stackPaneParent;
    @FXML private ImageView imageView;
 
-   @Setter private VideoPlayer mediaPlayer;
+   @Setter private VideoPlayer videoPlayer;
    @Setter private boolean atEndOfVideo = false;
    @Setter private boolean isPlaying = true;
    @Setter private VideoPlaybackCoordinator videoPlaybackCoordinator;
-   @Setter private VideoPlaybackSpeedView videoPlaybackSpeedView;
    @Setter private VideoEpisodeInfoView videoEpisodeInfoView;
    @Setter private VideoTimeSliderView videoTimeSliderView;
    @Setter private VideoVolumeView videoVolumeView;
@@ -88,10 +86,10 @@ public class VideoPlayerView implements Initializable
       videoPlayerFactory.setupAndStart();
    }
 
-   public void initializeMediaPlayer(String videoPath)
+   public void initializeVideoPlayer(String videoPath)
    {
       LOGGER.info("Delegating media player initialization to MediaPlayerManager for path: " + videoPath);
-      mediaPlayer = videoMediaPlayer.createAndSetupPlayer(videoPath);
+      videoPlayer = videoMediaPlayer.createAndSetupPlayer(videoPath);
    }
 
    public void initializeAllControlsSvgOnTheBeginning()
@@ -109,7 +107,7 @@ public class VideoPlayerView implements Initializable
 
    void handlePlayPauseRestart()
    {
-      videoTimeSliderView.bindToMediaPlayer(mediaPlayer);
+      videoTimeSliderView.bindToMediaPlayer(videoPlayer);
       videoPlaybackCoordinator.togglePlayPause();
    }
 
@@ -122,15 +120,15 @@ public class VideoPlayerView implements Initializable
    public void resetTimeSlider()
    {
       sliderTime.setValue(PlayerConstants.Playback.RESET_TIME_VALUE);
-      VideoSliderStyleEffect.addColorToSlider(sliderTime, () -> PlayerConstants.Playback.RESET_TIME_VALUE);
+      VideoSliderStyleEffect.addColorToSlider(sliderTime, () -> (double) PlayerConstants.Playback.RESET_TIME_VALUE);
    }
 
    public void playByDefault()
    {
-      if (mediaPlayer != null && mediaPlayer.getStatus() == VideoPlayer.Status.READY)
+      if (videoPlayer != null && videoPlayer.getStatus() == VideoPlayer.Status.READY)
       {
          Platform.runLater(() -> {
-            mediaPlayer.play();
+            videoPlayer.play();
             setPlaying(true);
             LOGGER.info("MediaPlayer playback started via playByDefault().");
          });
@@ -139,16 +137,16 @@ public class VideoPlayerView implements Initializable
 
    void updateCurrentTimeLabelIfNeeded()
    {
-      if (mediaPlayer != null && !labelCurrentTime.textProperty().equals(labelTotalTime.textProperty()))
+      if (videoPlayer != null && !labelCurrentTime.textProperty().equals(labelTotalTime.textProperty()))
       {
          labelCurrentTime.textProperty().unbind();
-         labelCurrentTime.setText(VideoTimeFormatEffect.format(mediaPlayer.getTotalDuration()) + " / ");
+         labelCurrentTime.setText(VideoTimeFormatEffect.format(videoPlayer.getTotalDuration()) + " / ");
       }
    }
 
    public void play()
    {
-      mediaPlayer.play();
+      videoPlayer.play();
       videoPlaybackButtonsView.setToPause();
       setPlaying(true);
       setAtEndOfVideo(false);
@@ -156,7 +154,7 @@ public class VideoPlayerView implements Initializable
 
    public void pause()
    {
-      mediaPlayer.pause();
+      videoPlayer.pause();
       videoPlaybackButtonsView.setToPlay();
       setPlaying(false);
    }
@@ -164,7 +162,7 @@ public class VideoPlayerView implements Initializable
    public void replay()
    {
       sliderTime.setValue(PlayerConstants.Playback.RESET_TIME_VALUE);
-      mediaPlayer.seek(javafx.util.Duration.ZERO);
+      videoPlayer.seek(javafx.util.Duration.ZERO);
       play();
    }
 
@@ -186,7 +184,7 @@ public class VideoPlayerView implements Initializable
          {
             LOGGER.info("Playing next episode: " + nextVideo.getEpisodeName());
             videoEpisodeInfoView.updateInfo(nextVideo);
-            initializeMediaPlayer(nextVideoPath);
+            initializeVideoPlayer(nextVideoPath);
             resetTimeSlider();
             updateCurrentTimeLabelIfNeeded();
          }
@@ -201,12 +199,12 @@ public class VideoPlayerView implements Initializable
    public void shutdown()
    {
       LOGGER.running("Shutting down VideoPlayer resources...");
-      if (mediaPlayer != null)
+      if (videoPlayer != null)
       {
          // audioNormalizer.stop(mediaPlayer);
-         mediaPlayer.stop();
-         mediaPlayer.dispose();
-         mediaPlayer = null;
+         videoPlayer.stop();
+         videoPlayer.dispose();
+         videoPlayer = null;
          LOGGER.info("MediaPlayer stopped and disposed.");
       }
    }

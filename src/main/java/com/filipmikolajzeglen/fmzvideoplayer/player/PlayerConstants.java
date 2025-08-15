@@ -21,20 +21,11 @@ public class PlayerConstants
 
    public static final class Playback
    {
-      public static final double DEFAULT_VOLUME_VALUE = 0.5;
-      public static final double MUTE_VOLUME_VALUE = 0.0;
-      public static final double RESET_TIME_VALUE = 1;
+      public static final int DEFAULT_VOLUME_VALUE = 100;
+      public static final int MUTE_VOLUME_VALUE = 0;
+      public static final int RESET_TIME_VALUE = 0;
       public static int MAX_SINGLE_SERIES_PER_DAY = 2;
       public static int MAX_EPISODES_PER_DAY = 30;
-
-      public static final String SPEED_LEVEL_1 = "1X";
-      public static final double SPEED_LEVEL_1_VALUE = 1.0;
-      public static final String SPEED_LEVEL_2 = "1.05X";
-      public static final double SPEED_LEVEL_2_VALUE = 1.05;
-      public static final String SPEED_LEVEL_3 = "1.1X";
-      public static final double SPEED_LEVEL_3_VALUE = 1.1;
-      public static final String SPEED_LEVEL_4 = "1.15X";
-      public static final double SPEED_LEVEL_4_VALUE = 1.15;
 
       public static int COMMERCIAL_COUNT_BETWEEN_EPISODES = 4;
       public static boolean COMMERCIALS_ENABLED = false;

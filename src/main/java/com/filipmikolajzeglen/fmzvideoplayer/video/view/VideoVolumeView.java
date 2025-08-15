@@ -19,7 +19,7 @@ public class VideoVolumeView
    private final Slider sliderVolume;
    private final Label labelVolume;
    private final SVGPath labelVolumeSVG;
-   private VideoPlayer mediaPlayer;
+   private VideoPlayer videoPlayer;
    private boolean isMuted = false;
    private ChangeListener<Number> volumeChangeListener;
 
@@ -47,28 +47,30 @@ public class VideoVolumeView
       this.hBoxVolume.setOnMouseEntered(event -> handleVolumeMouseEnter());
    }
 
-   public void bindToMediaPlayer(VideoPlayer mediaPlayer)
+   public void bindToVideoPlayer(VideoPlayer videoPlayer)
    {
       unbindVolume();
-      this.mediaPlayer = mediaPlayer;
-      if (mediaPlayer == null)
+      this.videoPlayer = videoPlayer;
+      if (videoPlayer == null)
       {
          return;
       }
 
+      // Ustaw slider na aktualną głośność odtwarzacza
+      sliderVolume.setValue(videoPlayer.getVolume());
+
       volumeChangeListener = (observable, oldValue, newValue) -> {
-         double volume = sliderVolume.getValue();
-         mediaPlayer.setVolume((int) (volume * 100)); // VLCJPlayer używa 0-100
+         int volume = (int) sliderVolume.getValue();
+         videoPlayer.setVolume(volume); // VLCJPlayer używa 0-100
          updateVolumeIcon(volume);
          updateMuteState(volume);
          addColorToSliderVolume();
       };
       sliderVolume.valueProperty().addListener(volumeChangeListener);
-      sliderVolume.setValue(mediaPlayer.getVolume() / 100.0);
       addColorToSliderVolume();
    }
 
-   private void updateVolumeIcon(double volume)
+   private void updateVolumeIcon(int volume)
    {
       if (volume == PlayerConstants.Playback.MUTE_VOLUME_VALUE)
       {
@@ -84,7 +86,7 @@ public class VideoVolumeView
       }
    }
 
-   private void updateMuteState(double volume)
+   private void updateMuteState(int volume)
    {
       isMuted = (volume == PlayerConstants.Playback.MUTE_VOLUME_VALUE);
    }
@@ -99,7 +101,7 @@ public class VideoVolumeView
 
    private void handleVolumeClick()
    {
-      if (mediaPlayer == null || sliderVolume == null)
+      if (videoPlayer == null || sliderVolume == null)
       {
          return;
       }
@@ -107,7 +109,7 @@ public class VideoVolumeView
       {
          LOGGER.info("Unmuted video volume");
          setLabelVolume1SVG();
-         mediaPlayer.setVolume((int) (PlayerConstants.Playback.DEFAULT_VOLUME_VALUE * 100));
+         videoPlayer.setVolume(PlayerConstants.Playback.DEFAULT_VOLUME_VALUE);
          sliderVolume.setValue(PlayerConstants.Playback.DEFAULT_VOLUME_VALUE);
          isMuted = false;
       }
@@ -115,7 +117,7 @@ public class VideoVolumeView
       {
          LOGGER.info("Muted video volume");
          setLabelVolumeMuteSVG();
-         mediaPlayer.setVolume((int) (PlayerConstants.Playback.MUTE_VOLUME_VALUE * 100));
+         videoPlayer.setVolume(PlayerConstants.Playback.MUTE_VOLUME_VALUE);
          sliderVolume.setValue(PlayerConstants.Playback.MUTE_VOLUME_VALUE);
          isMuted = true;
       }
@@ -128,14 +130,14 @@ public class VideoVolumeView
          hBoxVolume.getChildren().add(sliderVolume);
       }
 
-      if (mediaPlayer != null)
+      if (videoPlayer != null)
       {
-         sliderVolume.setValue(mediaPlayer.getVolume() / 100.0);
+         sliderVolume.setValue(videoPlayer.getVolume());
          addColorToSliderVolume();
       }
       else
       {
-         LOGGER.error("Media player was NULL during handling volume mouse entered");
+         LOGGER.error("Video player was NULL during handling volume mouse entered");
       }
    }
 

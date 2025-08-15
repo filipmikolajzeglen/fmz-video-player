@@ -58,7 +58,7 @@ public class VideoTimeSliderView
       }
    }
 
-   private <T> void removeListener(ObservableValue<T> property, javafx.beans.value.ChangeListener<T> listener)
+   private <T> void removeListener(ObservableValue<T> property, ChangeListener<T> listener)
    {
       if (listener != null)
       {
