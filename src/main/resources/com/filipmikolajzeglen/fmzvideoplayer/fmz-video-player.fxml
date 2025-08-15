@@ -1,14 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.media.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.text.*?>
-
+<?import javafx.geometry.Insets?><?import javafx.scene.control.Button?><?import javafx.scene.control.Label?><?import javafx.scene.control.Slider?><?import javafx.scene.image.ImageView?><?import javafx.scene.layout.HBox?><?import javafx.scene.layout.StackPane?><?import javafx.scene.layout.VBox?><?import javafx.scene.shape.SVGPath?><?import javafx.scene.text.Font?>
 <StackPane fx:id="stackPaneParent" style="-fx-background-color: #000000;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.filipmikolajzeglen.fmzvideoplayer.video.view.VideoPlayerView">
-   <MediaView fx:id="mediaView" />
+   <ImageView fx:id="imageView" />
    <VBox alignment="BOTTOM_CENTER" prefHeight="92.0" prefWidth="954.0">
 
       <VBox fx:id="vBoxFullPanel" style="-fx-background-color: rgba(0,0,0,0.7);">

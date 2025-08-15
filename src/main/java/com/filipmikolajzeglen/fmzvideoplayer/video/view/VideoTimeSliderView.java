@@ -1,5 +1,6 @@
 package com.filipmikolajzeglen.fmzvideoplayer.video.view;
 
+import com.filipmikolajzeglen.fmzvideoplayer.player.VideoPlayer;
 import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoSliderStyleEffect;
 import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoTimeFormatEffect;
 import javafx.beans.binding.Bindings;
@@ -7,8 +8,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
-import javafx.scene.media.MediaPlayer;
-import javafx.util.Duration;
 
 public class VideoTimeSliderView
 {
@@ -17,9 +16,9 @@ public class VideoTimeSliderView
    private final Label labelTotalTime;
    private ChangeListener<Boolean> sliderValueChangingListener;
    private ChangeListener<Number> sliderValueListener;
-   private ChangeListener<Duration> mediaPlayerTotalDurationListener;
-   private ChangeListener<Duration> mediaPlayerCurrentDurationListener;
-   private MediaPlayer mediaPlayer;
+   private ChangeListener<javafx.util.Duration> mediaPlayerTotalDurationListener;
+   private ChangeListener<javafx.util.Duration> mediaPlayerCurrentDurationListener;
+   private VideoPlayer mediaPlayer;
 
    public static VideoTimeSliderView of(VideoPlayerView videoPlayerView)
    {
@@ -34,7 +33,7 @@ public class VideoTimeSliderView
       VideoSliderStyleEffect.addDynamicColorListener(this.sliderTime);
    }
 
-   public void bindToMediaPlayer(MediaPlayer mediaPlayer)
+   public void bindToMediaPlayer(VideoPlayer mediaPlayer)
    {
       unbindListeners();
       this.mediaPlayer = mediaPlayer;
@@ -73,7 +72,7 @@ public class VideoTimeSliderView
          bindCurrentTimeLabel();
          if (!isChanging)
          {
-            mediaPlayer.seek(Duration.seconds(sliderTime.getValue()));
+            mediaPlayer.seek(javafx.util.Duration.seconds(sliderTime.getValue()));
          }
       };
       sliderTime.valueChangingProperty().addListener(sliderValueChangingListener);
@@ -86,7 +85,7 @@ public class VideoTimeSliderView
          double currentTime = mediaPlayer.getCurrentTime().toSeconds();
          if (Math.abs(currentTime - newValue.doubleValue()) > 0.5)
          {
-            mediaPlayer.seek(Duration.seconds(newValue.doubleValue()));
+            mediaPlayer.seek(javafx.util.Duration.seconds(newValue.doubleValue()));
          }
       };
       sliderTime.valueProperty().addListener(sliderValueListener);

@@ -1,19 +1,13 @@
 package com.filipmikolajzeglen.fmzvideoplayer.video.view;
 
-import static javafx.scene.media.MediaPlayer.Status;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants;
 import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
-import com.filipmikolajzeglen.fmzvideoplayer.video.audio.AudioNormalizer;
-import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoFadeOutEffect;
-import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoMediaSizeEffect;
-import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoSliderStyleEffect;
-import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoTimeFormatEffect;
+import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants;
+import com.filipmikolajzeglen.fmzvideoplayer.player.VideoPlayer;
 import com.filipmikolajzeglen.fmzvideoplayer.video.Video;
 import com.filipmikolajzeglen.fmzvideoplayer.video.VideoCommercialsPlaylist;
 import com.filipmikolajzeglen.fmzvideoplayer.video.VideoMediaPlayer;
@@ -21,17 +15,21 @@ import com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlaybackCoordinator;
 import com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlayerFactory;
 import com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlaylist;
 import com.filipmikolajzeglen.fmzvideoplayer.video.VideoService;
+import com.filipmikolajzeglen.fmzvideoplayer.video.audio.AudioNormalizer;
+import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoFadeOutEffect;
+import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoMediaSizeEffect;
+import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoSliderStyleEffect;
+import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoTimeFormatEffect;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaView;
 import javafx.scene.shape.SVGPath;
 import lombok.Getter;
 import lombok.Setter;
@@ -60,9 +58,9 @@ public class VideoPlayerView implements Initializable
    @FXML private Slider sliderVolume;
    @FXML private Slider sliderTime;
    @FXML private StackPane stackPaneParent;
-   @FXML private MediaView mediaView;
+   @FXML private ImageView imageView;
 
-   @Setter private MediaPlayer mediaPlayer;
+   @Setter private VideoPlayer mediaPlayer;
    @Setter private boolean atEndOfVideo = false;
    @Setter private boolean isPlaying = true;
    @Setter private VideoPlaybackCoordinator videoPlaybackCoordinator;
@@ -94,7 +92,6 @@ public class VideoPlayerView implements Initializable
    {
       LOGGER.info("Delegating media player initialization to MediaPlayerManager for path: " + videoPath);
       mediaPlayer = videoMediaPlayer.createAndSetupPlayer(videoPath);
-      mediaView.setMediaPlayer(mediaPlayer);
    }
 
    public void initializeAllControlsSvgOnTheBeginning()
@@ -118,7 +115,7 @@ public class VideoPlayerView implements Initializable
 
    void handleNextClick()
    {
-      audioNormalizer.stop(mediaPlayer);
+      // audioNormalizer.stop(mediaPlayer);
       videoPlaybackCoordinator.next();
    }
 
@@ -130,7 +127,7 @@ public class VideoPlayerView implements Initializable
 
    public void playByDefault()
    {
-      if (mediaPlayer != null && mediaPlayer.getStatus() == Status.READY)
+      if (mediaPlayer != null && mediaPlayer.getStatus() == VideoPlayer.Status.READY)
       {
          Platform.runLater(() -> {
             mediaPlayer.play();
@@ -206,7 +203,7 @@ public class VideoPlayerView implements Initializable
       LOGGER.running("Shutting down VideoPlayer resources...");
       if (mediaPlayer != null)
       {
-         audioNormalizer.stop(mediaPlayer);
+         // audioNormalizer.stop(mediaPlayer);
          mediaPlayer.stop();
          mediaPlayer.dispose();
          mediaPlayer = null;

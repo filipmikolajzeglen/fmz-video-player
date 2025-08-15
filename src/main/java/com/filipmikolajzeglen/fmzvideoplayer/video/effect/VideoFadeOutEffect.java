@@ -5,14 +5,14 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import javafx.scene.media.MediaView;
 import javafx.util.Duration;
 
 public class VideoFadeOutEffect
 {
    private final VBox panel;
-   private final MediaView mediaView;
+   private final ImageView imageView;
    private final PauseTransition delayFadeOut;
 
    public static VideoFadeOutEffect of(VideoPlayerView videoPlayerView)
@@ -23,7 +23,7 @@ public class VideoFadeOutEffect
    private VideoFadeOutEffect(VideoPlayerView videoPlayerView)
    {
       this.panel = videoPlayerView.getVBoxFullPanel();
-      this.mediaView = videoPlayerView.getMediaView();
+      this.imageView = videoPlayerView.getImageView();
       this.delayFadeOut = new PauseTransition(Duration.seconds(3));
       setupFadeOut();
       delayFadeOut.playFromStart();
@@ -32,7 +32,9 @@ public class VideoFadeOutEffect
    private void setupFadeOut()
    {
       delayFadeOut.setOnFinished(e -> fadeOutPanel());
-      mediaView.setOnMouseMoved(evt -> delayFadeOut.playFromStart());
+      if (imageView != null) {
+         imageView.setOnMouseMoved(evt -> delayFadeOut.playFromStart());
+      }
       panel.setOnMouseExited(evt -> delayFadeOut.playFromStart());
       panel.setOnMouseEntered(evt -> {
          panel.setOpacity(1);

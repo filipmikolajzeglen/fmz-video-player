@@ -8,7 +8,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
-import javafx.scene.media.MediaPlayer;
+import com.filipmikolajzeglen.fmzvideoplayer.player.VideoPlayer;
 import javafx.scene.shape.SVGPath;
 
 public class VideoVolumeView
@@ -19,7 +19,7 @@ public class VideoVolumeView
    private final Slider sliderVolume;
    private final Label labelVolume;
    private final SVGPath labelVolumeSVG;
-   private MediaPlayer mediaPlayer;
+   private VideoPlayer mediaPlayer;
    private boolean isMuted = false;
    private ChangeListener<Number> volumeChangeListener;
 
@@ -47,7 +47,7 @@ public class VideoVolumeView
       this.hBoxVolume.setOnMouseEntered(event -> handleVolumeMouseEnter());
    }
 
-   public void bindToMediaPlayer(MediaPlayer mediaPlayer)
+   public void bindToMediaPlayer(VideoPlayer mediaPlayer)
    {
       unbindVolume();
       this.mediaPlayer = mediaPlayer;
@@ -58,13 +58,13 @@ public class VideoVolumeView
 
       volumeChangeListener = (observable, oldValue, newValue) -> {
          double volume = sliderVolume.getValue();
-         mediaPlayer.setVolume(volume);
+         mediaPlayer.setVolume((int) (volume * 100)); // VLCJPlayer używa 0-100
          updateVolumeIcon(volume);
          updateMuteState(volume);
          addColorToSliderVolume();
       };
       sliderVolume.valueProperty().addListener(volumeChangeListener);
-      mediaPlayer.volumeProperty().bindBidirectional(sliderVolume.valueProperty());
+      sliderVolume.setValue(mediaPlayer.getVolume() / 100.0);
       addColorToSliderVolume();
    }
 
@@ -91,10 +91,6 @@ public class VideoVolumeView
 
    public void unbindVolume()
    {
-      if (mediaPlayer != null)
-      {
-         sliderVolume.valueProperty().unbindBidirectional(mediaPlayer.volumeProperty());
-      }
       if (volumeChangeListener != null)
       {
          sliderVolume.valueProperty().removeListener(volumeChangeListener);
@@ -111,7 +107,7 @@ public class VideoVolumeView
       {
          LOGGER.info("Unmuted video volume");
          setLabelVolume1SVG();
-         mediaPlayer.setVolume(PlayerConstants.Playback.DEFAULT_VOLUME_VALUE);
+         mediaPlayer.setVolume((int) (PlayerConstants.Playback.DEFAULT_VOLUME_VALUE * 100));
          sliderVolume.setValue(PlayerConstants.Playback.DEFAULT_VOLUME_VALUE);
          isMuted = false;
       }
@@ -119,7 +115,7 @@ public class VideoVolumeView
       {
          LOGGER.info("Muted video volume");
          setLabelVolumeMuteSVG();
-         mediaPlayer.setVolume(PlayerConstants.Playback.MUTE_VOLUME_VALUE);
+         mediaPlayer.setVolume((int) (PlayerConstants.Playback.MUTE_VOLUME_VALUE * 100));
          sliderVolume.setValue(PlayerConstants.Playback.MUTE_VOLUME_VALUE);
          isMuted = true;
       }
@@ -134,7 +130,7 @@ public class VideoVolumeView
 
       if (mediaPlayer != null)
       {
-         sliderVolume.setValue(mediaPlayer.getVolume());
+         sliderVolume.setValue(mediaPlayer.getVolume() / 100.0);
          addColorToSliderVolume();
       }
       else

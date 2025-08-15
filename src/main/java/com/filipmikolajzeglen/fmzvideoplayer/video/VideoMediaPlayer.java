@@ -1,16 +1,18 @@
 package com.filipmikolajzeglen.fmzvideoplayer.video;
 
-import java.io.File;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
+import com.filipmikolajzeglen.fmzvideoplayer.player.VideoPlayer;
+import com.filipmikolajzeglen.fmzvideoplayer.player.VLCJPlayer;
 import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoSliderStyleEffect;
 import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoTimeFormatEffect;
 import com.filipmikolajzeglen.fmzvideoplayer.video.view.VideoPlayerView;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import javafx.util.Duration;
+import javafx.scene.image.ImageView;
+import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
+import uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurface;
+import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -28,21 +30,26 @@ public class VideoMediaPlayer
       return new VideoMediaPlayer(videoPlayerView);
    }
 
-   public MediaPlayer createAndSetupPlayer(String videoPath)
+   public VideoPlayer createAndSetupPlayer(String videoPath)
    {
       stopAndDisposePlayer(videoPlayerView.getMediaPlayer());
 
-      Media media = new Media(new File(videoPath).toURI().toString());
-      MediaPlayer mediaPlayer = new MediaPlayer(media);
+      // Utwórz EmbeddedMediaPlayer i ustaw powierzchnię na ImageView
+      ImageView imageView = videoPlayerView.getImageView();
+      MediaPlayerFactory mediaPlayerFactory = new MediaPlayerFactory();
+      EmbeddedMediaPlayer embeddedMediaPlayer = mediaPlayerFactory.mediaPlayers().newEmbeddedMediaPlayer();
+      embeddedMediaPlayer.videoSurface().set(new ImageViewVideoSurface(imageView));
+      embeddedMediaPlayer.media().play(videoPath); // <-- zmiana z startPaused na play
+
+      VideoPlayer mediaPlayer = new VLCJPlayer(embeddedMediaPlayer);
 
       bindControllersTo(mediaPlayer);
       setupEventHandlers(mediaPlayer, videoPath);
-      videoPlayerView.getAudioNormalizer().apply(mediaPlayer);
 
       return mediaPlayer;
    }
 
-   void stopAndDisposePlayer(MediaPlayer mediaPlayer)
+   void stopAndDisposePlayer(VideoPlayer mediaPlayer)
    {
       if (mediaPlayer != null)
       {
@@ -54,25 +61,24 @@ public class VideoMediaPlayer
          mediaPlayer.setOnReady(null);
          mediaPlayer.setOnError(null);
          mediaPlayer.setOnEndOfMedia(null);
-         mediaPlayer.setAudioSpectrumListener(null);
          mediaPlayer.stop();
          mediaPlayer.dispose();
          LOGGER.info("Listeners were removed. Media player was stopped and disposed.");
       }
    }
 
-   private void bindControllersTo(MediaPlayer mediaPlayer)
+   private void bindControllersTo(VideoPlayer mediaPlayer)
    {
       videoPlayerView.getVideoVolumeView().bindToMediaPlayer(mediaPlayer);
       videoPlayerView.getVideoTimeSliderView().bindToMediaPlayer(mediaPlayer);
       videoPlayerView.getVideoMediaSizeEffect().bindToScene();
-      videoPlayerView.getVideoPlaybackSpeedView().setMediaPlayer(mediaPlayer);
+      // videoPlayerView.getVideoPlaybackSpeedView().setMediaPlayer(mediaPlayer);
       VideoSliderStyleEffect.addColorToSlider(videoPlayerView.getSliderTime(),
             videoPlayerView.getSliderTime()::getValue);
       VideoSliderStyleEffect.addDynamicColorListener(videoPlayerView.getSliderTime());
    }
 
-   private void setupEventHandlers(MediaPlayer mediaPlayer, String videoPath)
+   private void setupEventHandlers(VideoPlayer mediaPlayer, String videoPath)
    {
       mediaPlayer.setOnReady(() -> handleOnReady(mediaPlayer, videoPath));
       mediaPlayer.setOnError(() -> handleOnError(mediaPlayer, videoPath));
@@ -88,10 +94,10 @@ public class VideoMediaPlayer
       });
    }
 
-   private void handleOnReady(MediaPlayer mediaPlayer, String videoPath)
+   private void handleOnReady(VideoPlayer mediaPlayer, String videoPath)
    {
       errorCounts.remove(videoPath);
-      if (mediaPlayer.getTotalDuration().lessThanOrEqualTo(Duration.ZERO))
+      if (mediaPlayer.getTotalDuration().lessThanOrEqualTo(javafx.util.Duration.ZERO))
       {
          LOGGER.error("Total duration was 00:00 - Started new initialization");
          videoPlayerView.initializeMediaPlayer(videoPath);
@@ -104,9 +110,9 @@ public class VideoMediaPlayer
       }
    }
 
-   private void handleOnError(MediaPlayer mediaPlayer, String videoPath)
+   private void handleOnError(VideoPlayer mediaPlayer, String videoPath)
    {
-      videoPlayerView.getAudioNormalizer().stop(mediaPlayer);
+      // videoPlayerView.getAudioNormalizer().stop(mediaPlayer);
       int currentFailures = errorCounts.getOrDefault(videoPath, 0) + 1;
 
       if (currentFailures < MAX_ERROR_RETRIES)
@@ -128,7 +134,7 @@ public class VideoMediaPlayer
    private void handleOnEndOfMedia()
    {
       LOGGER.info("Video has finished. Loading next video.");
-      videoPlayerView.getAudioNormalizer().stop(videoPlayerView.getMediaPlayer());
+      // videoPlayerView.getAudioNormalizer().stop(videoPlayerView.getMediaPlayer());
       videoPlayerView.getVideoPlaybackCoordinator().next();
    }
 }
