@@ -33,7 +33,7 @@ public class PlayerConsoleLogsView
    {
       consoleLogTextFlow.setLineSpacing(8);
       consoleLogTextFlow.setBackground(Background.fill(Paint.valueOf("#ffffff")));
-      consoleLogTextFlow.setStyle("-fx-font-size: 13px; -fx-font-family: 'JetBrains Mono';");
+      consoleLogTextFlow.setStyle("-fx-font-size: 11px; -fx-font-family: 'JetBrains Mono';");
       consoleLogTextFlow.prefWidthProperty().bind(consoleLogContent.widthProperty());
       consoleLogTextFlow.prefHeightProperty().bind(consoleLogContent.heightProperty());
       GuiLogAppender.setLogListener((formattedDate, level, message) -> {
