@@ -24,13 +24,18 @@ public class PlayerConfiguration
    private String commercialsPath;
 
    @Override
-   public boolean equals(Object o) {
-      if (this == o) return true;
+   public boolean equals(Object o)
+   {
+      if (this == o)
+      {
+         return true;
+      }
       return o != null && getClass() == o.getClass();
    }
 
    @Override
-   public int hashCode() {
+   public int hashCode()
+   {
       return Objects.hash(getClass());
    }
 }

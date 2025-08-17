@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PlayerMainView
 {
-   private Database<PlayerConfiguration> configDatabase;
+   private Database<PlayerConfiguration> database;
    private Map<Toggle, Region> tabMapping;
 
    //@formatter:off
@@ -100,10 +100,10 @@ public class PlayerMainView
                }
 
                // 2. If configDatabase is null, create it and save the configuration.
-               if (configDatabase == null)
+               if (database == null)
                {
-                  configDatabase = Database.getInstance(PlayerConfiguration.class);
-                  configDatabase.ensureFileExists();
+                  database = Database.getInstance(PlayerConfiguration.class);
+                  database.ensureFileExists();
                   savePlayerConfiguration();
                }
 
@@ -201,11 +201,11 @@ public class PlayerMainView
          return;
       }
 
-      configDatabase = Database.getInstance(PlayerConfiguration.class);
+      database = Database.getInstance(PlayerConfiguration.class);
 
-      if (!configDatabase.readAll().isEmpty())
+      if (!database.readAll().isEmpty())
       {
-         PlayerConfiguration config = configDatabase.readAll().getFirst();
+         PlayerConfiguration config = database.readAll().getFirst();
 
          if (playerQuickStartView != null)
          {
@@ -262,7 +262,7 @@ public class PlayerMainView
             new ArrayList<>(playerTvScheduleView.getScheduleListView().getItems()),
             playerAdvancedSettingsView.getCommercialsPathField().getText()
       );
-      configDatabase.update(config);
+      database.update(config);
    }
 
    public void onPlayClicked()

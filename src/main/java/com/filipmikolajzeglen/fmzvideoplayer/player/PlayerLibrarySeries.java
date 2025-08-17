@@ -1,5 +1,7 @@
 package com.filipmikolajzeglen.fmzvideoplayer.player;
 
+import java.util.Objects;
+
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -49,5 +51,21 @@ public class PlayerLibrarySeries
    public void setTotalWatchingTime(String time)
    {
       this.totalWatchingTime.set(time);
+   }
+
+   @Override
+   public boolean equals(Object o)
+   {
+      if (this == o)
+      {
+         return true;
+      }
+      return o != null && getClass() == o.getClass();
+   }
+
+   @Override
+   public int hashCode()
+   {
+      return Objects.hash(getClass());
    }
 }

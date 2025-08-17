@@ -6,8 +6,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.filipmikolajzeglen.fmzvideoplayer.database.Database;
 import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants;
 import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerLibrarySeries;
+import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerLibrarySeriesMetadata;
 import com.filipmikolajzeglen.fmzvideoplayer.video.VideoMetadataReader;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -28,6 +30,8 @@ import lombok.Getter;
 @Getter
 public class PlayerQuickStartView
 {
+   private Database<PlayerLibrarySeriesMetadata> database;
+
    //@formatter:off
    @FXML private VBox quickStartContent;
    @FXML private Label maxSeriesLabel;
@@ -101,11 +105,16 @@ public class PlayerQuickStartView
 
    private void startDurationCalculation(String basePath, ObservableList<PlayerLibrarySeries> seriesList)
    {
+      database = Database.getInstance(PlayerLibrarySeriesMetadata.class);
+      database.ensureFileExists();
+
       Task<Void> task = new Task<>()
       {
          @Override
          protected Void call()
          {
+            List<PlayerLibrarySeriesMetadata> cached = database.readAll();
+
             for (PlayerLibrarySeries seriesInfo : seriesList)
             {
                if (isCancelled())
@@ -113,14 +122,42 @@ public class PlayerQuickStartView
                   break;
                }
 
-               File seriesDir = new File(basePath, seriesInfo.getName());
-               File[] videoFiles = listVideoFiles(seriesDir);
-               long totalSeconds = Arrays.stream(videoFiles)
-                     .mapToLong(VideoMetadataReader::getDurationInSeconds)
-                     .sum();
+               PlayerLibrarySeriesMetadata meta = cached.stream()
+                     .filter(m -> m.getName().equals(seriesInfo.getName()))
+                     .findFirst()
+                     .orElse(null);
 
-               String formattedDuration = formatDuration(totalSeconds);
-               Platform.runLater(() -> seriesInfo.setTotalWatchingTime(formattedDuration));
+               int episodeCount = seriesInfo.getEpisodeCount();
+               String formattedDuration;
+
+               if (meta != null && meta.getEpisodeCount() == episodeCount && meta.getTotalWatchingTime() != null)
+               {
+                  formattedDuration = meta.getTotalWatchingTime();
+               }
+               else
+               {
+                  File seriesDir = new File(basePath, seriesInfo.getName());
+                  File[] videoFiles = listVideoFiles(seriesDir);
+                  long totalSeconds = Arrays.stream(videoFiles)
+                        .mapToLong(VideoMetadataReader::getDurationInSeconds)
+                        .sum();
+                  formattedDuration = formatDuration(totalSeconds);
+
+                  PlayerLibrarySeriesMetadata newMeta = new PlayerLibrarySeriesMetadata(
+                        seriesInfo.getName(), episodeCount, formattedDuration
+                  );
+                  if (meta != null)
+                  {
+                     database.update(newMeta);
+                  }
+                  else
+                  {
+                     database.create(newMeta);
+                  }
+               }
+
+               String finalFormattedDuration = formattedDuration;
+               Platform.runLater(() -> seriesInfo.setTotalWatchingTime(finalFormattedDuration));
             }
             return null;
          }
