@@ -144,8 +144,7 @@ public class Database<DOCUMENT>
             data.add(item);
             saveToFile();
             log.info("Item updated (created new config) in file {}.", filename);
-            log.info("BEFORE NULL");
-            log.info("AFTER {}", item);
+            logBeforeAfterUpdate(item);
          }
          else
          {
@@ -156,8 +155,7 @@ public class Database<DOCUMENT>
                data.set(index, item);
                saveToFile();
                log.info("Item updated (existing config overwritten) in file {}.", filename);
-               log.info("BEFORE {}", beforeUpdate);
-               log.info("AFTER {}", item);
+               logBeforeAfterUpdate(beforeUpdate, item);
             }
          }
       }
@@ -184,5 +182,22 @@ public class Database<DOCUMENT>
          saveToFile();
          log.info("All items cleared in file {}.", filename);
       }
+   }
+
+   private void logBeforeAfterUpdate(DOCUMENT after)
+   {
+      log.info("BEFORE: NULL");
+      logAfterUpdate(after);
+   }
+
+   private void logBeforeAfterUpdate(DOCUMENT before, DOCUMENT after)
+   {
+      log.info("BEFORE: {}", before);
+      logAfterUpdate(after);
+   }
+
+   private void logAfterUpdate(DOCUMENT after)
+   {
+      log.info("AFTER : {}", after);
    }
 }

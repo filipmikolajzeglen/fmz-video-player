@@ -6,7 +6,7 @@
 <!--   <property name="CONSOLE_LOG_PATTERN"-->
 <!--         value="%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%magenta(%thread)] %cyan(%logger{36}) : %msg%n%ex"/>-->
    <property name="CONSOLE_LOG_PATTERN"
-         value="%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level)[%18.18t] %cyan(%36.36c{36}) : %m%n%ex"/>
+         value="%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%18.18t] %cyan(%36.36c{36}) : %m%n%ex"/>
 
    <property name="FILE_LOG_PATTERN"
          value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} : %msg%n%ex"/>
