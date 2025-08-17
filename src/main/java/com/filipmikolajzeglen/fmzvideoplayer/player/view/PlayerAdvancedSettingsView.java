@@ -2,7 +2,6 @@ package com.filipmikolajzeglen.fmzvideoplayer.player.view;
 
 import java.io.File;
 
-import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
 import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConfiguration;
 import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants;
 import com.filipmikolajzeglen.fmzvideoplayer.video.Video;
@@ -22,12 +21,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import javafx.stage.DirectoryChooser;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Getter
 public class PlayerAdvancedSettingsView
 {
-   private static final Logger LOGGER = new Logger();
-
    //@formatter:off
    @FXML private VBox advancedContent;
    @FXML private ComboBox<String> iconStyleComboBox;
@@ -124,7 +123,7 @@ public class PlayerAdvancedSettingsView
       File videoFileJson = getConfigFile(Video.class.getSimpleName());
       if (videoFileJson.exists()) {
          var removed = videoFileJson.delete();
-         LOGGER.info("Video database file deleted: " + removed);
+         log.info("Video database file deleted: {}", removed);
       }
    }
 
@@ -133,7 +132,7 @@ public class PlayerAdvancedSettingsView
       File configFileJson = getConfigFile(PlayerConfiguration.class.getSimpleName());
       if (configFileJson.exists()) {
          var removed = configFileJson.delete();
-         LOGGER.info("Player configuration file deleted: " + removed);
+         log.info("Player configuration file deleted: {}", removed);
       }
    }
 

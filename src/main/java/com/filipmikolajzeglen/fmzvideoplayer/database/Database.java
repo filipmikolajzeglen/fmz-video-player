@@ -9,12 +9,11 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class Database<DOCUMENT>
 {
-
-   private static final Logger LOGGER = new Logger();
    private static final Map<String, Database<?>> INSTANCES = new ConcurrentHashMap<>();
    public static final String APP_DATA_DIRECTORY = System.getenv("APPDATA") + File.separator + "FMZVideoPlayer";
    public static final String FMZ_DATABASE_NAME = "FMZDB";
@@ -30,7 +29,7 @@ public class Database<DOCUMENT>
       this.documentClass = documentClass;
       this.filename = APP_DATA_DIRECTORY + File.separator + FMZ_DATABASE_NAME + "_" + documentClass.getSimpleName() + ".json";
       load();
-      LOGGER.info("Database: Initialized file " + filename + " with " + data.size() + " items.");
+      log.info("Initialized file {} with {} items.", filename, data.size());
    }
 
    @SuppressWarnings("unchecked")
@@ -63,18 +62,18 @@ public class Database<DOCUMENT>
             {
                data = objectMapper.readValue(file,
                      objectMapper.getTypeFactory().constructCollectionType(List.class, documentClass));
-               LOGGER.info("Database: Data loaded from file " + filename);
+               log.info("Data loaded from file {}", filename);
             }
             catch (IOException e)
             {
-               LOGGER.error("Database: Error while loading data: " + e.getMessage());
+               log.error("Error while loading data: {}", e.getMessage());
                data = new ArrayList<>();
             }
          }
          else
          {
             data = new ArrayList<>();
-            LOGGER.info("Database: " + filename + " not found. Initialized empty database.");
+            log.info("Database file {} not found. Initialized empty database.", filename);
          }
       }
    }
@@ -86,11 +85,10 @@ public class Database<DOCUMENT>
          File file = new File(filename);
          file.getParentFile().mkdirs();
          objectMapper.writerWithDefaultPrettyPrinter().writeValue(file, data);
-         LOGGER.info("Database: Data saved to file " + filename);
       }
       catch (IOException e)
       {
-         LOGGER.error("Database: Error while saving: " + e.getMessage());
+         log.error("Error while saving: {}", e.getMessage());
       }
    }
 
@@ -101,7 +99,8 @@ public class Database<DOCUMENT>
       {
          data.add(item);
          saveToFile();
-         LOGGER.info("Database: Item created successfully.");
+         log.info("Item created successfully in file {}.", filename);
+         log.info("CREATE {}", item);
       }
    }
 
@@ -111,7 +110,7 @@ public class Database<DOCUMENT>
       {
          data.addAll(items);
          saveToFile();
-         LOGGER.info("Database: Items created: " + items.size());
+         log.info("Items created: {} in file {}", items.size(), filename);
       }
    }
 
@@ -144,16 +143,21 @@ public class Database<DOCUMENT>
             data = new ArrayList<>();
             data.add(item);
             saveToFile();
-            LOGGER.info("Database: Item updated (created new config).");
+            log.info("Item updated (created new config) in file {}.", filename);
+            log.info("BEFORE NULL");
+            log.info("AFTER {}", item);
          }
          else
          {
             int index = data.indexOf(item);
             if (index >= 0)
             {
+               var beforeUpdate = data.get(index);
                data.set(index, item);
                saveToFile();
-               LOGGER.info("Database: Item updated (overwritten config).");
+               log.info("Item updated (existing config overwritten) in file {}.", filename);
+               log.info("BEFORE {}", beforeUpdate);
+               log.info("AFTER {}", item);
             }
          }
       }
@@ -166,7 +170,8 @@ public class Database<DOCUMENT>
          if (data.remove(item))
          {
             saveToFile();
-            LOGGER.info("Database: Item deleted successfully.");
+            log.info("Item deleted successfully from file {}.", filename);
+            log.info("REMOVED {}", item);
          }
       }
    }
@@ -177,7 +182,7 @@ public class Database<DOCUMENT>
       {
          data.clear();
          saveToFile();
-         LOGGER.info("Database: All items cleared.");
+         log.info("All items cleared in file {}.", filename);
       }
    }
 }

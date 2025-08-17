@@ -5,17 +5,16 @@ import java.io.InputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
 import javafx.scene.control.Labeled;
 import javafx.scene.shape.SVGPath;
+import lombok.extern.slf4j.Slf4j;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+@Slf4j
 public class VideoIconsEffect
 {
-
-   private static final Logger LOGGER = new Logger();
    private static final String EMPTY_SVG_CONTENT = "";
 
    public static void setControlSVG(Labeled control, SVGPath svgPath, String resourcePath)
@@ -30,15 +29,15 @@ public class VideoIconsEffect
       {
          if (is == null)
          {
-            LOGGER.warning("Cannot find SVG resource: " + resourcePath);
+            log.warn("Cannot find SVG resource: {}", resourcePath);
             return EMPTY_SVG_CONTENT;
          }
          return extractPathDataFromStream(is);
       }
       catch (Exception e)
       {
-         LOGGER.error("Error while loading or parsing SVG file: " + resourcePath);
-         LOGGER.error(e.getMessage());
+         log.error("Error while loading or parsing SVG file: {}", resourcePath);
+         log.error(e.getMessage());
          return EMPTY_SVG_CONTENT;
       }
    }
@@ -57,7 +56,7 @@ public class VideoIconsEffect
          return pathElement.getAttribute("d");
       }
 
-      LOGGER.warning("No <path> tag found in the SVG file.");
+      log.warn("No <path> tag found in the SVG file.");
       return EMPTY_SVG_CONTENT;
    }
 }

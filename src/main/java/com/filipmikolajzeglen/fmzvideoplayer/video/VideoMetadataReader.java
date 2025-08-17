@@ -4,14 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
 import io.humble.video.Demuxer;
 import io.humble.video.Global;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class VideoMetadataReader
 {
-   private static final Logger LOGGER = new Logger();
-
    public static long getDurationInSeconds(File videoFile)
    {
       if (videoFile == null || !videoFile.exists())
@@ -33,7 +32,7 @@ public class VideoMetadataReader
       }
       catch (IOException | InterruptedException e)
       {
-         LOGGER.error("Error getting duration for file: " + videoFile.getAbsolutePath());
+         log.error("Error getting duration for file: {}", videoFile.getAbsolutePath(), e);
          if (e instanceof InterruptedException)
          {
             Thread.currentThread().interrupt();
@@ -50,7 +49,7 @@ public class VideoMetadataReader
             }
             catch (IOException | InterruptedException e)
             {
-               LOGGER.error("Error closing demuxer for file: " + videoFile.getAbsolutePath() + e);
+               log.error("Error closing demuxer for file: {}", videoFile.getAbsolutePath(), e);
                if (e instanceof InterruptedException)
                {
                   Thread.currentThread().interrupt();

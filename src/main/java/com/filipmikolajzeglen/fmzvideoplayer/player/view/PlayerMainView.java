@@ -7,7 +7,6 @@ import java.util.Map;
 
 import com.filipmikolajzeglen.fmzvideoplayer.VideoPlayerApplication;
 import com.filipmikolajzeglen.fmzvideoplayer.database.Database;
-import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
 import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConfiguration;
 import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants;
 import com.filipmikolajzeglen.fmzvideoplayer.video.Video;
@@ -25,10 +24,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class PlayerMainView
 {
-   private static final Logger LOGGER = new Logger();
    private Database<PlayerConfiguration> configDatabase;
    private Map<Toggle, Region> tabMapping;
 
@@ -197,7 +197,7 @@ public class PlayerMainView
       File configFile = getConfigFile();
       if (!configFile.exists())
       {
-         LOGGER.info("No configuration file found. Using default values.");
+         log.info("Configuration file does not exist: {}", configFile.getAbsolutePath());
          return;
       }
 
@@ -209,7 +209,7 @@ public class PlayerMainView
 
          if (playerQuickStartView != null)
          {
-            LOGGER.info("Loading configuration from file: " + configFile.getAbsolutePath());
+            log.info("Loading configuration from file: {}", configFile.getAbsolutePath());
             playerQuickStartView.getMaxSeriesSpinner().getValueFactory().setValue(config.getMaxSingleSeriesPerDay());
             playerQuickStartView.getMaxEpisodesSpinner().getValueFactory().setValue(config.getMaxEpisodesPerDay());
             playerQuickStartView.getVideoMainSourceField().setText(config.getVideoMainSourcePath());

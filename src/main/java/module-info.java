@@ -4,7 +4,6 @@ module com.filip.tvscheduler.fmztvscheduler {
 
    requires static lombok;
    requires java.xml;
-   requires jcodec;
    requires humble.video.all;
    requires humble.video.noarch;
    requires javafx.fxml;
@@ -14,6 +13,9 @@ module com.filip.tvscheduler.fmztvscheduler {
    requires java.desktop;
    requires uk.co.caprica.vlcj;
    requires uk.co.caprica.vlcj.javafx;
+   requires org.slf4j;
+   requires ch.qos.logback.classic;
+   requires ch.qos.logback.core;
 
    exports com.filipmikolajzeglen.fmzvideoplayer;
    exports com.filipmikolajzeglen.fmzvideoplayer.database;
@@ -31,5 +33,4 @@ module com.filip.tvscheduler.fmztvscheduler {
    opens com.filipmikolajzeglen.fmzvideoplayer.video.audio to com.fasterxml.jackson.databind, javafx.fxml;
    exports com.filipmikolajzeglen.fmzvideoplayer.video.effect;
    opens com.filipmikolajzeglen.fmzvideoplayer.video.effect to com.fasterxml.jackson.databind, javafx.fxml;
-   opens com.filipmikolajzeglen.fmzvideoplayer.demo to javafx.graphics;
 }

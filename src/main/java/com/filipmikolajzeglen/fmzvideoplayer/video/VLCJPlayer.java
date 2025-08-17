@@ -1,4 +1,4 @@
-package com.filipmikolajzeglen.fmzvideoplayer.player;
+package com.filipmikolajzeglen.fmzvideoplayer.video;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -6,7 +6,8 @@ import javafx.util.Duration;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
-public class VLCJPlayer implements VideoPlayer {
+public class VLCJPlayer implements VideoPlayer
+{
 
    private final EmbeddedMediaPlayer embeddedMediaPlayer;
 
@@ -17,61 +18,75 @@ public class VLCJPlayer implements VideoPlayer {
    private final ObjectProperty<Runnable> onError = new SimpleObjectProperty<>();
    private final ObjectProperty<Status> status = new SimpleObjectProperty<>(Status.UNKNOWN);
 
-   public VLCJPlayer(EmbeddedMediaPlayer embeddedMediaPlayer) {
+   public VLCJPlayer(EmbeddedMediaPlayer embeddedMediaPlayer)
+   {
       this.embeddedMediaPlayer = embeddedMediaPlayer;
       addListeners();
    }
 
-   private void addListeners() {
-      embeddedMediaPlayer.events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
+   private void addListeners()
+   {
+      embeddedMediaPlayer.events().addMediaPlayerEventListener(new MediaPlayerEventAdapter()
+      {
          @Override
-         public void lengthChanged(uk.co.caprica.vlcj.player.base.MediaPlayer mediaPlayer, long newLength) {
+         public void lengthChanged(uk.co.caprica.vlcj.player.base.MediaPlayer mediaPlayer, long newLength)
+         {
             javafx.application.Platform.runLater(() -> totalDuration.set(Duration.millis(newLength)));
          }
 
          @Override
-         public void timeChanged(uk.co.caprica.vlcj.player.base.MediaPlayer mediaPlayer, long newTime) {
+         public void timeChanged(uk.co.caprica.vlcj.player.base.MediaPlayer mediaPlayer, long newTime)
+         {
             javafx.application.Platform.runLater(() -> currentTime.set(Duration.millis(newTime)));
          }
 
          @Override
-         public void mediaPlayerReady(uk.co.caprica.vlcj.player.base.MediaPlayer mediaPlayer) {
+         public void mediaPlayerReady(uk.co.caprica.vlcj.player.base.MediaPlayer mediaPlayer)
+         {
             javafx.application.Platform.runLater(() -> {
                status.set(Status.READY);
-               if (getOnReady() != null) {
+               if (getOnReady() != null)
+               {
                   getOnReady().run();
                }
             });
          }
 
          @Override
-         public void playing(uk.co.caprica.vlcj.player.base.MediaPlayer mediaPlayer) {
+         public void playing(uk.co.caprica.vlcj.player.base.MediaPlayer mediaPlayer)
+         {
             javafx.application.Platform.runLater(() -> status.set(Status.PLAYING));
          }
 
          @Override
-         public void paused(uk.co.caprica.vlcj.player.base.MediaPlayer mediaPlayer) {
+         public void paused(uk.co.caprica.vlcj.player.base.MediaPlayer mediaPlayer)
+         {
             javafx.application.Platform.runLater(() -> status.set(Status.PAUSED));
          }
 
          @Override
-         public void stopped(uk.co.caprica.vlcj.player.base.MediaPlayer mediaPlayer) {
+         public void stopped(uk.co.caprica.vlcj.player.base.MediaPlayer mediaPlayer)
+         {
             javafx.application.Platform.runLater(() -> status.set(Status.STOPPED));
          }
 
          @Override
-         public void finished(uk.co.caprica.vlcj.player.base.MediaPlayer mediaPlayer) {
+         public void finished(uk.co.caprica.vlcj.player.base.MediaPlayer mediaPlayer)
+         {
             javafx.application.Platform.runLater(() -> {
-               if (getOnEndOfMedia() != null) {
+               if (getOnEndOfMedia() != null)
+               {
                   getOnEndOfMedia().run();
                }
             });
          }
 
          @Override
-         public void error(uk.co.caprica.vlcj.player.base.MediaPlayer mediaPlayer) {
+         public void error(uk.co.caprica.vlcj.player.base.MediaPlayer mediaPlayer)
+         {
             javafx.application.Platform.runLater(() -> {
-               if (getOnError() != null) {
+               if (getOnError() != null)
+               {
                   getOnError().run();
                }
             });
@@ -81,122 +96,146 @@ public class VLCJPlayer implements VideoPlayer {
 
    // --- Implementacja interfejsu VideoPlayer ---
    @Override
-   public void play() {
+   public void play()
+   {
       embeddedMediaPlayer.controls().play();
    }
 
    @Override
-   public void pause() {
+   public void pause()
+   {
       embeddedMediaPlayer.controls().pause();
    }
 
    @Override
-   public void stop() {
+   public void stop()
+   {
       embeddedMediaPlayer.controls().stop();
    }
 
    @Override
-   public void setRate(float rate) {
+   public void setRate(float rate)
+   {
       embeddedMediaPlayer.controls().setRate(rate);
    }
 
    @Override
-   public void seek(Duration duration) {
+   public void seek(Duration duration)
+   {
       embeddedMediaPlayer.controls().setTime((long) duration.toMillis());
    }
 
    @Override
-   public void setVolume(int volume) {
+   public void setVolume(int volume)
+   {
       embeddedMediaPlayer.audio().setVolume(volume);
    }
 
    @Override
-   public int getVolume() {
+   public int getVolume()
+   {
       return embeddedMediaPlayer.audio().volume();
    }
 
    @Override
-   public void release() {
+   public void release()
+   {
       embeddedMediaPlayer.release();
    }
 
    @Override
-   public void dispose() {
+   public void dispose()
+   {
       release();
    }
 
    @Override
-   public Duration getTotalDuration() {
+   public Duration getTotalDuration()
+   {
       return totalDuration.get();
    }
 
    @Override
-   public ObjectProperty<Duration> totalDurationProperty() {
+   public ObjectProperty<Duration> totalDurationProperty()
+   {
       return totalDuration;
    }
 
    @Override
-   public Duration getCurrentTime() {
+   public Duration getCurrentTime()
+   {
       return currentTime.get();
    }
 
    @Override
-   public ObjectProperty<Duration> currentTimeProperty() {
+   public ObjectProperty<Duration> currentTimeProperty()
+   {
       return currentTime;
    }
 
    @Override
-   public Status getStatus() {
+   public Status getStatus()
+   {
       return status.get();
    }
 
    @Override
-   public ObjectProperty<Status> statusProperty() {
+   public ObjectProperty<Status> statusProperty()
+   {
       return status;
    }
 
    @Override
-   public void setOnReady(Runnable value) {
+   public void setOnReady(Runnable value)
+   {
       onReady.set(value);
    }
 
    @Override
-   public Runnable getOnReady() {
+   public Runnable getOnReady()
+   {
       return onReady.get();
    }
 
    @Override
-   public ObjectProperty<Runnable> onReadyProperty() {
+   public ObjectProperty<Runnable> onReadyProperty()
+   {
       return onReady;
    }
 
    @Override
-   public void setOnEndOfMedia(Runnable value) {
+   public void setOnEndOfMedia(Runnable value)
+   {
       onEndOfMedia.set(value);
    }
 
    @Override
-   public Runnable getOnEndOfMedia() {
+   public Runnable getOnEndOfMedia()
+   {
       return onEndOfMedia.get();
    }
 
    @Override
-   public ObjectProperty<Runnable> onEndOfMediaProperty() {
+   public ObjectProperty<Runnable> onEndOfMediaProperty()
+   {
       return onEndOfMedia;
    }
 
    @Override
-   public void setOnError(Runnable value) {
+   public void setOnError(Runnable value)
+   {
       onError.set(value);
    }
 
    @Override
-   public Runnable getOnError() {
+   public Runnable getOnError()
+   {
       return onError.get();
    }
 
    @Override
-   public ObjectProperty<Runnable> onErrorProperty() {
+   public ObjectProperty<Runnable> onErrorProperty()
+   {
       return onError;
    }
 }

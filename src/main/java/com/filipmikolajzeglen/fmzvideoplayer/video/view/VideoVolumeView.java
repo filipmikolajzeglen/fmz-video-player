@@ -1,20 +1,19 @@
 package com.filipmikolajzeglen.fmzvideoplayer.video.view;
 
 import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants;
-import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
-import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoSliderStyleEffect;
+import com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlayer;
 import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoIconsEffect;
+import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoSliderStyleEffect;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
-import com.filipmikolajzeglen.fmzvideoplayer.player.VideoPlayer;
 import javafx.scene.shape.SVGPath;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class VideoVolumeView
 {
-   private static final Logger LOGGER = new Logger();
-
    private final HBox hBoxVolume;
    private final Slider sliderVolume;
    private final Label labelVolume;
@@ -56,12 +55,10 @@ public class VideoVolumeView
          return;
       }
 
-      // Ustaw slider na aktualną głośność odtwarzacza
       sliderVolume.setValue(videoPlayer.getVolume());
-
       volumeChangeListener = (observable, oldValue, newValue) -> {
          int volume = (int) sliderVolume.getValue();
-         videoPlayer.setVolume(volume); // VLCJPlayer używa 0-100
+         videoPlayer.setVolume(volume);
          updateVolumeIcon(volume);
          updateMuteState(volume);
          addColorToSliderVolume();
@@ -107,7 +104,7 @@ public class VideoVolumeView
       }
       if (isMuted)
       {
-         LOGGER.info("Unmuted video volume");
+         log.info("Unmuting video volume");
          setLabelVolume1SVG();
          videoPlayer.setVolume(PlayerConstants.Playback.DEFAULT_VOLUME_VALUE);
          sliderVolume.setValue(PlayerConstants.Playback.DEFAULT_VOLUME_VALUE);
@@ -115,7 +112,7 @@ public class VideoVolumeView
       }
       else
       {
-         LOGGER.info("Muted video volume");
+         log.info("Muting video volume");
          setLabelVolumeMuteSVG();
          videoPlayer.setVolume(PlayerConstants.Playback.MUTE_VOLUME_VALUE);
          sliderVolume.setValue(PlayerConstants.Playback.MUTE_VOLUME_VALUE);
@@ -137,7 +134,7 @@ public class VideoVolumeView
       }
       else
       {
-         LOGGER.error("Video player was NULL during handling volume mouse entered");
+         log.info("Video player was NULL during handling volume mouse entered");
       }
    }
 

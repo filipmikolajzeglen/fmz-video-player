@@ -5,13 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
 import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants;
-import com.filipmikolajzeglen.fmzvideoplayer.player.VideoPlayer;
 import com.filipmikolajzeglen.fmzvideoplayer.video.Video;
 import com.filipmikolajzeglen.fmzvideoplayer.video.VideoCommercialsPlaylist;
 import com.filipmikolajzeglen.fmzvideoplayer.video.VideoMediaPlayer;
 import com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlaybackCoordinator;
+import com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlayer;
 import com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlayerFactory;
 import com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlaylist;
 import com.filipmikolajzeglen.fmzvideoplayer.video.VideoService;
@@ -33,12 +32,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Getter
 public class VideoPlayerView implements Initializable
 {
-   private static final Logger LOGGER = new Logger();
-
    //@formatter:off
    @FXML private VBox vBoxFullPanel;
    @FXML private HBox hBoxControls;
@@ -88,13 +87,13 @@ public class VideoPlayerView implements Initializable
 
    public void initializeVideoPlayer(String videoPath)
    {
-      LOGGER.info("Delegating media player initialization to MediaPlayerManager for path: " + videoPath);
+      log.info("Initializing video player for path: {}", videoPath);
       videoPlayer = videoMediaPlayer.createAndSetupPlayer(videoPath);
    }
 
    public void initializeAllControlsSvgOnTheBeginning()
    {
-      LOGGER.info("Initialize all controls svg on the beginning");
+      log.info("Initialize all controls svg on the beginning");
       videoPlaybackButtonsView.setToPause();
       videoPlaybackButtonsView.initializeNextButton();
    }
@@ -113,7 +112,6 @@ public class VideoPlayerView implements Initializable
 
    void handleNextClick()
    {
-      // audioNormalizer.stop(mediaPlayer);
       videoPlaybackCoordinator.next();
    }
 
@@ -130,7 +128,7 @@ public class VideoPlayerView implements Initializable
          Platform.runLater(() -> {
             videoPlayer.play();
             setPlaying(true);
-            LOGGER.info("MediaPlayer playback started via playByDefault().");
+            log.info("MediaPlayer playback started via playByDefault().");
          });
       }
    }
@@ -182,7 +180,7 @@ public class VideoPlayerView implements Initializable
 
          if (nextVideo != null && nextVideoPath != null)
          {
-            LOGGER.info("Playing next episode: " + nextVideo.getEpisodeName());
+            log.info("Playing next episode: {}", nextVideo.getEpisodeName());
             videoEpisodeInfoView.updateInfo(nextVideo);
             initializeVideoPlayer(nextVideoPath);
             resetTimeSlider();
@@ -191,21 +189,21 @@ public class VideoPlayerView implements Initializable
       }
       else
       {
-         LOGGER.info("End of playlist. Setting REPLAY button.");
+         log.info("End of playlist. Setting REPLAY button.");
          handleEndOfPlaylist();
       }
    }
 
    public void shutdown()
    {
-      LOGGER.running("Shutting down VideoPlayer resources...");
+      log.info("Shutting down VideoPlayer resources...");
       if (videoPlayer != null)
       {
          // audioNormalizer.stop(mediaPlayer);
          videoPlayer.stop();
          videoPlayer.dispose();
          videoPlayer = null;
-         LOGGER.info("MediaPlayer stopped and disposed.");
+         log.info("MediaPlayer stopped and disposed.");
       }
    }
 

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+   <!-- Zmienne używane w konfiguracji -->
+   <property name="LOGS_PATH" value="C:\Users\Kratos\AppData\Roaming\FMZVideoPlayer\logs" />
+<!--   <property name="CONSOLE_LOG_PATTERN"-->
+<!--         value="%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%magenta(%thread)] %cyan(%logger{36}) : %msg%n%ex"/>-->
+   <property name="CONSOLE_LOG_PATTERN"
+         value="%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level)[%18.18t] %cyan(%36.36c{36}) : %m%n%ex"/>
+
+   <property name="FILE_LOG_PATTERN"
+         value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} : %msg%n%ex"/>
+
+   <!-- Appender konsolowy z kolorowaniem -->
+   <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+      <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+         <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+         <charset>UTF-8</charset>
+      </encoder>
+   </appender>
+
+   <!-- Appender do pliku z rotacją (RollingFileAppender) -->
+   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+      <file>${LOGS_PATH}/app.log</file>
+      <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+         <pattern>${FILE_LOG_PATTERN}</pattern>
+         <charset>UTF-8</charset>
+      </encoder>
+
+      <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+         <!-- Rotacja plików logów codziennie -->
+         <fileNamePattern>${LOGS_PATH}/archived/app.%d{yyyy-MM-dd}.log</fileNamePattern>
+         <!-- Przechowuj historię logów przez 30 dni -->
+         <maxHistory>30</maxHistory>
+         <!-- Maksymalny rozmiar wszystkich archiwalnych plików logów -->
+         <totalSizeCap>1GB</totalSizeCap>
+      </rollingPolicy>
+   </appender>
+
+   <!-- Konfiguracja głównego loggera (root) -->
+   <!-- Loguje wszystko od poziomu INFO do konsoli i do pliku -->
+   <root level="INFO">
+      <appender-ref ref="CONSOLE" />
+      <appender-ref ref="FILE" />
+   </root>
+
+</configuration>

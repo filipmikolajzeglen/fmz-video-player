@@ -2,7 +2,6 @@ package com.filipmikolajzeglen.fmzvideoplayer.video.audio;
 
 import java.util.List;
 
-import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
 import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants;
 import com.filipmikolajzeglen.fmzvideoplayer.video.Video;
 import com.filipmikolajzeglen.fmzvideoplayer.video.VideoService;
@@ -18,12 +17,13 @@ import javafx.util.Duration;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 class AudioNormalizationAlgorithm
 {
-   private static final Logger LOGGER = new Logger();
    private static final int NORMALIZATION_SAMPLE_COUNT = 500;
    private static final double TARGET_VOLUME = 0.5;
 
@@ -57,7 +57,7 @@ class AudioNormalizationAlgorithm
    {
       if (video == null || videoService == null)
       {
-         LOGGER.error("Cannot normalize audio: missing Video or Service component.");
+         log.error("Cannot normalize audio: missing Video or Service component.");
          return false;
       }
       return true;
@@ -65,7 +65,7 @@ class AudioNormalizationAlgorithm
 
    private void startNormalization()
    {
-      LOGGER.running("Volume is normalizing for current video...");
+      log.info("Starting audio normalization...");
       normalizing = true;
       animator.start();
    }
@@ -123,7 +123,7 @@ class AudioNormalizationAlgorithm
       mediaPlayer.setAudioSpectrumListener(null);
       currentListener = null;
 
-      LOGGER.info(String.format("Normalized volume was saved to database: %s", normalizedVolume));
+      log.info("Normalized volume was restored from database: {}", normalizedVolume);
    }
 
    void reset(MediaPlayer mediaPlayer)

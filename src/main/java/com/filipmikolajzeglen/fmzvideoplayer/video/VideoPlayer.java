@@ -1,4 +1,4 @@
-package com.filipmikolajzeglen.fmzvideoplayer.player;
+package com.filipmikolajzeglen.fmzvideoplayer.video;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.util.Duration;

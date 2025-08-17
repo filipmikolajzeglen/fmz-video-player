@@ -3,16 +3,15 @@ package com.filipmikolajzeglen.fmzvideoplayer.video;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
 import lombok.Getter;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @ToString
 @Getter
 public class VideoPlaylist
 {
-   private static final Logger LOGGER = new Logger();
-
    private final List<Video> playlist;
    private final List<String> videoPathsList;
    private int currentIndex;
@@ -28,7 +27,7 @@ public class VideoPlaylist
          videoPathsList.add(video.getPath());
       }
 
-      LOGGER.info("Initialized PlaylistManager with " + videos.size() + " videos");
+      log.info("Playlist initialized with {} videos", videos.size());
    }
 
    public boolean hasNext()
@@ -59,10 +58,10 @@ public class VideoPlaylist
       if (hasNext())
       {
          currentIndex++;
-         LOGGER.info("Moving to next video, index: " + currentIndex);
+         log.info("Moving to next video, index: {}", currentIndex);
          return getCurrentVideo();
       }
-      LOGGER.warning("No more videos in playlist");
+      log.warn("No more videos in playlist");
       return null;
    }
 
@@ -71,8 +70,8 @@ public class VideoPlaylist
       if (!playlist.isEmpty())
       {
          currentIndex = 0;
-         LOGGER.info("====================== START YOUR AWESOME TV ======================");
-         LOGGER.info("Reset playlist to first video");
+         log.info("====================== START YOUR AWESOME TV ======================");
+         log.info("Reset playlist to first video");
       }
    }
 

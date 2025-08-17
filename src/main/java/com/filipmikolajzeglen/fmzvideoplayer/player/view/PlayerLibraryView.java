@@ -32,7 +32,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class PlayerLibraryView
 {
    //@formatter:off
@@ -143,7 +145,7 @@ public class PlayerLibraryView
          libraryScrollPane.setFitToHeight(true);
          libraryScrollPane.setContent(detailView);
       } catch (IOException e) {
-         e.printStackTrace();
+         log.error(e.getMessage(), e);
       }
    }
 

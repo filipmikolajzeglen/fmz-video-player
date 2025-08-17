@@ -1,6 +1,6 @@
 package com.filipmikolajzeglen.fmzvideoplayer.video.view;
 
-import com.filipmikolajzeglen.fmzvideoplayer.player.VideoPlayer;
+import com.filipmikolajzeglen.fmzvideoplayer.video.VideoPlayer;
 import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoSliderStyleEffect;
 import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoTimeFormatEffect;
 import javafx.beans.binding.Bindings;

@@ -3,15 +3,15 @@ package com.filipmikolajzeglen.fmzvideoplayer.video;
 import java.util.List;
 import java.util.Optional;
 
-import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
 import com.filipmikolajzeglen.fmzvideoplayer.video.view.VideoPlayerView;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class VideoPlaybackCoordinator
 {
-   private static final Logger LOGGER = new Logger();
    private final VideoPlayerView videoPlayerView;
 
    static VideoPlaybackCoordinator of(VideoPlayerView videoPlayerView)
@@ -37,19 +37,19 @@ public class VideoPlaybackCoordinator
 
    void play()
    {
-      LOGGER.info("Video was resumed");
+      log.info("Video was played");
       videoPlayerView.play();
    }
 
    void pause()
    {
-      LOGGER.info("Video was paused");
+      log.info("Video was paused");
       videoPlayerView.pause();
    }
 
    void replay()
    {
-      LOGGER.info("Video was replayed");
+      log.info("Video was replayed");
       videoPlayerView.replay();
    }
 
@@ -81,9 +81,9 @@ public class VideoPlaybackCoordinator
 
    private void playNextCommercial()
    {
-      LOGGER.info("======================    NEXT COMMERCIAL    ======================");
+      log.info("======================    NEXT COMMERCIAL    ======================");
       String nextAdPath = videoPlayerView.getCommercialPlaylist().getFirst();
-      LOGGER.info("Playing next commercial: " + nextAdPath);
+      log.info("Next commercial path: {}", nextAdPath);
       videoPlayerView.getVideoEpisodeInfoView().updateInfo(null);
       videoPlayerView.resetTimeSlider();
       videoPlayerView.initializeVideoPlayer(nextAdPath);
@@ -91,7 +91,7 @@ public class VideoPlaybackCoordinator
 
    private void finishCommercialBlockAndPlayNextEpisode()
    {
-      LOGGER.info("Commercial block finished. Proceeding to the episode.");
+      log.info("====================== FINISH COMMERCIAL BLOCK ======================");
       videoPlayerView.setPlayingCommercial(false);
       playNextEpisode();
    }
@@ -116,14 +116,14 @@ public class VideoPlaybackCoordinator
       {
          currentVideo.setWatched(true);
          videoPlayerView.getVideoService().getDatabase().update(currentVideo);
-         LOGGER.info("Video marked as watched and saved to database: " + currentVideo.getId());
+         log.info("Video marked as watched and saved to database: {}", currentVideo.getId());
       }
    }
 
    private void startCommercialBlock(List<String> commercialsToPlay)
    {
-      LOGGER.info("====================== START COMMERCIAL BLOCK ======================");
-      LOGGER.info("Starting a commercial block with " + commercialsToPlay.size());
+      log.info("====================== START COMMERCIAL BLOCK ======================");
+      log.info("Commercials to play: {}", commercialsToPlay.size());
       videoPlayerView.setCommercialPlaylist(commercialsToPlay);
       videoPlayerView.setPlayingCommercial(true);
 
@@ -135,7 +135,7 @@ public class VideoPlaybackCoordinator
 
    private void playNextEpisode()
    {
-      LOGGER.info("======================       NEXT VIDEO       =======================");
+      log.info("======================       NEXT VIDEO       =======================");
       videoPlayerView.playNextEpisodeFromPlaylist();
    }
 

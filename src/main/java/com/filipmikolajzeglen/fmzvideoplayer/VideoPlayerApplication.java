@@ -10,7 +10,6 @@ import static java.util.Objects.requireNonNull;
 import java.io.IOException;
 import java.util.Arrays;
 
-import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
 import com.filipmikolajzeglen.fmzvideoplayer.video.view.VideoPlayerView;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -19,11 +18,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class VideoPlayerApplication extends Application
 {
-   private static final Logger LOGGER = new Logger();
-
    @Override
    public void start(Stage primaryStage)
    {
@@ -40,8 +39,7 @@ public class VideoPlayerApplication extends Application
       }
       catch (IOException e)
       {
-         LOGGER.error(APPLICATION_ERROR + e.getCause());
-         LOGGER.error(APPLICATION_ERROR + Arrays.toString(e.getStackTrace()));
+         log.error(APPLICATION_ERROR + "{}", Arrays.toString(e.getStackTrace()));
       }
    }
 
@@ -71,7 +69,7 @@ public class VideoPlayerApplication extends Application
          }
          catch (IOException e)
          {
-            new Logger().error(APPLICATION_ERROR + e.getCause());
+            log.error(APPLICATION_ERROR + "{}", String.valueOf(e.getCause()));
          }
       });
    }

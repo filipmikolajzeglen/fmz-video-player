@@ -15,26 +15,26 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants;
 import com.filipmikolajzeglen.fmzvideoplayer.database.Database;
-import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
+import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @ToString
 @Getter
 @RequiredArgsConstructor
 public class VideoService
 {
-   private static final Logger LOGGER = new Logger();
    private final Database<Video> database;
 
    public void initialize()
    {
       if (database.readAll().isEmpty())
       {
-         LOGGER.warning("Database is empty, loading all videos from main source");
+         log.warn("Database is empty, loading all videos from main source");
          database.createAll(getAllVideoFromMainSource());
       }
    }
@@ -46,7 +46,7 @@ public class VideoService
 
       if (allFilesAndDirs == null)
       {
-         LOGGER.warning("Could not list files in the main video source directory: " + mainDirectory.getPath());
+         log.warn("Could not list files in the main video source directory: {}", mainDirectory.getPath());
          return Collections.emptyList();
       }
 
@@ -96,7 +96,7 @@ public class VideoService
       }
       catch (IOException e)
       {
-         LOGGER.error("An IO exception occurred " + e);
+         log.error("An IO exception occurred {}", String.valueOf(e));
          return "";
       }
    }
@@ -151,7 +151,7 @@ public class VideoService
          List<Video> seriesEpisodes = unwatchedVideosBySeries.get(seriesName);
          if (seriesEpisodes == null || seriesEpisodes.isEmpty())
          {
-            LOGGER.warning("No unwatched episodes for series: " + seriesName + " in the schedule.");
+            log.warn("No unwatched episodes for series: {} in the schedule.", seriesName);
             continue;
          }
 
@@ -163,8 +163,7 @@ public class VideoService
          }
          else
          {
-            LOGGER.warning(
-                  "All unwatched episodes for the series: " + seriesName + " have already been added to the schedule.");
+            log.warn("All unwatched episodes for the series: {} have already been added to the schedule.", seriesName);
          }
       }
 
@@ -178,12 +177,12 @@ public class VideoService
 
       if (seriesDir.exists() && seriesDir.isDirectory())
       {
-         LOGGER.info("Creating playlist for series: " + seriesName);
+         log.info("Creating playlist for series: {}", seriesName);
          return getAllEpisodesOfCartoonFromDirectory(seriesDir);
       }
       else
       {
-         LOGGER.warning("Directory for series not found: " + seriesName);
+         log.warn("Directory for series not found: {}", seriesName);
          return Collections.emptyList();
       }
    }

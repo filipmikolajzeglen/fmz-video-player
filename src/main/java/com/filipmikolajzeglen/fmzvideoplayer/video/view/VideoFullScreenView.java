@@ -1,7 +1,6 @@
 package com.filipmikolajzeglen.fmzvideoplayer.video.view;
 
 import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants;
-import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
 import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoIconsEffect;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
@@ -9,11 +8,11 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.SVGPath;
 import javafx.stage.Stage;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class VideoFullScreenView
 {
-   private static final Logger LOGGER = new Logger();
-
    private final StackPane rootPane;
    private final Label fullScreenLabel;
    private final SVGPath fullScreenSVGPath;
@@ -41,19 +40,19 @@ public class VideoFullScreenView
 
       if (stage.isFullScreen())
       {
-         LOGGER.info("Fullscreen was entered");
+         log.info("Toggling fullscreen mode");
          setLabelMinimizeSVG();
          stage.addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ESCAPE)
             {
-               LOGGER.info("Button ESCAPE was clicked");
+               log.info("Button ESCAPE was clicked");
                setLabelEnterFullscreenSVG();
             }
          });
       }
       else
       {
-         LOGGER.info("Fullscreen was exited");
+         log.info("Exiting fullscreen mode");
          setLabelEnterFullscreenSVG();
       }
    }

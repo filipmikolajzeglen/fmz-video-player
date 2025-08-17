@@ -3,7 +3,6 @@ package com.filipmikolajzeglen.fmzvideoplayer.video;
 import java.util.List;
 
 import com.filipmikolajzeglen.fmzvideoplayer.database.Database;
-import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
 import com.filipmikolajzeglen.fmzvideoplayer.player.PlayerConstants;
 import com.filipmikolajzeglen.fmzvideoplayer.video.audio.AudioNormalizer;
 import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoFadeOutEffect;
@@ -16,11 +15,12 @@ import com.filipmikolajzeglen.fmzvideoplayer.video.view.VideoTimeSliderView;
 import com.filipmikolajzeglen.fmzvideoplayer.video.view.VideoVolumeView;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class VideoPlayerFactory
 {
-   private static final Logger LOGGER = new Logger();
    private final VideoPlayerView videoPlayerView;
 
    public static VideoPlayerFactory of(VideoPlayerView videoPlayerView)
@@ -71,8 +71,7 @@ public class VideoPlayerFactory
 
       if (PlayerConstants.Playback.PLAYLIST_TO_START != null)
       {
-         LOGGER.info(
-               "Creating playlist for a specific series: " + PlayerConstants.Playback.PLAYLIST_TO_START);
+         log.info("Creating playlist for a specific series: {}", PlayerConstants.Playback.PLAYLIST_TO_START);
          videos = videoPlayerView.getVideoService().createPlaylistForSeries(PlayerConstants.Playback.PLAYLIST_TO_START);
          PlayerConstants.Playback.PLAYLIST_TO_START = null;
       }
@@ -89,7 +88,7 @@ public class VideoPlayerFactory
       }
       VideoPlaylist videoPlaylist = new VideoPlaylist(videos);
       videoPlayerView.setVideoPlaylist(videoPlaylist);
-      LOGGER.info(videoPlaylist.createPlaylistLog());
+      log.info(videoPlaylist.createPlaylistLog());
    }
 
    private void startFirstVideoIfAvailable()

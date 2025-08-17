@@ -3,23 +3,21 @@ package com.filipmikolajzeglen.fmzvideoplayer.video;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.filipmikolajzeglen.fmzvideoplayer.logger.Logger;
-import com.filipmikolajzeglen.fmzvideoplayer.player.VideoPlayer;
-import com.filipmikolajzeglen.fmzvideoplayer.player.VLCJPlayer;
 import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoSliderStyleEffect;
 import com.filipmikolajzeglen.fmzvideoplayer.video.effect.VideoTimeFormatEffect;
 import com.filipmikolajzeglen.fmzvideoplayer.video.view.VideoPlayerView;
 import javafx.scene.image.ImageView;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurface;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 
+@Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class VideoMediaPlayer
 {
-   private static final Logger LOGGER = new Logger();
    private static final int MAX_ERROR_RETRIES = 5;
 
    private final VideoPlayerView videoPlayerView;
@@ -62,7 +60,7 @@ public class VideoMediaPlayer
          videoPlayer.setOnEndOfMedia(null);
          videoPlayer.stop();
          videoPlayer.dispose();
-         LOGGER.info("Listeners were removed. Media player was stopped and disposed.");
+         log.info("Stopping and disposing media player: {}", videoPlayer.getClass().getSimpleName());
       }
    }
 
@@ -87,7 +85,7 @@ public class VideoMediaPlayer
          }
          else
          {
-            LOGGER.warning("onEndOfMedia event received for a disposed or old media player. Ignoring.");
+            log.warn("onEndOfMedia event received for a disposed or old media player. Ignoring.");
          }
       });
    }
@@ -97,12 +95,12 @@ public class VideoMediaPlayer
       errorCounts.remove(videoPath);
       if (videoPlayer.getTotalDuration().lessThanOrEqualTo(javafx.util.Duration.ZERO))
       {
-         LOGGER.error("Total duration was 00:00 - Started new initialization");
+         log.error("Total duration was 00:00 - Started new initialization");
          videoPlayerView.initializeVideoPlayer(videoPath);
       }
       else
       {
-         LOGGER.info("Video is ready to play. Total duration: " +
+         log.info("Video player is ready. Total duration: {}",
                VideoTimeFormatEffect.format(videoPlayer.getTotalDuration()));
          videoPlayerView.playByDefault();
       }
@@ -116,14 +114,12 @@ public class VideoMediaPlayer
       if (currentFailures < MAX_ERROR_RETRIES)
       {
          errorCounts.put(videoPath, currentFailures);
-         LOGGER.error(String.format("Error in media player for '%s'. Attempt %d of %d.",
-               videoPath, currentFailures, MAX_ERROR_RETRIES));
+         log.error("Error in media player for '{}'. Attempt {} of {}.", videoPath, currentFailures, MAX_ERROR_RETRIES);
          videoPlayerView.initializeVideoPlayer(videoPath);
       }
       else
       {
-         LOGGER.error(String.format("Failed to play '%s' after %d attempts. Skipping file.",
-               videoPath, MAX_ERROR_RETRIES));
+         log.error("Failed to play '{}' after {} attempts. Skipping file.", videoPath, MAX_ERROR_RETRIES);
          errorCounts.remove(videoPath);
          handleOnEndOfMedia();
       }
@@ -131,7 +127,7 @@ public class VideoMediaPlayer
 
    private void handleOnEndOfMedia()
    {
-      LOGGER.info("Video has finished. Loading next video.");
+      log.info("Video has finished. Loading next video.");
       // videoPlayerView.getAudioNormalizer().stop(videoPlayerView.getMediaPlayer());
       videoPlayerView.getVideoPlaybackCoordinator().next();
    }

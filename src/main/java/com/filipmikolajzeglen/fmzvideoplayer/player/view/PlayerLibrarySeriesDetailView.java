@@ -20,7 +20,6 @@ import javafx.scene.shape.Rectangle;
 
 public class PlayerLibrarySeriesDetailView
 {
-
    @FXML
    private TableView<PlayerLibraryView.EpisodeInfo> episodeTable;
    @FXML
